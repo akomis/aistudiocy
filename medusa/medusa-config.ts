@@ -2,6 +2,8 @@ import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
+const BACKEND_URL = "https://" + process.env.RAILWAY_PUBLIC_DOMAIN;
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.POSTGRES_URL,
@@ -17,26 +19,26 @@ module.exports = defineConfig({
     },
   },
   admin: {
-    backendUrl: "https://" + process.env.RAILWAY_PUBLIC_DOMAIN,
+    backendUrl: BACKEND_URL,
     disable: false,
   },
   modules: [
-    // {
-    //   key: Modules.FILE,
-    //   resolve: '@medusajs/file',
-    //   options: {
-    //     providers: [
-    //       {
-    //         resolve: '@medusajs/file-local',
-    //         id: 'local',
-    //         options: {
-    //           upload_dir: 'static',
-    //           backend_url: `${process.env.MEDUSA_BACKEND_URL}/static`
-    //         }
-    //       }
-    //     ]
-    //   }
-    // },
+    {
+      key: Modules.FILE,
+      resolve: "@medusajs/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/file-local",
+            id: "local",
+            options: {
+              upload_dir: "static",
+              backend_url: `${BACKEND_URL}/static`,
+            },
+          },
+        ],
+      },
+    },
     ...(process.env.REDIS_URL
       ? [
           {

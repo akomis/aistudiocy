@@ -4,7 +4,9 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 module.exports = defineConfig({
   projectConfig: {
-    databaseUrl: process.env.DATABASE_URL,
+    databaseUrl: process.env.POSTGRES_URL,
+    databaseLogging: true,
+    redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -12,6 +14,10 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
+  },
+  admin: {
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
+    disable: false,
   },
   modules: [
     // {
@@ -50,31 +56,31 @@ module.exports = defineConfig({
           },
         ]
       : []),
-    ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
-      ? [
-          {
-            key: Modules.NOTIFICATION,
-            resolve: "@medusajs/notification",
-            options: {
-              providers: [
-                ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
-                  ? [
-                      {
-                        resolve: "./src/modules/email-notifications",
-                        id: "resend",
-                        options: {
-                          channels: ["email"],
-                          api_key: process.env.RESEND_API_KEY,
-                          from: process.env.ADMIN_EMAIL,
-                        },
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          },
-        ]
-      : []),
+    // ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
+    //   ? [
+    //       {
+    //         key: Modules.NOTIFICATION,
+    //         resolve: "@medusajs/notification",
+    //         options: {
+    //           providers: [
+    //             ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
+    //               ? [
+    //                   {
+    //                     resolve: "./src/modules/email-notifications",
+    //                     id: "resend",
+    //                     options: {
+    //                       channels: ["email"],
+    //                       api_key: process.env.RESEND_API_KEY,
+    //                       from: process.env.ADMIN_EMAIL,
+    //                     },
+    //                   },
+    //                 ]
+    //               : []),
+    //           ],
+    //         },
+    //       },
+    //     ]
+    //   : []),
     ...(process.env.STRIPE_API_KEY && process.env.STRIPE_WEBHOOK_SECRET
       ? [
           {

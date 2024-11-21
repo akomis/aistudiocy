@@ -8,7 +8,7 @@ module.exports = defineConfig({
     databaseLogging: true,
     redisUrl: process.env.REDIS_URL,
     workerMode: "shared",
-    databaseName: "medusa",
+    databaseName: "railway",
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,

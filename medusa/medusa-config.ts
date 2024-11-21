@@ -17,7 +17,7 @@ module.exports = defineConfig({
     },
   },
   admin: {
-    backendUrl: process.env.RAILWAY_PUBLIC_DOMAIN,
+    backendUrl: "https://" + process.env.RAILWAY_PUBLIC_DOMAIN,
     disable: false,
   },
   modules: [

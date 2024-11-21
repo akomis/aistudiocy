@@ -2132,7 +2132,7 @@
 
 "@medusajs/event-bus-redis@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/event-bus-redis/-/event-bus-redis-2.0.4.tgz#43bfd03ce5d0f7ab9b66c170293caab4eaa7ec2f"
+  resolved "https://registry.npmjs.org/@medusajs/event-bus-redis/-/event-bus-redis-2.0.4.tgz#43bfd03ce5d0f7ab9b66c170293caab4eaa7ec2f"
   integrity sha512-CjUZF8DPKfUNjJJ83zK4vZcmQkRvoVQknPKPMenTw/y0yf1x8aVNjCWXNrj8QUWTxy5RJ2R+nNxVchI0pJZ5oA==
   dependencies:
     bullmq "5.13.0"
@@ -2140,7 +2140,7 @@
 
 "@medusajs/file-local@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/file-local/-/file-local-2.0.4.tgz#5d33465b6061bb273137dc38db50fe9aeb60fd52"
+  resolved "https://registry.npmjs.org/@medusajs/file-local/-/file-local-2.0.4.tgz#5d33465b6061bb273137dc38db50fe9aeb60fd52"
   integrity sha512-rmhW5CiVipkzCxa4FBAyrR2nVjfW7fZxSKJgCv1Usb4aUlWAXiC5VGOQqJdfWC4X++HjvVDy7Tt9D6V+ZmSJ9A==
 
 "@medusajs/file-s3@^2.0.4":
@@ -2154,7 +2154,7 @@
 
 "@medusajs/file@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/file/-/file-2.0.4.tgz#73beb233eba32a967cdf81f884c5967314aeedec"
+  resolved "https://registry.npmjs.org/@medusajs/file/-/file-2.0.4.tgz#73beb233eba32a967cdf81f884c5967314aeedec"
   integrity sha512-4+RE3R1GAxnKhUi1hLQhJBrI8FvP0aOvL5xPGPlaWDtJ9o8p/if0iNkREvVfH1m8+dopgdZRi4/C4MtWpp38Bw==
 
 "@medusajs/framework@latest":
@@ -2329,7 +2329,7 @@
 
 "@medusajs/notification@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/notification/-/notification-2.0.4.tgz#f34b0f226a5d1ca4132401a3c57b7c5f65a32f80"
+  resolved "https://registry.npmjs.org/@medusajs/notification/-/notification-2.0.4.tgz#f34b0f226a5d1ca4132401a3c57b7c5f65a32f80"
   integrity sha512-N+1BCaLaPL4gz599IMTmE//tNMwIFpj8S+8pG2h1+qwkVPhFWqCfnbS28bVILm4fE0j8uUezrIpZhwQUB+uDiA==
 
 "@medusajs/orchestration@^2.0.4":
@@ -2347,14 +2347,14 @@
 
 "@medusajs/payment-stripe@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/payment-stripe/-/payment-stripe-2.0.4.tgz#c9d57493c6ba286692ebbc1d1cbe5747422e0861"
+  resolved "https://registry.npmjs.org/@medusajs/payment-stripe/-/payment-stripe-2.0.4.tgz#c9d57493c6ba286692ebbc1d1cbe5747422e0861"
   integrity sha512-oJKT70qKSr3yjqa6KSH7ig+23PCuiQViQORTzB3oOowzbMS6rNPwmMvakvV6ANlyZiWCzRKvUOjYjBUrSeCZ9g==
   dependencies:
     stripe "^15.5.0"
 
 "@medusajs/payment@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/payment/-/payment-2.0.4.tgz#44e60f1624536aabdcc25bc75bd93b98d1f1aa2e"
+  resolved "https://registry.npmjs.org/@medusajs/payment/-/payment-2.0.4.tgz#44e60f1624536aabdcc25bc75bd93b98d1f1aa2e"
   integrity sha512-czG07rTOxsgPSY268FFXgyQ3ug4p2chtcksxM5swZO/e9+wYo9l76kQPKrHOSMi7TvucTtDK3EXI9zpsk1VX9g==
 
 "@medusajs/pricing@^2.0.4":
@@ -2499,7 +2499,7 @@
 
 "@medusajs/workflow-engine-redis@^2.0.4":
   version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@medusajs/workflow-engine-redis/-/workflow-engine-redis-2.0.4.tgz#6faf5eacf697305701fb077bcefce8de3d03e8b2"
+  resolved "https://registry.npmjs.org/@medusajs/workflow-engine-redis/-/workflow-engine-redis-2.0.4.tgz#6faf5eacf697305701fb077bcefce8de3d03e8b2"
   integrity sha512-4mlqinHdgRSD72roFQfJBo5J73kdunKhJOtkLRn/MchXVWSgxu76tv3+tzhZNILiFyLifXdKbsToyrMEqBuTSw==
   dependencies:
     bullmq "5.13.0"
@@ -9917,7 +9917,16 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -9949,7 +9958,14 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -10499,7 +10515,7 @@ winston@^3.8.2:
     triple-beam "^1.3.0"
     winston-transport "^4.9.0"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -10512,6 +10528,15 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

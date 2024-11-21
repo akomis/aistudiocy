@@ -58,31 +58,31 @@ module.exports = defineConfig({
           },
         ]
       : []),
-    // ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
-    //   ? [
-    //       {
-    //         key: Modules.NOTIFICATION,
-    //         resolve: "@medusajs/notification",
-    //         options: {
-    //           providers: [
-    //             ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
-    //               ? [
-    //                   {
-    //                     resolve: "./src/modules/email-notifications",
-    //                     id: "resend",
-    //                     options: {
-    //                       channels: ["email"],
-    //                       api_key: process.env.RESEND_API_KEY,
-    //                       from: process.env.ADMIN_EMAIL,
-    //                     },
-    //                   },
-    //                 ]
-    //               : []),
-    //           ],
-    //         },
-    //       },
-    //     ]
-    //   : []),
+    ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
+      ? [
+          {
+            key: Modules.NOTIFICATION,
+            resolve: "@medusajs/notification",
+            options: {
+              providers: [
+                ...(process.env.RESEND_API_KEY && process.env.ADMIN_EMAIL
+                  ? [
+                      {
+                        resolve: "./src/modules/email-notifications",
+                        id: "resend",
+                        options: {
+                          channels: ["email"],
+                          api_key: process.env.RESEND_API_KEY,
+                          from: process.env.ADMIN_EMAIL,
+                        },
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          },
+        ]
+      : []),
     ...(process.env.STRIPE_API_KEY && process.env.STRIPE_WEBHOOK_SECRET
       ? [
           {

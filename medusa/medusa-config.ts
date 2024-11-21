@@ -16,7 +16,7 @@ module.exports = defineConfig({
     },
   },
   admin: {
-    backendUrl: process.env.MEDUSA_BACKEND_URL,
+    backendUrl: process.env.RAILWAY_PUBLIC_DOMAIN,
     disable: false,
   },
   modules: [

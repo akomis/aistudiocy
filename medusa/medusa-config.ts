@@ -22,22 +22,22 @@ module.exports = defineConfig({
     disable: false,
   },
   modules: [
-    // {
-    //   key: Modules.FILE,
-    //   resolve: "@medusajs/file",
-    //   options: {
-    //     providers: [
-    //       {
-    //         resolve: "@medusajs/file-local",
-    //         id: "local",
-    //         options: {
-    //           upload_dir: "static",
-    //           backend_url: `${process.env.BACKEND_URL}/static`,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // },
+    {
+      key: Modules.FILE,
+      resolve: "@medusajs/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/file-local",
+            id: "local",
+            options: {
+              upload_dir: "static",
+              backend_url: `${process.env.BACKEND_URL}/static`,
+            },
+          },
+        ],
+      },
+    },
     ...(process.env.REDIS_URL
       ? [
           {

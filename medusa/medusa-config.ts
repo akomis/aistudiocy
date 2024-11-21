@@ -7,6 +7,7 @@ module.exports = defineConfig({
     databaseUrl: process.env.POSTGRES_URL,
     databaseLogging: true,
     redisUrl: process.env.REDIS_URL,
+    workerMode: "shared",
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,

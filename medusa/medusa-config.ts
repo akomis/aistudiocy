@@ -96,5 +96,5 @@ module.exports = defineConfig({
         ]
       : []),
   ],
-  plugins: ["medusa-fulfillment-manual"],
+  plugins: [],
 });

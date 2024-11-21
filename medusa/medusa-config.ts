@@ -2,8 +2,6 @@ import { loadEnv, defineConfig, Modules } from "@medusajs/framework/utils";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
-const BACKEND_URL = "https://" + process.env.RAILWAY_PUBLIC_DOMAIN;
-
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.POSTGRES_URL,
@@ -19,7 +17,7 @@ module.exports = defineConfig({
     },
   },
   admin: {
-    backendUrl: BACKEND_URL,
+    backendUrl: process.env.BACKEND_URL,
     disable: false,
   },
   modules: [
@@ -33,7 +31,7 @@ module.exports = defineConfig({
             id: "local",
             options: {
               upload_dir: "static",
-              backend_url: `${BACKEND_URL}/static`,
+              backend_url: `${process.env.BACKEND_URL}/static`,
             },
           },
         ],

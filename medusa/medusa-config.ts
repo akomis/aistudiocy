@@ -27,14 +27,27 @@ module.exports = defineConfig({
       resolve: "@medusajs/file",
       options: {
         providers: [
-          {
-            resolve: "@medusajs/file-local",
-            id: "local",
-            options: {
-              upload_dir: "/uploads/images",
-              backend_url: `${process.env.BACKEND_URL}/app/uploads/images`,
-            },
-          },
+          ...(process.env.MINIO_ENDPOINT &&
+          process.env.MINIO_ACCESS_KEY &&
+          process.env.MINIO_SECRET_KEY
+            ? [
+                {
+                  resolve: "./src/modules/minio-file",
+                  id: "minio",
+                  options: {
+                    endPoint: process.env.MINIO_ENDPOINT,
+                    accessKey: process.env.MINIO_ACCESS_KEY,
+                    secretKey: process.env.MINIO_SECRET_KEY,
+                    bucket: process.env.MINIO_BUCKET,
+                  },
+                },
+              ]
+            : [
+                {
+                  resolve: "@medusajs/file-local",
+                  id: "local",
+                },
+              ]),
         ],
       },
     },

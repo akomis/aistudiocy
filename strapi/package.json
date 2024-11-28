@@ -7,7 +7,6 @@
     "build": "strapi build",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
-    "railway": "railway login && railway link && railway shell",
     "start": "strapi start",
     "strapi": "strapi"
   },

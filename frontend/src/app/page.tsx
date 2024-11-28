@@ -14,8 +14,8 @@ const About = () => {
       <div className="flex gap-20 items-end">
         <p className="text-4xl">ABOUT</p>
         <div>
-          {data.map((about) => (
-            <p key={about.id}>{about.description}</p>
+          {data.map((about: any) => (
+            <p key={about?.key}>{about?.value}</p>
           ))}
         </div>
       </div>

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
+import localFont from "next/font/local";
 import "./globals.css";
+import { ReactQueryProvider } from "@/providers/react-query";
 
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
+const ceraPro = localFont({
+  src: "./fonts/cera-pro/CeraPro-Black.woff",
+  variable: "--font-cera-pro",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "ai studio",
@@ -20,8 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`antialiased bg-black text-white`}>{children}</body>
-    </html>
+    <ReactQueryProvider>
+      <html lang="en" className={ceraPro.className}>
+        <body className={`antialiased bg-black text-white`}>{children}</body>
+      </html>
+    </ReactQueryProvider>
   );
 }

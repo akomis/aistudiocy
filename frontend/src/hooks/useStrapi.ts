@@ -1,17 +1,24 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const useStrapi = (key: string, params = {}) => {
-  const fetchData = async () => {
-    const { data } = await axios.get(`${process.env.STRAPI_URL}/${key}`, {
-      params,
-    });
+  const queryFn = async () => {
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/${key}`,
+      {
+        params,
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_STRAPI_TOKEN}`,
+        },
+      }
+    );
 
     return data;
   };
 
-  // @ts-ignore
-  return useQuery([key], fetchData);
+  return useQuery({ queryKey: [key], queryFn });
 };
 
 export default useStrapi;

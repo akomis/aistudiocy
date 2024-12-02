@@ -10,7 +10,7 @@
     "strapi"
   ],
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
   },
   "scripts": {
     "env-init": "railway login && railway link \"af60ba60-9d5f-4da4-bb99-416334c3b312\" && railway shell",

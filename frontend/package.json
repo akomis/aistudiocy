@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "load-env": "railway link af60ba60-9d5f-4da4-bb99-416334c3b312 Frontend && railway shell"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.61.3",

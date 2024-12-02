@@ -3,17 +3,16 @@ export default ({ env }) => ({
     config: {
       provider: "aws-s3",
       providerOptions: {
-        baseUrl: env("MINIO_PUBLIC_ENDPOINT"),
         s3Options: {
           credentials: {
-            accessKeyId: env("MINIO_ROOT_USER"),
-            secretAccessKey: env("MINIO_ROOT_PASSWORD"),
+            accessKeyId: env("MINIO_KEY"),
+            secretAccessKey: env("MINIO_SECRET"),
           },
-          endpoint: env("MINIO_PRIVATE_ENDPOINT"),
+          endpoint: env("MINIO_ENDPOINT"),
           region: env("MINIO_REGION"),
           forcePathStyle: true,
           params: {
-            Bucket: env("MINIO_BUCKET"),
+            Bucket: "strapi",
           },
         },
       },

@@ -1,0 +1,16 @@
+{
+  "name": "aistudiocy",
+  "version": "1.0.0",
+  "repository": "https://github.com/akomis/aistudiocy.git",
+  "author": "akomis <akomis@protonmail.com>",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "medusa",
+    "strapi"
+  ],
+  "scripts": {
+    "env-init": "railway login && railway link \"af60ba60-9d5f-4da4-bb99-416334c3b312\" && railway shell",
+    "generate-types": "yarn workspace strapi run generate-ts-types && yarn workspace frontend run fetch-types"
+  }
+}

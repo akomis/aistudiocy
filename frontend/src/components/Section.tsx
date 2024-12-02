@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from "@/utils/tailwind";
 
 type Props = {
   children: React.ReactNode;

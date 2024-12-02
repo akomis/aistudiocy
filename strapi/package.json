@@ -7,6 +7,7 @@
     "build": "strapi build",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
+    "generate-ts-types": "strapi ts:generate-types",
     "load-env": "railway link af60ba60-9d5f-4da4-bb99-416334c3b312 Strapi && railway shell",
     "start": "strapi start",
     "strapi": "strapi"

@@ -11,6 +11,18 @@
   ],
   "scripts": {
     "env-init": "railway login && railway link \"af60ba60-9d5f-4da4-bb99-416334c3b312\" && railway shell",
-    "generate-types": "yarn workspace strapi run generate-ts-types && yarn workspace frontend run fetch-types"
+    "generate-types": "yarn workspace strapi run generate-ts-types && yarn workspace frontend run fetch-types",
+    "start": "yarn workspace foreach run start",
+    "build": "yarn workspace foreach run build",
+    "dev": "yarn workspace foreach run dev",
+    "start:frontend": "yarn workspace frontend run start",
+    "start:medusa": "yarn workspace medusa run start",
+    "start:strapi": "yarn workspace strapi run start",
+    "build:frontend": "yarn workspace frontend run build",
+    "build:medusa": "yarn workspace medusa run build",
+    "build:strapi": "yarn workspace strapi run build",
+    "dev:frontend": "yarn workspace frontend run dev",
+    "dev:medusa": "yarn workspace medusa run dev",
+    "dev:strapi": "yarn workspace strapi run dev",
   }
 }

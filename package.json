@@ -1,8 +1,6 @@
 {
   "name": "aistudiocy",
   "version": "1.0.0",
-  "repository": "https://github.com/akomis/aistudiocy.git",
-  "author": "akomis <akomis@protonmail.com>",
   "private": true,
   "workspaces": [
     "frontend",

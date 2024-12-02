@@ -4,9 +4,24 @@ import "./globals.css";
 import { ReactQueryProvider } from "@/providers/react-query";
 
 const ceraPro = localFont({
-  src: "./fonts/cera-pro/CeraPro-Black.woff",
-  variable: "--font-cera-pro",
-  weight: "100 900",
+  src: [
+    {
+      path: "../fonts/CeraPro-Light.woff2",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../fonts/CeraPro-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/CeraPro-Black.woff2",
+      weight: "900",
+      style: "bold",
+    },
+  ],
+  variable: "--font-primary",
 });
 
 export const metadata: Metadata = {
@@ -22,8 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
-      <html lang="en" className={ceraPro.className}>
-        <body className={`antialiased bg-black text-white`}>{children}</body>
+      <html lang="en">
+        <body className={`${ceraPro.variable} antialiased bg-black text-white`}>
+          {children}
+        </body>
       </html>
     </ReactQueryProvider>
   );

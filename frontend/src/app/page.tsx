@@ -13,11 +13,11 @@ const About = () => {
     <Section className="py-10 border-2 border-red-500">
       <div className="flex gap-20 items-end">
         <p className="text-4xl">ABOUT</p>
-        <div>
-          {data.map((about: any) => (
+        {/* <div>
+          {data?.map((about: any) => (
             <p key={about?.key}>{about?.value}</p>
           ))}
-        </div>
+        </div> */}
       </div>
     </Section>
   );

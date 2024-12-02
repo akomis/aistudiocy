@@ -7,6 +7,14 @@ import { ApiAboutAbout, ApiSocialSocial } from "@/types/generated/contentTypes";
 import { StrapiAttributes } from "@/types/strapi";
 import Block from "@/components/Block";
 
+const Header = () => {
+  return (
+    <Section className="h-screen border-red-500 border-2">
+      <div>HEADER</div>
+    </Section>
+  );
+};
+
 const About = () => {
   const { data } = useStrapi("abouts");
 
@@ -16,8 +24,8 @@ const About = () => {
 
   return (
     <Section>
-      <div className="flex gap-20 items-end">
-        <p className="text-9xl font-bold">ABOUT</p>
+      <div className="flex flex-col lg:flex-row gap-20 ">
+        <p className="text-9xl font-bold lg:self-end">ABOUT</p>
         <div className="flex flex-col gap-10 m-10">
           {abouts.map((about) => (
             <div key={about.Title} className="flex flex-col gap-2">
@@ -40,7 +48,7 @@ const Footer = () => {
 
   return (
     <Section className="h-[200px] flex justify-end items-end">
-      <div className="flex font-bold gap-10 mr-10 mb-10">
+      <div className="flex flex-col sm:flex-row font-bold gap-10 mr-10 mb-10">
         {socials.map((social) => (
           <div key={social.Key} className="flex flex-col">
             <p>{social.Key}</p>
@@ -57,9 +65,7 @@ const Footer = () => {
 export default function Home() {
   return (
     <Screen>
-      {/* <Section className="h-screen">
-        <div>HEADER</div>
-      </Section> */}
+      <Header />
       <About />
       <Footer />
     </Screen>

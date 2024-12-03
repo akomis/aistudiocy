@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname:
+          process.env.BUCKET_HOST ??
+          process.env.NEXT_PUBLIC_BUCKET_HOST ??
+          "bucket-dev.aistudiocy.com",
+        port: "",
+        pathname: "/strapi/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

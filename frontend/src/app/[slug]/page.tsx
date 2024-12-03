@@ -3,8 +3,8 @@ import Screen from "@/components/Screen";
 import { Label } from "@/components/ui/label";
 import { get } from "@/lib/strapi";
 import { notFound } from "next/navigation";
-import { MasonryPhotoAlbum } from "react-photo-album";
-import "react-photo-album/masonry.css";
+import Gallery from "@/components/Gallery";
+import Link from "next/link";
 
 export default async function Page({
   params,
@@ -26,20 +26,24 @@ export default async function Page({
     height: image.height,
   }));
 
-  console.log(page);
-
   return (
     <Screen className="p-20 flex flex-col gap-20">
+      <Link href="/">
+        <Label className="text-xl hover:cursor-pointer hover:text-gray-300 transform transition-all">
+          HOME
+        </Label>
+      </Link>
+
       <div className="flex flex-col">
-        <Label className="text-4xl">{page.Title}</Label>
+        <Label className="text-4xl font-bold">{page.Title}</Label>
         <Label className="text-xl font-thin">{page.Subtitle}</Label>
       </div>
 
-      <div>
+      <div className="">
         <Block content={page.Content} />
       </div>
 
-      <MasonryPhotoAlbum photos={photos} />
+      <Gallery photos={photos} />
     </Screen>
   );
 }

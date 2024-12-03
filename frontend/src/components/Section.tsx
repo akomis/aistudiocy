@@ -1,10 +1,15 @@
-import { cn } from "@/utils/tailwind";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 };
 
-export default function Section({ children, className }: Props) {
-  return <section className={cn("", className)}>{children}</section>;
+export default function Section({ children, className, style }: Props) {
+  return (
+    <section className={cn("", className)} style={style}>
+      {children}
+    </section>
+  );
 }

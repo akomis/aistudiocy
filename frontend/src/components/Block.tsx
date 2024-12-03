@@ -19,8 +19,6 @@ export default function Block({
       content={content}
       blocks={{
         image: ({ image }) => {
-          console.log(image);
-
           return (
             <Image
               src={image.url}

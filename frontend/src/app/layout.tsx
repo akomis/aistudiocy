@@ -7,7 +7,7 @@ const ceraPro = localFont({
   src: [
     {
       path: "../fonts/CeraPro-Light.woff2",
-      weight: "200",
+      weight: "100",
       style: "normal",
     },
     {

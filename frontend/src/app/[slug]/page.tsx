@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label";
 import { get } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 import Gallery from "@/components/Gallery";
-import Link from "next/link";
 import HomeButton from "@/components/HomeButton";
 
 export default async function Page({

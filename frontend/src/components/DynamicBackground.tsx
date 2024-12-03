@@ -4,8 +4,8 @@ import { useState } from "react";
 import Section from "./Section";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Logo from "./Logo";
 
 type Props = { data: any[] };
 
@@ -30,16 +30,9 @@ const DynamicBackground = ({ data }: Props) => {
           router.push("/catalogue");
         }}
       >
-        <Image
-          className="w-[50px]"
-          src="/logo.png"
-          alt="logo"
-          width={209}
-          height={415}
-          style={{ objectFit: "contain" }}
-        />
+        <Logo />
 
-        <div className="flex flex-col gap-2 w-24">
+        <div className="flex flex-col gap-4 w-24">
           {data.map((header: any) => (
             <div
               key={header.Category}

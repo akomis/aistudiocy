@@ -5,6 +5,7 @@ import { get } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 import Gallery from "@/components/Gallery";
 import Link from "next/link";
+import HomeButton from "@/components/HomeButton";
 
 export default async function Page({
   params,
@@ -28,11 +29,7 @@ export default async function Page({
 
   return (
     <Screen className="p-20 flex flex-col gap-20">
-      <Link href="/">
-        <Label className="text-xl hover:cursor-pointer hover:text-gray-300 transform transition-all">
-          HOME
-        </Label>
-      </Link>
+      <HomeButton />
 
       <div className="flex flex-col">
         <Label className="text-6xl font-bold">{page.Title}</Label>
@@ -41,7 +38,7 @@ export default async function Page({
         )}
       </div>
 
-      <div className="">
+      <div>
         <Block content={page.Content} />
       </div>
 

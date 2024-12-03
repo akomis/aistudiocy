@@ -1,35 +1,28 @@
 {
   "kind": "collectionType",
-  "collectionName": "categories",
+  "collectionName": "headers",
   "info": {
-    "singularName": "category",
-    "pluralName": "categories",
-    "displayName": "Category"
+    "singularName": "header",
+    "pluralName": "headers",
+    "displayName": "Header"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "Name": {
+    "Category": {
       "type": "string",
       "required": true,
       "unique": true
     },
-    "Header": {
+    "Image": {
       "allowedTypes": [
         "images"
       ],
       "type": "media",
       "multiple": false,
       "required": true
-    },
-    "Gallery": {
-      "allowedTypes": [
-        "images"
-      ],
-      "type": "media",
-      "multiple": true
     }
   }
 }

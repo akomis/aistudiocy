@@ -1,5 +1,4 @@
 import HomeButton from "@/components/HomeButton";
-import Logo from "@/components/Logo";
 import { Label } from "@radix-ui/react-label";
 
 export default function NotFound() {
@@ -11,7 +10,8 @@ export default function NotFound() {
         </Label>
         <HomeButton />
       </div>
-      <Logo />
+
+      <HomeButton isIcon />
     </div>
   );
 }

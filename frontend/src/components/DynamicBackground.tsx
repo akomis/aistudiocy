@@ -47,9 +47,9 @@ const DynamicBackground = ({ data }: Props) => {
             >
               <Label
                 className={cn(
-                  "text-xl font-bold text-white hover:cursor-pointer hover:text-gray-700",
+                  "text-sm font-bold text-white hover:cursor-pointer hover:text-gray-300 tracking-widest",
                   {
-                    "text-gray-400": slideIndex === data.indexOf(header),
+                    "opacity-70": slideIndex === data.indexOf(header),
                   }
                 )}
                 htmlFor={header.Category}

@@ -1,11 +1,9 @@
-"use client";
-
-import useStrapi from "@/hooks/useStrapi";
 import Screen from "../components/Screen";
 import Section from "../components/Section";
 import { ApiAboutAbout, ApiSocialSocial } from "@/types/generated/contentTypes";
 import { StrapiAttributes } from "@/types/strapi";
 import Block from "@/components/Block";
+import { get } from "@/utils/strapi";
 
 const Header = () => {
   return (
@@ -15,8 +13,8 @@ const Header = () => {
   );
 };
 
-const About = () => {
-  const { data } = useStrapi("abouts");
+const About = async () => {
+  const data = await get("abouts");
 
   if (!data) return null;
 
@@ -39,10 +37,10 @@ const About = () => {
   );
 };
 
-const Footer = () => {
-  const { data } = useStrapi("socials");
+const Footer = async () => {
+  const data = await get("socials");
 
-  if (!data) return null;
+  if (!data?.data) return null;
 
   const socials = data.data as StrapiAttributes<ApiSocialSocial>;
 
@@ -62,7 +60,7 @@ const Footer = () => {
   );
 };
 
-export default function Home() {
+export default async function Home() {
   return (
     <Screen>
       <Header />

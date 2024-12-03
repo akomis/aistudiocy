@@ -3,6 +3,7 @@ import Section from "../components/Section";
 import Block from "@/components/Block";
 import DynamicBackground from "@/components/DynamicBackground";
 import { get } from "@/lib/strapi";
+import Link from "next/link";
 
 const Header = async () => {
   const getHeader = await get("headers");
@@ -39,32 +40,55 @@ const About = async () => {
 const Footer = async () => {
   const getSocials = await get("socials");
   const getFooter = await get("image");
+  const getPages = await get("pages");
 
   if (!getSocials?.data) return null;
   if (!getFooter?.data) return null;
 
   const socials = getSocials.data;
   const footer = getFooter.data.Footer;
+  const pages = getPages.data;
   const bgImageUrl = footer?.url;
+
+  console.log(pages);
 
   return (
     <Section
-      className="h-[300px] flex justify-end items-end"
+      className="h-[400px] flex flex-col justify-end items-end"
       style={{
         backgroundImage: `url(${bgImageUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col sm:flex-row font-bold gap-10 mr-10 mb-10">
-        {socials.map((social: any) => (
-          <div key={social.Key} className="flex flex-col">
-            <p>{social.Key}</p>
-            <a href={social.URL} target="_blank">
-              {social.Value}
-            </a>
-          </div>
-        ))}
+      <div className="flex flex-col justify-end items-end gap-10 mr-10 mb-10">
+        <div className="flex flex-col sm:flex-row font-bold gap-10">
+          {socials.map((social: any) => (
+            <div key={social.Key} className="flex flex-col">
+              <p>{social.Key}</p>
+              <a
+                href={social.URL}
+                target="_blank"
+                className="hover:text-gray-400"
+              >
+                {social.Value}
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col sm:flex-row font-thin gap-10 ">
+          {pages.map((page: any) => (
+            <Link
+              key={page.Key}
+              href={`/${page.Key}`}
+              target="_blank"
+              className="hover:cursor-pointer hover:text-gray-300"
+            >
+              {page.Title}
+            </Link>
+          ))}
+        </div>
       </div>
     </Section>
   );

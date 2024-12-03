@@ -18313,6 +18313,11 @@ react-jwt@^1.2.0:
   optionalDependencies:
     fsevents "^2.3.2"
 
+react-photo-album@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/react-photo-album/-/react-photo-album-3.0.2.tgz#994644afe651cc8516ea15bfc2f054563568ba45"
+  integrity sha512-w3+8i6aj9l1jRfcubgVbAlBGSdtiXcqWdcwZcH4/Bavc+v7X7h+S3TkQ723pvDABjhaaxS168g9ECEBP6xnKrQ==
+
 react-promise-suspense@0.3.4:
   version "0.3.4"
   resolved "https://registry.npmjs.org/react-promise-suspense/-/react-promise-suspense-0.3.4.tgz#05d19a75703d71374674840056cfef2fcd38809d"

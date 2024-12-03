@@ -50,8 +50,6 @@ const Footer = async () => {
   const pages = getPages.data;
   const bgImageUrl = footer?.url;
 
-  console.log(pages);
-
   return (
     <Section
       className="h-[400px] flex flex-col justify-end items-end"

@@ -20,7 +20,7 @@ export default async function Page({
     notFound();
   }
 
-  const photos = page.Gallery.map((image: any) => ({
+  const photos = page.Gallery?.map((image: any) => ({
     src: image.url,
     width: image.width,
     height: image.height,
@@ -35,15 +35,17 @@ export default async function Page({
       </Link>
 
       <div className="flex flex-col">
-        <Label className="text-4xl font-bold">{page.Title}</Label>
-        <Label className="text-xl font-thin">{page.Subtitle}</Label>
+        <Label className="text-6xl font-bold">{page.Title}</Label>
+        {page.Subtitle && (
+          <Label className="text-xl font-thin">{page.Subtitle}</Label>
+        )}
       </div>
 
       <div className="">
         <Block content={page.Content} />
       </div>
 
-      <Gallery photos={photos} />
+      {photos && <Gallery photos={photos} />}
     </Screen>
   );
 }

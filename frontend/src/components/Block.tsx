@@ -6,6 +6,7 @@ import {
   BlocksRenderer,
   type BlocksContent,
 } from "@strapi/blocks-react-renderer";
+import { Label } from "./ui/label";
 
 export default function Block({
   content,
@@ -27,6 +28,26 @@ export default function Block({
               alt={image.alternativeText || ""}
             />
           );
+        },
+        paragraph: ({ children }) => <p>{children}</p>,
+
+        heading: ({ children, level }) => {
+          switch (level) {
+            case 1:
+              return <Label className="text-4xl mb-10 flex">{children}</Label>;
+            case 2:
+              return <Label className="text-3xl mb-8 flex">{children}</Label>;
+            case 3:
+              return <Label className="text-2xl mb-4 flex">{children}</Label>;
+            case 4:
+              return <Label className="text-2xl mb-2 flex">{children}</Label>;
+            case 5:
+              return <Label className="text-lg mb-2 flex">{children}</Label>;
+            case 6:
+              return <Label className="text-md mb-2 flex">{children}</Label>;
+            default:
+              return <Label className="text-sm mb-2 flex">{children}</Label>;
+          }
         },
       }}
     />

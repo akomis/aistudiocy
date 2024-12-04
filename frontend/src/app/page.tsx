@@ -1,4 +1,3 @@
-import Screen from "../components/Screen";
 import Section from "../components/Section";
 import Block from "@/components/Block";
 import DynamicBackground from "@/components/DynamicBackground";
@@ -95,10 +94,10 @@ const Footer = async () => {
 
 export default async function Home() {
   return (
-    <Screen>
+    <>
       <Header />
       <About />
       <Footer />
-    </Screen>
+    </>
   );
 }

@@ -3675,7 +3675,7 @@
   resolved "https://registry.npmjs.org/@medusajs/inventory/-/inventory-2.0.7.tgz#ff7801d87a9ab106d83f32326858f04e634cd32c"
   integrity sha512-0YbJhVClX6K4BDMBR0TUM8XgE1zQ/pyPXbReMw7tMHufS80MHZbrbLRFpUCNhKcwlVF5b/MeZceZ4fW24lBXkw==
 
-"@medusajs/js-sdk@2.0.7":
+"@medusajs/js-sdk@2.0.7", "@medusajs/js-sdk@^2.0.7":
   version "2.0.7"
   resolved "https://registry.npmjs.org/@medusajs/js-sdk/-/js-sdk-2.0.7.tgz#f12e62ad3860a0c88da3f589278ab96cdd5378ed"
   integrity sha512-gLJ58C79/X0R7tOsK8FWoeg5wLriiYPPmAmevPojF2pws28aYtWT3hWWpsKb0KoeV415TmCkFleg7oxgCfk3EA==
@@ -5187,7 +5187,7 @@
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-compose-refs" "1.0.1"
 
-"@radix-ui/react-slot@1.1.0":
+"@radix-ui/react-slot@1.1.0", "@radix-ui/react-slot@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.1.0.tgz#7c5e48c36ef5496d97b08f1357bb26ed7c714b84"
   integrity sha512-FUCf5XMfmW4dtYl69pdS4DbxKy8nj4M7SafBgPllysxmdachynNflAdp/gCsnYWNDnge6tI9onzMp5ARYc1KNw==

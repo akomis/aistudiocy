@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import Section from "./Section";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Logo from "./Logo";
+import Categories from "./Categories";
 
 type Props = { data: any[] };
 
@@ -14,6 +13,7 @@ const DynamicBackground = ({ data }: Props) => {
   const router = useRouter();
 
   const images = data.map((image: any) => image.Image?.url);
+  const categories = data.map((category: any) => category.Category);
 
   return (
     <Section
@@ -32,27 +32,11 @@ const DynamicBackground = ({ data }: Props) => {
       >
         <Logo />
 
-        <div className="flex flex-col gap-4 w-24">
-          {data.map((header: any) => (
-            <div
-              key={header.Category}
-              className="flex items-center font-thin text-right"
-            >
-              <Label
-                className={cn(
-                  "text-sm font-bold text-white hover:cursor-pointer hover:text-gray-300 tracking-widest",
-                  {
-                    "opacity-70": slideIndex === data.indexOf(header),
-                  }
-                )}
-                htmlFor={header.Category}
-                onMouseEnter={() => setSlideIndex(data.indexOf(header))}
-              >
-                {header.Category}
-              </Label>
-            </div>
-          ))}
-        </div>
+        <Categories
+          categories={categories}
+          activeIndex={slideIndex}
+          setIndex={setSlideIndex}
+        />
       </div>
     </Section>
   );

@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
           process.env.NEXT_PUBLIC_BUCKET_HOST ??
           "bucket-dev.aistudiocy.com",
         port: "",
-        pathname: "/strapi/**",
+        pathname: "/**",
       },
     ],
   },

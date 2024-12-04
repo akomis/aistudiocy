@@ -5,6 +5,7 @@ import { get } from "@/lib/strapi";
 import { notFound } from "next/navigation";
 import Gallery from "@/components/Gallery";
 import HomeButton from "@/components/HomeButton";
+import Title from "@/components/Title";
 
 export default async function Page({
   params,
@@ -27,11 +28,11 @@ export default async function Page({
   }));
 
   return (
-    <Screen className="p-20 flex flex-col gap-20">
+    <Screen>
       <HomeButton />
 
       <div className="flex flex-col">
-        <Label className="text-6xl font-bold">{page.Title}</Label>
+        <Title>{page.Title}</Title>
         {page.Subtitle && (
           <Label className="text-xl font-thin">{page.Subtitle}</Label>
         )}

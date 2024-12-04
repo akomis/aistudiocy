@@ -6,5 +6,9 @@ type Props = {
 };
 
 export default function Screen({ children, className }: Props) {
-  return <div className={cn("", className)}>{children}</div>;
+  return (
+    <div className={cn("p-10 md:p-20 flex flex-col gap-20", className)}>
+      {children}
+    </div>
+  );
 }

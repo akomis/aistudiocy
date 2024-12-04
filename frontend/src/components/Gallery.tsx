@@ -64,7 +64,7 @@ export default function Gallery({ photos }: { photos: Photo[] }) {
               ]
             : undefined
         }
-        carousel={{ finite: false }}
+        carousel={{ finite: true }}
         styles={{ root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" } }}
         controller={{
           closeOnBackdropClick: true,

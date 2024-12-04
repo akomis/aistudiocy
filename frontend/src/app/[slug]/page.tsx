@@ -34,7 +34,7 @@ export default async function Page({
       <div className="flex flex-col">
         <Title>{page.Title}</Title>
         {page.Subtitle && (
-          <Label className="text-xl font-thin">{page.Subtitle}</Label>
+          <Label className="text-xl font-light">{page.Subtitle}</Label>
         )}
       </div>
 

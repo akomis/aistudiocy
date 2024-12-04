@@ -16,10 +16,10 @@ export default function Categories({
   return (
     <div className="flex flex-col gap-4 w-24">
       {categories.map((category: any) => (
-        <div key={category} className="flex items-center font-thin text-right">
+        <div key={category} className="flex items-center text-right">
           <Label
             className={cn(
-              "text-sm font-bold text-white hover:cursor-pointer hover:opacity-80 tracking-widest",
+              "text-sm font-semibold text-white hover:cursor-pointer hover:opacity-80 tracking-widest",
               {
                 "opacity-70": activeIndex === categories.indexOf(category),
               }

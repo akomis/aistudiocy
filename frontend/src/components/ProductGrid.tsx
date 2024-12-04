@@ -30,7 +30,7 @@ const ProductItem = ({ product }: { product: StoreProduct }) => {
   return (
     product.thumbnail && (
       <div
-        className="hover:cursor-pointer hover:opacity-75 transition-all relative"
+        className="hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -38,10 +38,9 @@ const ProductItem = ({ product }: { product: StoreProduct }) => {
           onClick={() => setLightboxPhoto(photos?.[0])}
           src={product.thumbnail}
           alt={product.title}
-          width={288}
-          height={288}
+          fill
           style={{ objectFit: "contain" }}
-        ></Image>
+        />
         {isHovered && (
           <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2">
             <span className="font-thin text-xl">{`€${product.variants[0].calculated_price?.calculated_amount}`}</span>
@@ -80,9 +79,9 @@ const ProductItem = ({ product }: { product: StoreProduct }) => {
 export default function ProductGrid({ products }: Props) {
   return (
     <div>
-      <div className="grid grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product) => (
-          <div className="h-72 w-72" key={product.id}>
+          <div key={product.id}>
             <ProductItem product={product} />
           </div>
         ))}

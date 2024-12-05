@@ -1,3 +1,4 @@
+import CutoffText from "@/components/CutoffText";
 import Section from "../components/Section";
 import Block from "@/components/Block";
 import DynamicBackground from "@/components/DynamicBackground";
@@ -28,9 +29,8 @@ const About = async () => {
   return (
     <Section>
       <div className="flex flex-col lg:flex-row justify-between items-end">
-        <div className="h-[110px] overflow-hidden">
-          <span className="text-9xl font-bold lg:self-end">ABOUT</span>
-        </div>
+        <CutoffText>ABOUT</CutoffText>
+
         <div className="flex flex-col gap-10 py-20 px-10">
           {abouts.map((about: any) => (
             <div key={about.Title} className="flex flex-col gap-2">

@@ -14,8 +14,6 @@ const DynamicBackground = ({ data }: Props) => {
   const router = useRouter();
   const categories = data.map((e) => e.category);
 
-  console.log(categoryId);
-
   const displayedImageUrl = data.find((e) => {
     return e.category.id === categoryId;
   })?.url;

@@ -11,10 +11,11 @@ import { cn } from "@/lib/utils";
 import FilterContext from "@/providers/filter";
 import { Label } from "./ui/label";
 import { sdk } from "@/lib/medusa";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Spinner from "./Spinner";
 import { useSearchParams } from "next/navigation";
+import { REGION_ID } from "@/lib/constants";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -26,7 +27,19 @@ const ProductItem = ({ product }: ProductItemProps) => {
     undefined
   );
 
-  if (!product.variants) return null;
+  if (!product?.variants) return null;
+
+  const cartId =
+    typeof window !== "undefined" ? localStorage.getItem("cart_id") : "";
+
+  const addItem = useMutation({
+    mutationFn: () =>
+      sdk.store.cart.createLineItem(cartId as string, {
+        variant_id: product.variants?.[0].id as string,
+        quantity: 1,
+      }),
+    mutationKey: ["add", product.variants[0].id],
+  });
 
   const photos = product.images?.map((image) => ({
     key: image.id,
@@ -52,7 +65,11 @@ const ProductItem = ({ product }: ProductItemProps) => {
         {isHovered && (
           <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
             <span className="text-xl font-light">{`€${product.variants[0].calculated_price?.calculated_amount}`}</span>
-            <Button variant="ghost" className="text-xl text-white">
+            <Button
+              variant="ghost"
+              className="text-xl text-white"
+              onClick={() => addItem.mutate()}
+            >
               <PlusIcon />
             </Button>
           </div>
@@ -99,7 +116,6 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   const { id, setId } = useContext(FilterContext);
 
   const searchParams = useSearchParams();
-  console.log(searchParams);
 
   useEffect(() => {
     setId(searchParams.get("category"));
@@ -110,7 +126,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
     queryFn: () =>
       sdk.store.product.list({
         fields: "*variants.calculated_price",
-        region_id: "reg_01JE7JJ691K3XF415A25MVP6ZT",
+        region_id: REGION_ID,
         category_id: id as string,
       }),
     enabled: Boolean(id),
@@ -128,7 +144,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
   if (isLoading) {
     return (
-      <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <Spinner />
       </div>
     );

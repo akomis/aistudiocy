@@ -48,7 +48,7 @@ export default async function Catalogue() {
           <Filter categories={categories} />
         )}
 
-        <Basket products={products} noProductsAvailable={noProductsAvailable} />
+        <Basket noProductsAvailable={noProductsAvailable} />
       </div>
 
       <ProductGrid

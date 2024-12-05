@@ -1,0 +1,1 @@
+export const REGION_ID = "reg_01JE7JJ691K3XF415A25MVP6ZT";

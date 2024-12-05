@@ -8,7 +8,7 @@ type Props = {
 
 type FilterContextType = {
   id: string | null;
-  setId: React.Dispatch<React.SetStateAction<string | null>>;
+  setId: (id: string | null) => void;
 };
 
 const FilterContext = createContext<FilterContextType>({

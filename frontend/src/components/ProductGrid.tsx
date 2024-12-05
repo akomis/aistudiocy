@@ -2,7 +2,7 @@
 
 import { StoreProduct } from "@medusajs/types";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
@@ -14,6 +14,7 @@ import { sdk } from "@/lib/medusa";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Spinner from "./Spinner";
+import { useSearchParams } from "next/navigation";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -95,7 +96,14 @@ type Props = {
 const IMAGE_SIZE = 3000;
 
 export default function ProductGrid({ products, images, emailHref }: Props) {
-  const { id } = useContext(FilterContext);
+  const { id, setId } = useContext(FilterContext);
+
+  const searchParams = useSearchParams();
+  console.log(searchParams);
+
+  useEffect(() => {
+    setId(searchParams.get("category"));
+  }, []);
 
   const { data: filteredProductsData, isLoading } = useQuery({
     queryKey: ["filteredProducts", id],
@@ -109,8 +117,6 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   });
 
   const filteredProducts = filteredProductsData?.products ?? products;
-
-  console.log(filteredProducts);
 
   const firstSet = filteredProducts.slice(0, 4);
   const secondSet = filteredProducts.slice(4, 6);
@@ -130,10 +136,14 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
   if (filteredProducts.length === 0) {
     return (
-      <Label className="text-2xl text-center">
-        No products found with the applied filter. Explore more categories
-        through the categories on top.
-      </Label>
+      <div className="flex flex-col mx-auto">
+        <Label className="text-2xl text-center font-light">
+          No products found with the applied filter.
+        </Label>
+        <Label className="text-2xl text-center font-light">
+          Feel free to explore more categories through the categories on top.
+        </Label>
+      </div>
     );
   }
 
@@ -207,13 +217,13 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
               />
             )}
 
-            {fourthSet &&
-              fourthSet.length &&
-              fourthSet.map((product) => (
-                <div key={product.id}>
-                  <ProductItem product={product} />
-                </div>
-              ))}
+            {fourthSet.length
+              ? fourthSet.map((product) => (
+                  <div key={product.id}>
+                    <ProductItem product={product} />
+                  </div>
+                ))
+              : null}
           </SubGrid>
         ) : null}
       </div>

@@ -1,13 +1,25 @@
 import Section from "../components/Section";
 import Block from "@/components/Block";
 import DynamicBackground from "@/components/DynamicBackground";
+import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 import Link from "next/link";
 
 const Header = async () => {
+  const categories = (await sdk.store.category.list()).product_categories;
   const headers = (await get("headers")).data;
 
-  return <DynamicBackground data={headers} />;
+  const data = categories.map((category) => {
+    return {
+      category: category,
+      url: headers.find(
+        (header: any) =>
+          header.Category.toLowerCase() === category.name.toLowerCase()
+      )?.Image?.url,
+    };
+  });
+
+  return <DynamicBackground data={data} />;
 };
 
 const About = async () => {

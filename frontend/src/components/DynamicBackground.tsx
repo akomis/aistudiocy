@@ -4,22 +4,27 @@ import { useState } from "react";
 import Section from "./Section";
 import { useRouter } from "next/navigation";
 import Logo from "./Logo";
-import Categories from "./Categories";
+import CategoryPicker from "./CategoryPicker";
+import { StoreProductCategory } from "@medusajs/types";
 
-type Props = { data: any[] };
+type Props = { data: { category: StoreProductCategory; url: string }[] };
 
 const DynamicBackground = ({ data }: Props) => {
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [categoryId, setCategoryId] = useState(data[0].category.id);
   const router = useRouter();
+  const categories = data.map((e) => e.category);
 
-  const images = data.map((image: any) => image.Image?.url);
-  const categories = data.map((category: any) => category.Category);
+  console.log(categoryId);
+
+  const displayedImageUrl = data.find((e) => {
+    return e.category.id === categoryId;
+  })?.url;
 
   return (
     <Section
       className="h-screen flex items-center px-14"
       style={{
-        backgroundImage: `url(${images[slideIndex]})`,
+        backgroundImage: `url(${displayedImageUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -32,11 +37,12 @@ const DynamicBackground = ({ data }: Props) => {
       >
         <Logo />
 
-        <Categories
+        <CategoryPicker
           categories={categories}
-          activeIndex={slideIndex}
-          setActive={setSlideIndex}
-          enableChangeOnHover
+          active={categoryId}
+          setActive={setCategoryId}
+          setOnHover
+          navigateOnClick
         />
       </div>
     </Section>

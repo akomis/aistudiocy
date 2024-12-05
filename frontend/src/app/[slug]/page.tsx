@@ -7,6 +7,14 @@ import Gallery from "@/components/Gallery";
 import HomeButton from "@/components/HomeButton";
 import Title from "@/components/Title";
 
+export async function generateStaticParams() {
+  const pages = await get("pages");
+
+  return pages.map((page: any) => ({
+    slug: page.Key,
+  }));
+}
+
 export default async function Page({
   params,
 }: {

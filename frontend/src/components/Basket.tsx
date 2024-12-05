@@ -20,10 +20,11 @@ import {
 } from "@stripe/react-stripe-js";
 import CutoffText from "./CutoffText";
 import { Label } from "@radix-ui/react-label";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "@/providers/cart";
 import { useMutation } from "@tanstack/react-query";
 import { sdk } from "@/lib/medusa";
+import Spinner from "./Spinner";
 
 type BasketGridProps = {
   items: StoreCartLineItem[];
@@ -31,13 +32,20 @@ type BasketGridProps = {
 
 const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
   const { cart, refreshCart } = useContext(CartContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const deleteItem = useMutation({
     mutationKey: ["delete", item.id],
-    mutationFn: () =>
-      sdk.store.cart.deleteLineItem(cart?.id as string, item?.id as string),
+    mutationFn: () => {
+      setIsLoading(true);
+      return sdk.store.cart.deleteLineItem(
+        cart?.id as string,
+        item?.id as string
+      );
+    },
     onSuccess: () => {
       refreshCart();
+      setIsLoading(false);
     },
   });
 
@@ -57,7 +65,7 @@ const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
           className="text-xl"
           onClick={() => deleteItem.mutate()}
         >
-          <MinusIcon />
+          {isLoading ? <Spinner /> : <MinusIcon />}
         </Button>
       </div>
     </div>

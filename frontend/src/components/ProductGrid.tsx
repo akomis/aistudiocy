@@ -27,6 +27,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const [lightboxPhoto, setLightboxPhoto] = useState<SlideImage | undefined>(
     undefined
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const { cart, setCart } = useContext(CartContext);
 
@@ -37,23 +38,31 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   const add = useMutation({
     mutationKey: ["add", variant.id],
-    mutationFn: () =>
-      sdk.store.cart.createLineItem(cart?.id as string, {
+    mutationFn: () => {
+      setIsLoading(true);
+      return sdk.store.cart.createLineItem(cart?.id as string, {
         variant_id: variant.id as string,
         quantity: 1,
-      }),
+      });
+    },
     onSuccess: (response) => {
       setCart(response.cart);
+      setIsLoading(false);
     },
   });
 
   const deleteItem = useMutation({
     mutationKey: ["delete", variant.id],
-    mutationFn: () =>
-      sdk.store.cart.deleteLineItem(cart?.id as string, lineItem?.id as string),
+    mutationFn: () => {
+      setIsLoading(true);
+      return sdk.store.cart.deleteLineItem(
+        cart?.id as string,
+        lineItem?.id as string
+      );
+    },
     onSuccess: (response) => {
-      console.log(response);
       setCart(response.parent);
+      setIsLoading(false);
     },
   });
 
@@ -93,7 +102,13 @@ const ProductItem = ({ product }: ProductItemProps) => {
                 isInBasket ? deleteItem.mutate() : add.mutate();
               }}
             >
-              {!isInBasket ? <PlusIcon /> : <MinusIcon />}
+              {isLoading ? (
+                <Spinner />
+              ) : !isInBasket ? (
+                <PlusIcon />
+              ) : (
+                <MinusIcon />
+              )}
             </Button>
           </div>
         )}

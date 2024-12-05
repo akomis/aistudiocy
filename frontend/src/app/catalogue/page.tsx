@@ -33,7 +33,7 @@ export default async function Catalogue() {
 
   return (
     <Screen className="p-40">
-      <div className="flex justify-between items-center w-full">
+      <div className="flex justify-between items-center w-full sticky top-0 p-4 z-10 bg-black/60">
         <HomeButton isIcon />
 
         {noProductsAvailable ? (

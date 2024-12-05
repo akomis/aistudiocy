@@ -1,8 +1,8 @@
+import Basket from "@/components/Basket";
 import Filter from "@/components/Filter";
 import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
@@ -27,6 +27,9 @@ export default async function Catalogue() {
   const emailHref = socials.find(
     (social: any) => social.Key.toLowerCase() === "email"
   ).URL;
+  const instagram = socials.find(
+    (social: any) => social.Key.toLowerCase() === "instagram"
+  );
 
   return (
     <Screen className="p-40">
@@ -35,21 +38,17 @@ export default async function Catalogue() {
 
         {noProductsAvailable ? (
           <Label className="text-center text-xl">
-            {
-              "We currently don't have any available pieces. We are working to produce more beautiful silver pieces so feel free to follow us on social media."
-            }
+            {`We currently don't have any available pieces. We are working to produce more beautiful silver pieces so feel free to follow us on social media `}
+            <a
+              href={instagram.URL}
+              className="hover:opacity-75 transition-all"
+            >{`@${instagram.Value}`}</a>
           </Label>
         ) : (
           <Filter categories={categories} />
         )}
 
-        <Button
-          className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all text-white hover:no-underline p-0"
-          variant={"link"}
-          disabled={noProductsAvailable}
-        >
-          BASKET
-        </Button>
+        <Basket products={products} noProductsAvailable={noProductsAvailable} />
       </div>
 
       <ProductGrid

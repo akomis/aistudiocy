@@ -8,7 +8,7 @@ import HomeButton from "@/components/HomeButton";
 import Title from "@/components/Title";
 
 export async function generateStaticParams() {
-  const pages = await get("pages");
+  const pages = (await get("pages")).data;
 
   return pages.map((page: any) => ({
     slug: page.Key,
@@ -21,9 +21,9 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
-  const pages = await get("pages");
+  const pages = (await get("pages")).data;
 
-  const page = pages.data.find((page: any) => page.Key === slug);
+  const page = pages.find((page: any) => page.Key === slug);
 
   if (!page) {
     notFound();

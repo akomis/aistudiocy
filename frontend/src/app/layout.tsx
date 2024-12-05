@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ReactQueryProvider } from "@/providers/react-query";
 
 const ceraPro = localFont({
   src: [
@@ -36,12 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReactQueryProvider>
-      <html lang="en">
-        <body className={`${ceraPro.variable} antialiased bg-black text-white`}>
-          {children}
-        </body>
-      </html>
-    </ReactQueryProvider>
+    <html lang="en">
+      <body className={`${ceraPro.variable} antialiased bg-black text-white`}>
+        {children}
+      </body>
+    </html>
   );
 }

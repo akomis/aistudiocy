@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
-import Link from "next/link";
 
 export default async function Catalogue() {
   const products = (
@@ -15,9 +14,9 @@ export default async function Catalogue() {
       region_id: "reg_01JE7JJ691K3XF415A25MVP6ZT",
     })
   ).products;
-  const categories = (await sdk.store.category.list()).product_categories.map(
-    (category) => category.name
-  );
+
+  const categories = (await sdk.store.category.list()).product_categories;
+
   const catalogueStaticImages = (await get("image")).data.Catalogue;
   const socials = (await get("socials")).data;
 
@@ -30,7 +29,7 @@ export default async function Catalogue() {
   ).URL;
 
   return (
-    <Screen>
+    <Screen className="p-40">
       <div className="flex justify-between items-center w-full">
         <HomeButton isIcon />
 
@@ -45,7 +44,7 @@ export default async function Catalogue() {
         )}
 
         <Button
-          className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all text-white hover:no-underline"
+          className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all text-white hover:no-underline p-0"
           variant={"link"}
           disabled={noProductsAvailable}
         >
@@ -53,23 +52,11 @@ export default async function Catalogue() {
         </Button>
       </div>
 
-      <ProductGrid products={products} images={catalogueStaticImages} />
-
-      <div>
-        <Link href="/sizing" target="_blank" className="text-5xl font-bold">
-          RING SIZE GUIDE
-        </Link>
-        <div className="text-xl font-light">
-          If you have any questions feel free to{" "}
-          <a
-            href={emailHref}
-            target="_blank"
-            className="font-normal hover:cursor-pointer hover:opacity-75 transition-all"
-          >
-            contact us
-          </a>
-        </div>
-      </div>
+      <ProductGrid
+        products={products}
+        images={catalogueStaticImages}
+        emailHref={emailHref}
+      />
     </Screen>
   );
 }

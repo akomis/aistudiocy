@@ -5,19 +5,13 @@ import { get } from "@/lib/strapi";
 import Link from "next/link";
 
 const Header = async () => {
-  const data = await get("headers");
+  const headers = (await get("headers")).data;
 
-  if (!data) throw new Error("No header data");
-
-  return <DynamicBackground data={data.data} />;
+  return <DynamicBackground data={headers} />;
 };
 
 const About = async () => {
-  const data = await get("abouts");
-
-  if (!data) throw new Error("No about data");
-
-  const abouts = data.data;
+  const abouts = (await get("abouts")).data;
 
   return (
     <Section>
@@ -39,15 +33,10 @@ const About = async () => {
 };
 
 const Footer = async () => {
-  const getSocials = await get("socials");
-  const getFooter = await get("image");
-  const getPages = await get("pages");
+  const socials = (await get("socials")).data;
+  const footer = (await get("image")).data.Footer;
+  const pages = (await get("pages")).data;
 
-  if (!getSocials?.data && !getFooter?.data && !getPages?.data) return null;
-
-  const socials = getSocials.data;
-  const footer = getFooter.data.Footer;
-  const pages = getPages.data;
   const bgImageUrl = footer?.url;
 
   return (

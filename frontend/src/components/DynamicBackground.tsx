@@ -35,7 +35,8 @@ const DynamicBackground = ({ data }: Props) => {
         <Categories
           categories={categories}
           activeIndex={slideIndex}
-          setIndex={setSlideIndex}
+          setActive={setSlideIndex}
+          enableChangeOnHover
         />
       </div>
     </Section>

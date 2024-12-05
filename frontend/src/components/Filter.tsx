@@ -1,20 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useContext } from "react";
 import Categories from "./Categories";
+import FilterContext from "@/providers/filter";
+import { StoreProductCategory } from "@medusajs/types";
 
 type Props = {
-  categories: any[];
+  categories: StoreProductCategory[];
 };
 
 export default function Filter({ categories }: Props) {
-  const [index, setIndex] = useState(0);
+  const { id, setId } = useContext(FilterContext);
 
-  return (
-    <Categories
-      categories={categories}
-      activeIndex={index}
-      setIndex={setIndex}
-    />
-  );
+  return <Categories categories={categories} active={id} setActive={setId} />;
 }

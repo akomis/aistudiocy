@@ -2,12 +2,18 @@
 
 import { StoreProduct } from "@medusajs/types";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import "yet-another-react-lightbox/styles.css";
 import { cn } from "@/lib/utils";
+import FilterContext from "@/providers/filter";
+import { Label } from "./ui/label";
+import { sdk } from "@/lib/medusa";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import Spinner from "./Spinner";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -83,24 +89,58 @@ const SubGrid = ({
 type Props = {
   products: StoreProduct[];
   images: any[];
+  emailHref: string;
 };
 
 const IMAGE_SIZE = 3000;
 
-export default function ProductGrid({ products, images }: Props) {
-  const firstSet = products.slice(0, 4);
-  const secondSet = products.slice(4, 6);
-  const thirdSet = products.slice(6, 10);
-  const fourthSet = products.slice(10);
+export default function ProductGrid({ products, images, emailHref }: Props) {
+  const { id } = useContext(FilterContext);
 
+  const { data: filteredProductsData, isLoading } = useQuery({
+    queryKey: ["filteredProducts", id],
+    queryFn: () =>
+      sdk.store.product.list({
+        fields: "*variants.calculated_price",
+        region_id: "reg_01JE7JJ691K3XF415A25MVP6ZT",
+        category_id: id as string,
+      }),
+    enabled: Boolean(id),
+  });
+
+  const filteredProducts = filteredProductsData?.products ?? products;
+
+  console.log(filteredProducts);
+
+  const firstSet = filteredProducts.slice(0, 4);
+  const secondSet = filteredProducts.slice(4, 6);
+  const thirdSet = filteredProducts.slice(6, 10);
+  const fourthSet = filteredProducts.slice(10);
   const firstImage = images[0];
   const secondImage = images[1];
   const thirdImage = images[2];
 
+  if (isLoading) {
+    return (
+      <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (filteredProducts.length === 0) {
+    return (
+      <Label className="text-2xl text-center">
+        No products found with the applied filter. Explore more categories
+        through the categories on top.
+      </Label>
+    );
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-8">
-        {firstSet && (
+        {firstSet.length ? (
           <SubGrid className="grid-cols-4">
             <SubGrid className="grid-cols-2 col-span-2">
               {firstSet.map((product) => (
@@ -125,9 +165,9 @@ export default function ProductGrid({ products, images }: Props) {
               </SubGrid>
             )}
           </SubGrid>
-        )}
+        ) : null}
 
-        {secondSet && (
+        {secondSet.length ? (
           <SubGrid className="grid-cols-4">
             {secondImage && (
               <Image
@@ -146,9 +186,9 @@ export default function ProductGrid({ products, images }: Props) {
               </div>
             ))}
           </SubGrid>
-        )}
+        ) : null}
 
-        {thirdSet && (
+        {thirdSet.length ? (
           <SubGrid className="grid-cols-4">
             {thirdSet.map((product) => (
               <div key={product.id}>
@@ -168,13 +208,30 @@ export default function ProductGrid({ products, images }: Props) {
             )}
 
             {fourthSet &&
+              fourthSet.length &&
               fourthSet.map((product) => (
                 <div key={product.id}>
                   <ProductItem product={product} />
                 </div>
               ))}
           </SubGrid>
-        )}
+        ) : null}
+      </div>
+
+      <div className="mt-40">
+        <Link href="/sizing" target="_blank" className="text-5xl font-bold">
+          RING SIZE GUIDE
+        </Link>
+        <div className="text-xl font-light">
+          If you have any questions feel free to{" "}
+          <a
+            href={emailHref}
+            target="_blank"
+            className="font-normal hover:cursor-pointer hover:opacity-75 transition-all"
+          >
+            contact us
+          </a>
+        </div>
       </div>
     </div>
   );

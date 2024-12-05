@@ -1,11 +1,11 @@
 "use client";
 
-import { StoreProduct } from "@medusajs/types";
+import { StoreProduct, StoreProductVariant } from "@medusajs/types";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { MinusIcon, PlusIcon } from "lucide-react";
 import "yet-another-react-lightbox/styles.css";
 import { cn } from "@/lib/utils";
 import FilterContext from "@/providers/filter";
@@ -16,6 +16,7 @@ import Link from "next/link";
 import Spinner from "./Spinner";
 import { useSearchParams } from "next/navigation";
 import { REGION_ID } from "@/lib/constants";
+import { CartContext } from "@/providers/cart";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -27,18 +28,33 @@ const ProductItem = ({ product }: ProductItemProps) => {
     undefined
   );
 
-  if (!product?.variants) return null;
+  const { cart, setCart } = useContext(CartContext);
 
-  const cartId =
-    typeof window !== "undefined" ? localStorage.getItem("cart_id") : "";
+  const variant = product.variants?.[0] as StoreProductVariant;
+  const lineItem = cart?.items?.find((item) => item?.variant_id === variant.id);
 
-  const addItem = useMutation({
+  if (!variant) return null;
+
+  const add = useMutation({
+    mutationKey: ["add", variant.id],
     mutationFn: () =>
-      sdk.store.cart.createLineItem(cartId as string, {
-        variant_id: product.variants?.[0].id as string,
+      sdk.store.cart.createLineItem(cart?.id as string, {
+        variant_id: variant.id as string,
         quantity: 1,
       }),
-    mutationKey: ["add", product.variants[0].id],
+    onSuccess: (response) => {
+      setCart(response.cart);
+    },
+  });
+
+  const deleteItem = useMutation({
+    mutationKey: ["delete", variant.id],
+    mutationFn: () =>
+      sdk.store.cart.deleteLineItem(cart?.id as string, lineItem?.id as string),
+    onSuccess: (response) => {
+      console.log(response);
+      setCart(response.parent);
+    },
   });
 
   const photos = product.images?.map((image) => ({
@@ -48,10 +64,15 @@ const ProductItem = ({ product }: ProductItemProps) => {
     src: image.url,
   }));
 
+  const isInBasket = Boolean(lineItem);
+
   return (
     product.thumbnail && (
       <div
-        className="hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square duration-500 ease-in-out"
+        className={cn(
+          "hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square duration-500 ease-in-out",
+          { "border-[1px] border-white": isInBasket }
+        )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -62,15 +83,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
           fill
           style={{ objectFit: "contain" }}
         />
-        {isHovered && (
+        {(isInBasket || isHovered) && (
           <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
-            <span className="text-xl font-light">{`€${product.variants[0].calculated_price?.calculated_amount}`}</span>
+            <span className="text-xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
             <Button
               variant="ghost"
               className="text-xl text-white"
-              onClick={() => addItem.mutate()}
+              onClick={() => {
+                isInBasket ? deleteItem.mutate() : add.mutate();
+              }}
             >
-              <PlusIcon />
+              {!isInBasket ? <PlusIcon /> : <MinusIcon />}
             </Button>
           </div>
         )}

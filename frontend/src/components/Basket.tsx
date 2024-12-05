@@ -1,11 +1,10 @@
 "use client";
 
-import { StoreCartLineItem, StoreProduct } from "@medusajs/types";
+import { StoreCartLineItem } from "@medusajs/types";
 import { Button } from "./ui/button";
 import {
   Drawer,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -19,39 +18,57 @@ import {
   useStripe,
   Elements,
 } from "@stripe/react-stripe-js";
-import { sdk } from "@/lib/medusa";
 import CutoffText from "./CutoffText";
-import { useQuery } from "@tanstack/react-query";
 import { Label } from "@radix-ui/react-label";
 import { useContext } from "react";
 import { CartContext } from "@/providers/cart";
+import { useMutation } from "@tanstack/react-query";
+import { sdk } from "@/lib/medusa";
 
 type BasketGridProps = {
   items: StoreCartLineItem[];
+};
+
+const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
+  const { cart, refreshCart } = useContext(CartContext);
+
+  const deleteItem = useMutation({
+    mutationKey: ["delete", item.id],
+    mutationFn: () =>
+      sdk.store.cart.deleteLineItem(cart?.id as string, item?.id as string),
+    onSuccess: () => {
+      refreshCart();
+    },
+  });
+
+  return (
+    <div className="relative aspect-square border-[1px] border-white p-3 bg-black">
+      <Image
+        src={item.thumbnail as string}
+        alt={item.title}
+        width={200}
+        height={200}
+        style={{ objectFit: "contain" }}
+      />
+      <div className="absolute bottom-0 w-full flex items-center justify-between p-4 pr-8 animate-in fade-in ease-in">
+        <span className="text-xl font-light">{`€${item.unit_price}`}</span>
+        <Button
+          variant="ghost"
+          className="text-xl"
+          onClick={() => deleteItem.mutate()}
+        >
+          <MinusIcon />
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 const BasketGrid = ({ items }: BasketGridProps) => {
   return (
     <div className="grid grid-cols-3 gap-4 overflow-y-auto overflow-x-hidden">
       {items.map((item) => (
-        <div
-          key={item.id}
-          className="relative aspect-square border-[1px] border-white p-3 bg-black"
-        >
-          <Image
-            src={item.thumbnail as string}
-            alt={item.title}
-            width={200}
-            height={200}
-            style={{ objectFit: "contain" }}
-          />
-          <div className="absolute bottom-0 w-full flex items-center justify-between p-4 pr-8 animate-in fade-in ease-in">
-            <span className="text-xl font-light">{`€${null}`}</span>
-            <Button variant="ghost" className="text-xl text-white">
-              <MinusIcon />
-            </Button>
-          </div>
-        </div>
+        <BasketGridItem key={item.id} item={item} />
       ))}
     </div>
   );
@@ -127,7 +144,7 @@ export default function Basket({ noProductsAvailable }: Props) {
           <div className="ml-auto flex flex-col self-end justify-center w-64 gap-4">
             <div className="w-full flex justify-between">
               <span className="text-2xl font-bold text-gray-400">TOTAL</span>
-              <span className="text-2xl font-bold ml-2">€0.00</span>
+              <span className="text-2xl font-bold ml-2">{`€${cart?.total ?? 0}`}</span>
             </div>
             <Button
               variant="outline"

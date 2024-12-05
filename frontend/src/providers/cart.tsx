@@ -3,7 +3,7 @@
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { StoreCart } from "@medusajs/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { createContext, useEffect, useState } from "react";
 
 type Props = {
@@ -11,45 +11,58 @@ type Props = {
 };
 
 type ContextType = {
-  cart: StoreCart | null;
+  cart: StoreCart | undefined;
   setCart: (cart: any) => void;
+  refreshCart: () => void;
 };
 
 export const CartContext = createContext<ContextType>({
-  cart: null,
+  cart: undefined,
   setCart: () => {},
+  refreshCart: () => {},
 });
 
 export const CartProvider = ({ children }: Props) => {
-  const cartId =
-    typeof window !== "undefined" ? localStorage.getItem("cart_id") : "";
-  const [cart, setCart] = useState<StoreCart | null>(null);
+  const [cart, setCart] = useState<StoreCart | undefined>(undefined);
 
   useEffect(() => {
-    (async () => {
-      if (true || !cartId) {
-        try {
-          const response = await sdk.store.cart.create({
-            region_id: REGION_ID,
-          });
+    if (cart) return;
 
-          setCart(response.cart);
-        } catch (error: any) {
+    const cartId = localStorage.getItem("cart_id");
+
+    if (!cartId) {
+      sdk.store.cart
+        .create({
+          region_id: REGION_ID,
+        })
+        .then(({ cart }) => {
+          setCart(cart);
+          localStorage.setItem("cart_id", cart.id);
+        })
+        .catch((error) => {
           throw new Error("Error creating cart:", error);
-        }
-      }
-    })();
-  }, []);
+        });
+    } else {
+      sdk.store.cart
+        .retrieve(cartId as string, {
+          fields: "id,*items.*",
+        })
+        .then(({ cart }) => {
+          setCart(cart);
+        })
+        .catch((error) => {
+          throw new Error("Error retrieving cart:", error);
+        });
+    }
+  }, [cart]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["cart", cartId],
-    queryFn: () =>
-      sdk.store.cart.retrieve(cartId as string, { fields: "id,*items.*" }),
-    enabled: Boolean(cartId),
-  });
+  const refreshCart = () => {
+    localStorage.removeItem("cart_id");
+    setCart(undefined);
+  };
 
   return (
-    <CartContext.Provider value={{ cart } as any}>
+    <CartContext.Provider value={{ cart, setCart, refreshCart }}>
       {children}
     </CartContext.Provider>
   );

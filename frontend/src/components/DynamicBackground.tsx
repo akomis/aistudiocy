@@ -30,7 +30,9 @@ const DynamicBackground = ({ data }: Props) => {
       }}
     >
       <div
-        className={"flex justify-between w-full hover:cursor-pointer"}
+        className={
+          "flex items-center justify-between h-full w-full hover:cursor-pointer "
+        }
         onClick={() => {
           router.push("/catalogue");
         }}

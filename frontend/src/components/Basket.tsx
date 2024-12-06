@@ -9,7 +9,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
-import { MinusIcon } from "lucide-react";
+import { Check, MinusIcon } from "lucide-react";
 import Image from "next/image";
 import {
   AddressElement,
@@ -20,7 +20,7 @@ import {
 } from "@stripe/react-stripe-js";
 import CutoffText from "./CutoffText";
 import { Label } from "@radix-ui/react-label";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { CartContext } from "@/providers/cart";
 import { useMutation } from "@tanstack/react-query";
 import { sdk } from "@/lib/medusa";
@@ -89,24 +89,24 @@ const BasketGrid = ({ items }: BasketGridProps) => {
   );
 };
 
-const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
-  const { cart, setCart, refreshCart } = useContext(CartContext);
+const CheckoutForm = () => {
+  const { cart, setCart, refreshCart, clientSecret, setClientSecret } =
+    useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
-  const emailRef = useRef<HTMLInputElement | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState<
     StripeAddressElementChangeEvent["value"] | null
   >(null);
-  const [email, setEmail] = useState<string | null>(null);
 
   const handlePayment = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !clientSecret || !cart)
+      throw new Error("handlePayment() is missing data");
 
     const card = elements.getElement(CardElement);
 
@@ -120,20 +120,9 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
     };
 
     await sdk.store.cart.update(cart?.id as string, {
-      region_id: REGION_ID,
-      email: email as string,
       shipping_address: address,
       billing_address: address,
     });
-
-    const { cart: updatedCart } = await sdk.store.cart.addShippingMethod(
-      cart?.id as string,
-      {
-        option_id: SHIPPING_OPTION_ID,
-      }
-    );
-
-    setCart(updatedCart);
 
     const { error } = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
@@ -170,8 +159,6 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
     setIsLoading(false);
   };
 
-  const isEmailValid = emailRef?.current?.validity.valid;
-
   return (
     <form
       className="flex flex-col gap-4 flex-1 overflow-y-auto overflow-x-hidden justify-between"
@@ -186,16 +173,6 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
         />
 
         <CardElement className="bg-white p-4" />
-
-        <Input
-          ref={emailRef}
-          type="email"
-          placeholder="Email"
-          onChange={(event) => {
-            setEmail(event.target.value);
-          }}
-          className="bg-white text-black min-h-12"
-        />
       </div>
 
       <div className="flex w-full flex-col gap-4">
@@ -208,13 +185,7 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
           className="w-full font-bold tracking-widest text-2xl"
           size={"lg"}
           type="submit"
-          disabled={
-            !cart?.items?.length ||
-            !stripe ||
-            !elements ||
-            !email ||
-            !isEmailValid
-          }
+          disabled={!cart?.items?.length || !stripe || !elements}
         >
           {isLoading ? <Spinner /> : "CHECKOUT"}
         </Button>
@@ -228,31 +199,62 @@ type Props = {
 };
 
 export default function Basket({ noProductsAvailable }: Props) {
-  const { cart, setClientSecret, clientSecret } = useContext(CartContext);
-  const [isLoading, setIsLoading] = useState(false);
+  const { cart, setCart, clientSecret, setClientSecret } =
+    useContext(CartContext);
 
-  useEffect(() => {
-    if (cart && !clientSecret) {
-      setIsLoading(true);
-      sdk.store.payment
-        .initiatePaymentSession(cart as StoreCart, {
-          provider_id: "pp_stripe_stripe",
-        })
-        .then((response) => {
-          setClientSecret(
-            response.payment_collection.payment_sessions?.[0].data
-              .client_secret as string
-          );
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          throw new Error("Error creating payment session:", error);
-        });
+  const [email, setEmail] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const emailRef = useRef<HTMLInputElement | null>(null);
+
+  const initializePayment = async () => {
+    setIsLoading(true);
+    await sdk.store.cart.update(cart?.id as string, {
+      region_id: REGION_ID,
+      email: email as string,
+    });
+
+    const { cart: updatedCart } = await sdk.store.cart.addShippingMethod(
+      cart?.id as string,
+      {
+        option_id: SHIPPING_OPTION_ID,
+      }
+    );
+
+    const cartClientSecret =
+      cart?.payment_collection?.payment_sessions?.[0]?.data?.client_secret;
+
+    if (cart) {
+      if (cartClientSecret) {
+        setClientSecret(cartClientSecret as string);
+      } else {
+        sdk.store.payment
+          .initiatePaymentSession(cart as StoreCart, {
+            provider_id: "pp_stripe_stripe",
+            data: {},
+          })
+          .then((response) => {
+            console.log(response);
+            setClientSecret(
+              response.payment_collection.payment_sessions?.[0].data
+                .client_secret as string
+            );
+          })
+          .catch((error) => {
+            throw new Error("Error creating payment session:", error);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }
     }
-  }, []);
+
+    setCart(updatedCart);
+  };
 
   const items: StoreCartLineItem[] =
     cart?.items?.filter((item) => item != null) ?? [];
+
+  const isEmailValid = emailRef?.current?.validity.valid;
 
   return (
     <Drawer>
@@ -280,26 +282,55 @@ export default function Basket({ noProductsAvailable }: Props) {
 
           <hr className="h-1 mx-auto w-96 md:h-96 md:w-1 md:my-auto rounded-full border-0 bg-[#111111] " />
 
-          {isLoading || !clientSecret ? (
-            <div className="flex flex-col items-center justify-center w-full md:w-[50vw] self-center">
-              <Spinner />
+          <div className="flex flex-col gap-4 w-full ">
+            <div className="flex gap-4">
+              <Input
+                ref={emailRef}
+                type="email"
+                placeholder="Email"
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+                disabled={Boolean(clientSecret)}
+                className="bg-white text-black min-h-12  "
+              />
+
+              {clientSecret ? (
+                <Check size={50} />
+              ) : (
+                <Button
+                  disabled={!items.length || !isEmailValid}
+                  className="h-12"
+                  onClick={initializePayment}
+                >
+                  <Check />
+                </Button>
+              )}
             </div>
-          ) : (
-            <Elements
-              stripe={stripePromise}
-              options={{
-                clientSecret: clientSecret,
-                loader: "auto",
-                appearance: {
-                  theme: "stripe",
-                  labels: "floating",
-                  variables: { borderRadius: "0" },
-                },
-              }}
-            >
-              <CheckoutForm clientSecret={clientSecret} />
-            </Elements>
-          )}
+
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center w-full md:w-[50vw] self-center">
+                <Spinner />
+              </div>
+            )}
+
+            {clientSecret && (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret: clientSecret,
+                  loader: "auto",
+                  appearance: {
+                    theme: "stripe",
+                    labels: "floating",
+                    variables: { borderRadius: "0" },
+                  },
+                }}
+              >
+                <CheckoutForm />
+              </Elements>
+            )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

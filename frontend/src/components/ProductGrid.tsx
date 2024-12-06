@@ -205,37 +205,33 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
     <div>
       <div className="flex flex-col gap-8">
         {firstSet.length ? (
-          <SubGrid className="grid-cols-4">
-            <SubGrid className="grid-cols-2 col-span-2">
+          <SubGrid className="grid-cols-2 lg:grid-cols-4">
+            <SubGrid className="grid-cols-1 sm:grid-cols-2 col-span-2">
               {firstSet.map((product) => (
-                <div key={product.id} className="col-span-1 row-span-1">
+                <div key={product.id} className="col-span-1">
                   <ProductItem product={product} />
                 </div>
               ))}
             </SubGrid>
 
             {firstImage && (
-              <SubGrid className="col-span-2">
-                <Image
-                  className="aspect-square h-full"
-                  src={firstImage.url}
-                  alt={
-                    firstImage.alternativeText ?? "ai studio catalogue image"
-                  }
-                  height={IMAGE_SIZE}
-                  width={IMAGE_SIZE}
-                  style={{ objectFit: "contain" }}
-                />
-              </SubGrid>
+              <Image
+                className="aspect-square h-full col-span-4 md:col-span-2"
+                src={firstImage.url}
+                alt={firstImage.alternativeText ?? "ai studio catalogue image"}
+                height={IMAGE_SIZE}
+                width={IMAGE_SIZE}
+                style={{ objectFit: "contain" }}
+              />
             )}
           </SubGrid>
         ) : null}
 
         {secondSet.length ? (
-          <SubGrid className="grid-cols-4">
+          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {secondImage && (
               <Image
-                className="col-span-2 h-full"
+                className="col-span-2 h-full hidden lg:block"
                 src={secondImage.url}
                 alt={secondImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -253,16 +249,16 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
         ) : null}
 
         {thirdSet.length ? (
-          <SubGrid className="grid-cols-4">
+          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 ">
             {thirdSet.map((product) => (
-              <div key={product.id}>
+              <div key={product.id} className="col-span-1">
                 <ProductItem product={product} />
               </div>
             ))}
 
             {thirdImage && (
               <Image
-                className="col-span-4 max-h-[400px]"
+                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px]"
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -283,10 +279,14 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
       </div>
 
       <div className="mt-40">
-        <Link href="/sizing" target="_blank" className="text-5xl font-bold">
+        <Link
+          href="/sizing"
+          target="_blank"
+          className="text-3xl md:text-5xl font-bold"
+        >
           RING SIZE GUIDE
         </Link>
-        <div className="text-xl font-light">
+        <div className="text-md md:text-xl font-light">
           If you have any questions feel free to{" "}
           <a
             href={emailHref}

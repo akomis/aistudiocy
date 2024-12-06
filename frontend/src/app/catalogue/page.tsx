@@ -4,6 +4,7 @@ import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
 import { Label } from "@/components/ui/label";
+import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 
@@ -11,7 +12,7 @@ export default async function Catalogue() {
   const products = (
     await sdk.store.product.list({
       fields: "*variants.calculated_price",
-      region_id: "reg_01JE7JJ691K3XF415A25MVP6ZT",
+      region_id: REGION_ID,
     })
   ).products;
 
@@ -32,7 +33,7 @@ export default async function Catalogue() {
   );
 
   return (
-    <Screen className="p-40">
+    <Screen className="p-5 lg:px-20">
       <div className="flex justify-between items-center w-full sticky top-0 p-4 z-10 bg-black/60">
         <HomeButton isIcon />
 

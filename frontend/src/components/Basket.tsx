@@ -1,6 +1,6 @@
 "use client";
 
-import { StoreAddAddress, StoreCartLineItem } from "@medusajs/types";
+import { StoreAddAddress, StoreCart, StoreCartLineItem } from "@medusajs/types";
 import { Button } from "./ui/button";
 import {
   Drawer,
@@ -20,7 +20,7 @@ import {
 } from "@stripe/react-stripe-js";
 import CutoffText from "./CutoffText";
 import { Label } from "@radix-ui/react-label";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { CartContext } from "@/providers/cart";
 import { useMutation } from "@tanstack/react-query";
 import { sdk } from "@/lib/medusa";
@@ -81,7 +81,7 @@ const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
 
 const BasketGrid = ({ items }: BasketGridProps) => {
   return (
-    <div className="grid grid-cols-3 gap-4 h-full md:max-w-[50vw] overflow-y-auto overflow-x-hidden">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-full md:max-w-[50vw] overflow-y-auto overflow-x-hidden">
       {items.map((item) => (
         <BasketGridItem key={item?.id} item={item} />
       ))}
@@ -89,11 +89,13 @@ const BasketGrid = ({ items }: BasketGridProps) => {
   );
 };
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
   const { cart, setCart, refreshCart } = useContext(CartContext);
-
   const stripe = useStripe();
   const elements = useElements();
+  const emailRef = useRef<HTMLInputElement | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState<
     StripeAddressElementChangeEvent["value"] | null
@@ -102,6 +104,7 @@ const CheckoutForm = () => {
 
   const handlePayment = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!stripe || !elements) return;
 
@@ -131,8 +134,6 @@ const CheckoutForm = () => {
     );
 
     setCart(updatedCart);
-    const clientSecret = updatedCart?.payment_collection?.payment_sessions?.[0]
-      .data.client_secret as string;
 
     const { error } = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
@@ -150,6 +151,7 @@ const CheckoutForm = () => {
           },
         },
       },
+      receipt_email: cart?.email,
     });
 
     if (error) {
@@ -164,28 +166,37 @@ const CheckoutForm = () => {
       alert("Order placed.");
       refreshCart();
     }
+
+    setIsLoading(false);
   };
+
+  const isEmailValid = emailRef?.current?.validity.valid;
 
   return (
     <form
-      className="flex flex-col gap-4 flex-1 overflow-y-auto overflow-x-hidden"
+      className="flex flex-col gap-4 flex-1 overflow-y-auto overflow-x-hidden justify-between"
       onSubmit={handlePayment}
     >
-      <AddressElement
-        onChange={(event: any) => {
-          setShippingAddress(event.value);
-        }}
-        options={{ mode: "billing" }}
-      />
-      <CardElement className="bg-white p-4" />
-      <Input
-        type="email"
-        placeholder="Email"
-        onChange={(event) => {
-          setEmail(event.target.value);
-        }}
-        className="bg-white text-black min-h-12"
-      />
+      <div className="flex flex-col gap-4">
+        <AddressElement
+          onChange={(event: any) => {
+            setShippingAddress(event.value);
+          }}
+          options={{ mode: "billing" }}
+        />
+
+        <CardElement className="bg-white p-4" />
+
+        <Input
+          ref={emailRef}
+          type="email"
+          placeholder="Email"
+          onChange={(event) => {
+            setEmail(event.target.value);
+          }}
+          className="bg-white text-black min-h-12"
+        />
+      </div>
 
       <div className="flex w-full flex-col gap-4">
         <div className="w-full flex justify-between">
@@ -197,9 +208,15 @@ const CheckoutForm = () => {
           className="w-full font-bold tracking-widest text-2xl"
           size={"lg"}
           type="submit"
-          disabled={!cart?.items?.length || !stripe || !elements || !email}
+          disabled={
+            !cart?.items?.length ||
+            !stripe ||
+            !elements ||
+            !email ||
+            !isEmailValid
+          }
         >
-          CHECKOUT
+          {isLoading ? <Spinner /> : "CHECKOUT"}
         </Button>
       </div>
     </form>
@@ -211,12 +228,31 @@ type Props = {
 };
 
 export default function Basket({ noProductsAvailable }: Props) {
-  const { cart } = useContext(CartContext);
+  const { cart, setClientSecret, clientSecret } = useContext(CartContext);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (cart && !clientSecret) {
+      setIsLoading(true);
+      sdk.store.payment
+        .initiatePaymentSession(cart as StoreCart, {
+          provider_id: "pp_stripe_stripe",
+        })
+        .then((response) => {
+          setClientSecret(
+            response.payment_collection.payment_sessions?.[0].data
+              .client_secret as string
+          );
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          throw new Error("Error creating payment session:", error);
+        });
+    }
+  }, []);
 
   const items: StoreCartLineItem[] =
     cart?.items?.filter((item) => item != null) ?? [];
-  const clientSecret = cart?.payment_collection?.payments?.[0]?.data
-    ?.client_secret as string;
 
   return (
     <Drawer>
@@ -233,7 +269,7 @@ export default function Basket({ noProductsAvailable }: Props) {
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex flex-1 flex-col md:flex-row gap-10 max-h-[70vh] ">
+        <div className="flex flex-1 flex-col md:flex-row gap-10 max-h-[70vh]">
           {items?.length ? (
             <BasketGrid items={items} />
           ) : (
@@ -244,20 +280,26 @@ export default function Basket({ noProductsAvailable }: Props) {
 
           <hr className="h-1 mx-auto w-96 md:h-96 md:w-1 md:my-auto rounded-full border-0 bg-[#111111] " />
 
-          <Elements
-            stripe={stripePromise}
-            options={{
-              clientSecret,
-              loader: "auto",
-              appearance: {
-                theme: "stripe",
-                labels: "floating",
-                variables: { borderRadius: "0" },
-              },
-            }}
-          >
-            <CheckoutForm />
-          </Elements>
+          {isLoading || !clientSecret ? (
+            <div className="flex flex-col items-center justify-center w-full md:w-[50vw] self-center">
+              <Spinner />
+            </div>
+          ) : (
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret: clientSecret,
+                loader: "auto",
+                appearance: {
+                  theme: "stripe",
+                  labels: "floating",
+                  variables: { borderRadius: "0" },
+                },
+              }}
+            >
+              <CheckoutForm clientSecret={clientSecret} />
+            </Elements>
+          )}
         </div>
       </DrawerContent>
     </Drawer>

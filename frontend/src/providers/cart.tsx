@@ -3,7 +3,6 @@
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { StoreCart } from "@medusajs/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { createContext, useEffect, useState } from "react";
 
 type Props = {
@@ -14,16 +13,23 @@ type ContextType = {
   cart: StoreCart | undefined;
   setCart: (cart: any) => void;
   refreshCart: () => void;
+  clientSecret: string | undefined;
+  setClientSecret: (secret: string) => void;
 };
 
 export const CartContext = createContext<ContextType>({
   cart: undefined,
   setCart: () => {},
   refreshCart: () => {},
+  clientSecret: undefined,
+  setClientSecret: () => {},
 });
 
 export const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<StoreCart | undefined>(undefined);
+  const [clientSecret, setClientSecret] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (cart) return;
@@ -45,7 +51,7 @@ export const CartProvider = ({ children }: Props) => {
     } else {
       sdk.store.cart
         .retrieve(cartId as string, {
-          fields: "id,*items.*",
+          fields: "*items.*",
         })
         .then(({ cart }) => {
           setCart(cart);
@@ -62,7 +68,9 @@ export const CartProvider = ({ children }: Props) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, setCart, refreshCart }}>
+    <CartContext.Provider
+      value={{ cart, setCart, refreshCart, clientSecret, setClientSecret }}
+    >
       {children}
     </CartContext.Provider>
   );

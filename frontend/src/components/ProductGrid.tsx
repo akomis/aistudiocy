@@ -34,8 +34,6 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const variant = product.variants?.[0] as StoreProductVariant;
   const lineItem = cart?.items?.find((item) => item?.variant_id === variant.id);
 
-  if (!variant) return null;
-
   const add = useMutation({
     mutationKey: ["add", variant.id],
     mutationFn: () => {
@@ -65,6 +63,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
       setIsLoading(false);
     },
   });
+
+  if (!variant) return null;
 
   const photos = product.images?.map((image) => ({
     key: image.id,

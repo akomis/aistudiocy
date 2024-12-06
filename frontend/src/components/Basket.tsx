@@ -13,7 +13,6 @@ import { MinusIcon } from "lucide-react";
 import Image from "next/image";
 import {
   AddressElement,
-  PaymentElement,
   useElements,
   useStripe,
   Elements,

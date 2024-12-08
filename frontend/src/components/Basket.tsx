@@ -90,8 +90,7 @@ const BasketGrid = ({ items }: BasketGridProps) => {
 };
 
 const CheckoutForm = () => {
-  const { cart, setCart, refreshCart, clientSecret, setClientSecret } =
-    useContext(CartContext);
+  const { cart, refreshCart, clientSecret } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
 

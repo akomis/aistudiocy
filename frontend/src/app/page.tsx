@@ -76,7 +76,7 @@ const Footer = async () => {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row font-thin gap-10 text-sm">
+        <div className="flex flex-col sm:flex-row font-thin gap-2 text-sm">
           {pages.map((page: any) => (
             <Link
               key={page.Key}

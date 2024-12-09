@@ -33,8 +33,8 @@ export default async function Catalogue() {
   );
 
   return (
-    <Screen className="p-5 lg:px-20">
-      <div className="flex justify-between items-center w-full sticky top-0 p-4 z-10 bg-black/60">
+    <Screen className="px-5 md:px-20 lg:px-40 xl:px-80">
+      <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/60 py-4">
         <HomeButton isIcon />
 
         {noProductsAvailable ? (
@@ -49,7 +49,7 @@ export default async function Catalogue() {
           <Filter categories={categories} />
         )}
 
-        <Basket noProductsAvailable={noProductsAvailable} />
+        <Basket />
       </div>
 
       <ProductGrid

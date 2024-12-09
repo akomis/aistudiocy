@@ -1,22 +1,23 @@
 "use client";
 
-import { StoreProduct, StoreProductVariant } from "@medusajs/types";
+import { Button } from "@/components/ui/button";
+import useIsMobile from "@/hooks/use-is-mobile";
+import { REGION_ID } from "@/lib/constants";
+import { sdk } from "@/lib/medusa";
+import { cn } from "@/lib/utils";
+import { CartContext } from "@/providers/cart";
+import FilterContext from "@/providers/filter";
+import { StoreCart, StoreProduct, StoreProductVariant } from "@medusajs/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { MinusIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
-import { Button } from "@/components/ui/button";
-import { MinusIcon, PlusIcon } from "lucide-react";
 import "yet-another-react-lightbox/styles.css";
-import { cn } from "@/lib/utils";
-import FilterContext from "@/providers/filter";
-import { Label } from "./ui/label";
-import { sdk } from "@/lib/medusa";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import Spinner from "./Spinner";
-import { useSearchParams } from "next/navigation";
-import { REGION_ID } from "@/lib/constants";
-import { CartContext } from "@/providers/cart";
+import { Label } from "./ui/label";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -30,6 +31,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { cart, setCart } = useContext(CartContext);
+  const isMobile = useIsMobile();
 
   const variant = product.variants?.[0] as StoreProductVariant;
   const lineItem = cart?.items?.find((item) => item?.variant_id === variant.id);
@@ -59,7 +61,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
       );
     },
     onSuccess: (response) => {
-      setCart(response.parent);
+      setCart(response.parent as StoreCart);
       setIsLoading(false);
     },
   });
@@ -79,7 +81,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     product.thumbnail && (
       <div
         className={cn(
-          "hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square duration-500 ease-in-out",
+          "hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square duration-500 ease-in-out ",
           { "border-[1px] border-white": isInBasket }
         )}
         onMouseEnter={() => setIsHovered(true)}
@@ -92,7 +94,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
           fill
           style={{ objectFit: "contain" }}
         />
-        {(isInBasket || isHovered) && (
+        {(isInBasket || isHovered || isMobile || isLoading) && (
           <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
             <span className="text-xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
             <Button
@@ -119,7 +121,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
             close={() => setLightboxPhoto(undefined)}
             slides={photos}
             carousel={{ finite: true }}
-            styles={{ root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" } }}
+            styles={{
+              root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" },
+            }}
             controller={{
               closeOnBackdropClick: true,
               closeOnPullUp: true,
@@ -202,11 +206,11 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   }
 
   return (
-    <div>
+    <div className="">
       <div className="flex flex-col gap-8">
         {firstSet.length ? (
-          <SubGrid className="grid-cols-2 lg:grid-cols-4">
-            <SubGrid className="grid-cols-1 sm:grid-cols-2 col-span-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4">
+            <SubGrid className="grid-cols-1 sm:grid-cols-2 col-span-2 ">
               {firstSet.map((product) => (
                 <div key={product.id} className="col-span-1">
                   <ProductItem product={product} />
@@ -224,7 +228,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
                 style={{ objectFit: "contain" }}
               />
             )}
-          </SubGrid>
+          </div>
         ) : null}
 
         {secondSet.length ? (

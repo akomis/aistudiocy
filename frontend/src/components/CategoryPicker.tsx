@@ -29,7 +29,7 @@ export default function CategoryPicker({
         <Label
           key={category.id}
           className={cn(
-            "text-sm font-semibold hover:cursor-pointer hover:opacity-80 tracking-widest text-center w-full",
+            "text-sm font-semibold hover:cursor-pointer hover:opacity-80 tracking-[0.3em] text-center w-full",
             {
               "opacity-70": active === category.id,
             }

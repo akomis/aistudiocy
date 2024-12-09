@@ -1,11 +1,7 @@
 "use client";
 
 import { useToast } from "@/hooks/use-toast";
-import {
-  PAYMENT_PROVIDER_ID,
-  REGION_ID,
-  SHIPPING_OPTION_ID,
-} from "@/lib/constants";
+import { PAYMENT_PROVIDER_ID, REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { stripePromise } from "@/lib/stripe";
 import { CartContext } from "@/providers/cart";
@@ -18,7 +14,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { StripeCardElement } from "@stripe/stripe-js";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -170,8 +166,12 @@ const CheckoutForm = () => {
       <div className="flex w-full flex-col gap-4">
         <div className="w-full flex justify-between">
           <span className="text-2xl font-bold text-gray-400">TOTAL</span>
-          <span className="text-2xl font-bold ml-2">{`€${cart?.total ?? 0}`}</span>
+          <span className="text-2xl font-bold ">
+            {`€${cart?.total ?? 0}`}{" "}
+            <span className="text-lg font-light">{`(SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0})`}</span>
+          </span>
         </div>
+
         <Button
           variant="outline"
           className="w-full font-bold tracking-widest text-2xl"
@@ -188,6 +188,12 @@ const CheckoutForm = () => {
 
 const CustomerForm = () => {
   const { cart, refetchCart } = useContext(CartContext);
+
+  const { data: { shipping_options = [] } = {} } = useQuery({
+    queryKey: ["shippingOptions"],
+    queryFn: () =>
+      sdk.store.fulfillment.listCartOptions({ cart_id: cart?.id as string }),
+  });
 
   const customerFormSchema = useMemo(
     () =>
@@ -224,6 +230,10 @@ const CustomerForm = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const shippingOption = shipping_options?.find(
+    (option) => option?.name === form.getValues().country_code
+  );
+
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
@@ -235,7 +245,7 @@ const CustomerForm = () => {
     });
 
     await sdk.store.cart.addShippingMethod(cart?.id as string, {
-      option_id: SHIPPING_OPTION_ID,
+      option_id: shippingOption?.id as string,
     });
 
     const address = {
@@ -465,14 +475,13 @@ export default function Basket() {
           </div>
 
           {hasItemsInBasket && (
-            <>
-              <hr className="h-2 mx-auto w-64 md:h-64 md:w-1 md:my-auto rounded-full bg-[#111111]" />
+            <div>
               <div className="flex flex-1 flex-col justify-end gap-4">
                 <CustomerForm />
 
                 {Boolean(clientSecret) && (
                   <div>
-                    <hr className="h-2 mx-auto w-64 rounded-full bg-[#111111]" />
+                    <hr className="h-1 mx-auto w-64 rounded-full bg-[#111111]" />
                     <Elements
                       stripe={stripePromise}
                       options={{
@@ -490,7 +499,7 @@ export default function Basket() {
                   </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
       </DrawerContent>

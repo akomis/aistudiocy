@@ -435,11 +435,11 @@ export default function Basket() {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline p-0">
+      <DrawerTrigger className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline">
         BASKET
       </DrawerTrigger>
       <DrawerContent className="p-4 max-w-[1200px] mx-auto">
-        <DrawerHeader>
+        <DrawerHeader className="p-0">
           <DrawerTitle>
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>

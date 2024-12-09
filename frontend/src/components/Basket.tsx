@@ -21,7 +21,7 @@ import { StripeCardElement } from "@stripe/stripe-js";
 import { useMutation } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
 import Image from "next/image";
-import { useContext, useMemo, useState, useEffect } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CountryPicker from "./CountryPicker";
@@ -83,7 +83,7 @@ const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
 
 const BasketGrid = ({ items }: { items: StoreCartLineItem[] }) => {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-full overflow-y-auto overflow-x-hidden">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-fit overflow-y-auto overflow-x-hidden">
       {items.map((item) => (
         <BasketGridItem key={item?.id} item={item} />
       ))}
@@ -150,8 +150,9 @@ const CheckoutForm = () => {
       });
     } else if (type === "order") {
       toast({
-        title: "Order placed",
-        description: "You should receive a confirmation email soon!",
+        title: "Order placed succesfully!",
+        description:
+          "Thank you for choosing us. You should receive a confirmation email soon.",
       });
       resetCart();
     }
@@ -161,7 +162,7 @@ const CheckoutForm = () => {
 
   return (
     <form
-      className="flex flex-col gap-4 flex-1 overflow-y-auto overflow-x-hidden justify-between"
+      className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between"
       onSubmit={handlePayment}
     >
       <CardElement className="bg-white p-4" />
@@ -270,7 +271,7 @@ const CustomerForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(initializePayment)}
-        className="grid grid-cols-2 gap-4 overflow-y-auto"
+        className="grid grid-cols-2 gap-4"
       >
         <FormField
           control={form.control}
@@ -427,6 +428,8 @@ export default function Basket() {
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
+  const hasItemsInBasket = Boolean(cart?.items?.length);
+
   useEffect(() => {
     if (open && !clientSecret) {
       setOpen(false);
@@ -438,19 +441,19 @@ export default function Basket() {
       <DrawerTrigger className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline">
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[1200px] mx-auto">
+      <DrawerContent className="p-4 max-w-[1200px] mx-auto ">
         <DrawerHeader className="p-0">
           <DrawerTitle>
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex flex-1 flex-col md:flex-row gap-10 max-h-[70vh]">
+        <div className="flex flex-1 flex-col md:flex-row gap-10 overflow-y-auto max-h-[70vh]">
           <div className="flex flex-1">
-            {items?.length ? (
+            {hasItemsInBasket ? (
               <BasketGrid items={items} />
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center">
+              <div className="flex flex-1 flex-col items-center justify-center py-10">
                 <Label className="text-xl sm:text-2xl font-thin text-center">
                   Your basket is empty.
                 </Label>{" "}
@@ -461,31 +464,34 @@ export default function Basket() {
             )}
           </div>
 
-          <hr className="h-1 mx-auto w-64 md:h-64 md:w-1 md:my-auto rounded-full border-0 bg-[#111111]" />
+          {hasItemsInBasket && (
+            <>
+              <hr className="h-2 mx-auto w-64 md:h-64 md:w-1 md:my-auto rounded-full bg-[#111111]" />
+              <div className="flex flex-1 flex-col justify-end gap-4">
+                <CustomerForm />
 
-          <div className="flex flex-1 flex-col justify-end gap-4">
-            <CustomerForm />
-
-            {Boolean(clientSecret) && (
-              <div>
-                <hr className="h-1 mx-auto w-64 rounded-full border-0 bg-[#111111]" />
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret: clientSecret,
-                    loader: "auto",
-                    appearance: {
-                      theme: "stripe",
-                      labels: "floating",
-                      variables: { borderRadius: "0" },
-                    },
-                  }}
-                >
-                  <CheckoutForm />
-                </Elements>
+                {Boolean(clientSecret) && (
+                  <div>
+                    <hr className="h-2 mx-auto w-64 rounded-full bg-[#111111]" />
+                    <Elements
+                      stripe={stripePromise}
+                      options={{
+                        clientSecret: clientSecret,
+                        loader: "auto",
+                        appearance: {
+                          theme: "stripe",
+                          labels: "floating",
+                          variables: { borderRadius: "0" },
+                        },
+                      }}
+                    >
+                      <CheckoutForm />
+                    </Elements>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </DrawerContent>
     </Drawer>

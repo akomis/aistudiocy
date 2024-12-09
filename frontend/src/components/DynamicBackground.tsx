@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import Section from "./Section";
-import { useRouter } from "next/navigation";
-import Logo from "./Logo";
-import CategoryPicker from "./CategoryPicker";
 import { StoreProductCategory } from "@medusajs/types";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import CategoryPicker from "./CategoryPicker";
+import Logo from "./Logo";
+import Section from "./Section";
 
 type Props = { data: { category: StoreProductCategory; url: string }[] };
 
 const DynamicBackground = ({ data }: Props) => {
   const [categoryId, setCategoryId] = useState(data[0].category.id);
+
   const router = useRouter();
   const categories = data.map((e) => e.category);
 

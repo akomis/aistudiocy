@@ -41,7 +41,10 @@ export default function CategoryPicker({
                   router.push(`/catalogue?category=${category.id}`);
                 }
               : () => {
-                  if (setOnClick) setActive(category.id);
+                  if (setOnClick) {
+                    if (category.id === active) setActive(null);
+                    else setActive(category.id);
+                  }
                 }
           }
           onMouseEnter={() => {

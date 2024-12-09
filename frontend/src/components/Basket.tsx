@@ -441,23 +441,23 @@ export default function Basket() {
       <DrawerTrigger className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline">
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[1200px] mx-auto ">
+      <DrawerContent className="p-4 max-w-[1200px] mx-auto bg-black/85">
         <DrawerHeader className="p-0">
           <DrawerTitle>
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex flex-1 flex-col md:flex-row gap-10 overflow-y-auto max-h-[70vh]">
+        <div className="flex flex-1 flex-col md:flex-row gap-10 overflow-y-auto max-h-[70vh] ">
           <div className="flex flex-1">
             {hasItemsInBasket ? (
               <BasketGrid items={items} />
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center py-10">
-                <Label className="text-xl sm:text-2xl font-thin text-center">
+              <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center ">
+                <Label className="text-lg sm:text-2xl font-thin text-center">
                   Your basket is empty.
                 </Label>{" "}
-                <Label className="text-xl sm:text-2xl font-thin text-center">
+                <Label className="text-lg sm:text-2xl font-thin text-center">
                   Use the [+] button on your preferred piece.
                 </Label>
               </div>

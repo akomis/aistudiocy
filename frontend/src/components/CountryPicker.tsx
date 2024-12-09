@@ -55,7 +55,10 @@ export default function CountryPicker({ value, setValue }: Props) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full h-full justify-between"
+          className={cn(
+            "w-full h-full justify-between bg-black text-md text-gray-400",
+            { "text-white": Boolean(value) }
+          )}
         >
           {value
             ? countries.find((country) => country.value === value)?.label

@@ -81,13 +81,12 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   return (
     product.thumbnail && (
-      <div className="relative aspect-square hover:cursor-pointer">
+      <div className="relative aspect-square hover:cursor-pointer transition-all duration-500 ease-in-out">
         {isAvailable ? (
           <div
-            className={cn(
-              " hover:opacity-75 transition-all duration-500 ease-in-out",
-              { "border-[1px] border-white": isInBasket }
-            )}
+            className={cn("hover:opacity-75", {
+              "border-[1px] border-white": isInBasket,
+            })}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -120,7 +119,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             )}
           </div>
         ) : (
-          <div className="">
+          <div>
             <Image
               onClick={() => setLightboxPhoto(photos?.[0])}
               src={product.thumbnail}
@@ -129,7 +128,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             <Badge
-              className="text-thin text-gray-300 absolute bottom-4 left-4 tracking-widest rounded-none"
+              className="text-thin text-gray-300 absolute bottom-4 left-4"
               variant={"outline"}
             >
               UNAVAILABLE
@@ -142,7 +141,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             open={Boolean(lightboxPhoto)}
             close={() => setLightboxPhoto(undefined)}
             slides={photos}
-            carousel={{ finite: true }}
+            carousel={{ finite: false }}
             styles={{
               root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" },
             }}
@@ -151,7 +150,27 @@ const ProductItem = ({ product }: ProductItemProps) => {
               closeOnPullUp: true,
               closeOnPullDown: true,
             }}
-          />
+            render={{
+              slideFooter: () => (
+                <Button
+                  variant="ghost"
+                  className="text-xl text-white border-2 fixed bottom-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    isInBasket ? deleteItem.mutate() : add.mutate();
+                  }}
+                >
+                  {isLoading ? (
+                    <Spinner />
+                  ) : !isInBasket ? (
+                    <PlusIcon />
+                  ) : (
+                    <MinusIcon />
+                  )}
+                </Button>
+              ),
+            }}
+          ></Lightbox>
         )}
       </div>
     )

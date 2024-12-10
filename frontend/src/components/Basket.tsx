@@ -166,7 +166,7 @@ const CheckoutForm = () => {
       <div className="flex w-full flex-col gap-4">
         <div className="w-full flex justify-between">
           <span className="text-2xl font-bold text-gray-400">TOTAL</span>
-          <span className="text-2xl font-bold ">
+          <span className="text-2xl font-bold">
             {`€${cart?.total ?? 0}`}{" "}
             <span className="text-lg font-light">{`(SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0})`}</span>
           </span>

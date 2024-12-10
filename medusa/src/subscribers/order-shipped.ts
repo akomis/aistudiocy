@@ -6,7 +6,7 @@ import {
 import { Modules } from "@medusajs/utils";
 import { EmailTemplates } from "../modules/email-notifications/templates";
 
-export default async function orderPlacedHandler({
+export default async function shippedHandler({
   event: { data },
   container,
 }: SubscriberArgs<any>) {
@@ -31,20 +31,20 @@ export default async function orderPlacedHandler({
       data: {
         emailOptions: {
           replyTo: process.env.ADMIN_EMAIL,
-          subject: "Your order has been placed",
+          subject: "Your order has been shipped",
         },
         order,
         shippingAddress,
-        preview: "Thank you for your order!",
+        preview: "Your order is on its way to you!",
         message:
-          "Your order has been placed successfully. You should expect a confirmation email soon about the shipment of your order.",
+          "Your order has been shipped and is on its way to you. If the package doesn't arrive in 3-5 business days, please contact us.",
       },
     });
   } catch (error) {
-    console.error("Error sending order confirmation notification:", error);
+    console.error("Error sending order shipped notification:", error);
   }
 }
 
 export const config: SubscriberConfig = {
-  event: "order.placed",
+  event: ["order.shipment_created"],
 };

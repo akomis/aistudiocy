@@ -31,13 +31,13 @@ export default async function orderPlacedHandler({
       data: {
         emailOptions: {
           replyTo: process.env.ADMIN_EMAIL,
-          subject: "Your order has been placed",
+          subject: "Your order has been cancelled & refunded",
         },
         order,
         shippingAddress,
-        preview: "Thank you for your order!",
+        preview: "Order cancelled & refunded!",
         message:
-          "Your order has been placed successfully. You should expect a confirmation email soon about the shipment of your order.",
+          "Your order has been cancelles and refunded. You should expect a refund within the next business days.",
       },
     });
   } catch (error) {
@@ -46,5 +46,5 @@ export default async function orderPlacedHandler({
 }
 
 export const config: SubscriberConfig = {
-  event: "order.placed",
+  event: "order.refund_created",
 };

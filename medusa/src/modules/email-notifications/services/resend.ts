@@ -26,9 +26,6 @@ type NotificationEmailOptions = Omit<
   "to" | "from" | "react" | "html" | "attachments"
 >;
 
-/**
- * Service to handle email notifications using the Resend API.
- */
 export class ResendNotificationService extends AbstractNotificationProviderService {
   static identifier = "RESEND_NOTIFICATION_SERVICE";
   protected config_: ResendServiceConfig; // Configuration for Resend API
@@ -64,7 +61,6 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       );
     }
 
-    // Generate the email content using the template
     let emailContent: ReactNode;
 
     try {
@@ -74,7 +70,7 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       );
     } catch (error) {
       if (error instanceof MedusaError) {
-        throw error; // Re-throw MedusaError for invalid template data
+        throw error;
       }
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
@@ -90,7 +86,9 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       to: notification.to,
       from: notification.from?.trim() ?? this.config_.from,
       react: emailContent,
-      subject: emailOptions.subject ?? "New notification from AISTUDIOCY",
+      subject: emailOptions.subject
+        ? `aistudio - ${emailOptions.subject}`
+        : "New notification from aistudio",
       headers: emailOptions.headers,
       replyTo: emailOptions.replyTo,
       cc: emailOptions.cc,
@@ -115,6 +113,7 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       this.logger_.log(
         `Successfully sent "${notification.template}" email to ${notification.to} via Resend`
       );
+
       return {}; // Return an empty object on success
     } catch (error) {
       const errorCode = error.code;

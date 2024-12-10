@@ -84,9 +84,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
       <div className="relative aspect-square hover:cursor-pointer transition-all duration-500 ease-in-out">
         {isAvailable ? (
           <div
-            className={cn("hover:opacity-75", {
-              "border-[1px] border-white": isInBasket,
-            })}
+            className=""
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -96,6 +94,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
               alt={product.title}
               fill
               style={{ objectFit: "contain" }}
+              className={cn("hover:opacity-75", {
+                "border border-white": isInBasket,
+              })}
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
               <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
@@ -131,7 +132,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               className="text-thin text-gray-300 absolute bottom-4 left-4"
               variant={"outline"}
             >
-              UNAVAILABLE
+              SOLD
             </Badge>
           </div>
         )}
@@ -170,22 +171,24 @@ const ProductItem = ({ product }: ProductItemProps) => {
                       </Badge>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="text-xl text-white border-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      isInBasket ? deleteItem.mutate() : add.mutate();
-                    }}
-                  >
-                    {isLoading ? (
-                      <Spinner />
-                    ) : !isInBasket ? (
-                      <PlusIcon />
-                    ) : (
-                      <MinusIcon />
-                    )}
-                  </Button>
+                  {isAvailable && (
+                    <Button
+                      variant="ghost"
+                      className="text-xl text-white border-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isInBasket ? deleteItem.mutate() : add.mutate();
+                      }}
+                    >
+                      {isLoading ? (
+                        <Spinner />
+                      ) : !isInBasket ? (
+                        <PlusIcon />
+                      ) : (
+                        <MinusIcon />
+                      )}
+                    </Button>
+                  )}
                 </div>
               ),
             }}

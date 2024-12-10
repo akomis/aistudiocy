@@ -31,7 +31,7 @@ export const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<StoreCart | undefined>(undefined);
 
   useEffect(() => {
-    if (cart !== undefined) return;
+    if (cart) return;
 
     const cartId = localStorage.getItem("cart_id");
 
@@ -66,6 +66,7 @@ export const CartProvider = ({ children }: Props) => {
         setCart(cart);
       })
       .catch((error) => {
+        resetCart();
         throw new Error("Error retrieving cart:", error);
       });
 

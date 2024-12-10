@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { PAYMENT_PROVIDER_ID, REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { stripePromise } from "@/lib/stripe";
@@ -14,7 +14,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { StripeCardElement } from "@stripe/stripe-js";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -87,113 +87,8 @@ const BasketGrid = ({ items }: { items: StoreCartLineItem[] }) => {
   );
 };
 
-const CheckoutForm = () => {
-  const { cart, resetCart } = useContext(CartContext);
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handlePayment = async (e: any) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
-      ?.client_secret as string;
-
-    if (!stripe || !elements || !clientSecret || !cart)
-      throw new Error("handlePayment() is missing data");
-
-    const card = elements.getElement(CardElement);
-
-    const { error } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: card as StripeCardElement,
-        billing_details: {
-          name: cart?.billing_address?.first_name,
-          email: cart?.email,
-          phone: cart?.billing_address?.phone,
-          address: {
-            city: cart?.billing_address?.city,
-            country: cart?.billing_address?.country_code,
-            line1: cart?.billing_address?.address_1,
-            line2: cart?.billing_address?.address_2,
-            postal_code: cart?.billing_address?.postal_code,
-          },
-        },
-      },
-      receipt_email: cart?.email,
-    });
-
-    if (error) {
-      toast({
-        title: "Error with payment details",
-        description: error.message,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    const { type } = await sdk.store.cart.complete(cart?.id as string);
-
-    if (type === "cart" && cart) {
-      toast({
-        title: "Error with payment details",
-        description: error,
-        variant: "destructive",
-      });
-    } else if (type === "order") {
-      toast({
-        title: "Order placed succesfully!",
-        description:
-          "Thank you for choosing us. You should receive a confirmation email soon.",
-      });
-      resetCart();
-    }
-
-    setIsLoading(false);
-  };
-
-  return (
-    <form
-      className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between"
-      onSubmit={handlePayment}
-    >
-      <CardElement className="bg-white p-4" />
-
-      <div className="flex w-full flex-col gap-4">
-        <div className="w-full flex justify-between">
-          <span className="text-2xl font-bold text-gray-400">TOTAL</span>
-          <span className="text-2xl font-bold">
-            {`€${cart?.total ?? 0}`}{" "}
-            <span className="text-lg font-light">{`(SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0})`}</span>
-          </span>
-        </div>
-
-        <Button
-          variant="outline"
-          className="w-full font-bold tracking-widest text-2xl"
-          size={"lg"}
-          type="submit"
-          disabled={!cart?.items?.length || !stripe || !elements}
-        >
-          {isLoading ? <Spinner /> : "CHECKOUT"}
-        </Button>
-      </div>
-    </form>
-  );
-};
-
 const CustomerForm = () => {
   const { cart, refetchCart } = useContext(CartContext);
-
-  const { data: { shipping_options = [] } = {} } = useQuery({
-    queryKey: ["shippingOptions"],
-    queryFn: () =>
-      sdk.store.fulfillment.listCartOptions({ cart_id: cart?.id as string }),
-  });
 
   const customerFormSchema = useMemo(
     () =>
@@ -230,30 +125,32 @@ const CustomerForm = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const shippingOption = shipping_options?.find(
-    (option) => option?.name === form.getValues().country_code
-  );
-
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
   const initializePayment = async () => {
     setIsLoading(true);
-    await sdk.store.cart.update(cart?.id as string, {
-      region_id: REGION_ID,
-      email: form.getValues().email,
-    });
 
-    await sdk.store.cart.addShippingMethod(cart?.id as string, {
-      option_id: shippingOption?.id as string,
-    });
+    try {
+      await sdk.store.cart.update(cart?.id as string, {
+        region_id: REGION_ID,
+        email: form.getValues().email,
+      });
+    } catch (e: any) {
+      toast({
+        title: "Error with customer registration",
+        description: e.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
 
     const address = {
       ...form.getValues(),
       email: undefined,
     } as StoreAddAddress;
 
-    const { cart: updatedCard } = await sdk.store.cart.update(
+    const { cart: updatedCart } = await sdk.store.cart.update(
       cart?.id as string,
       {
         shipping_address: address,
@@ -261,8 +158,33 @@ const CustomerForm = () => {
       }
     );
 
+    const { shipping_options } = await sdk.store.fulfillment.listCartOptions({
+      cart_id: updatedCart?.id as string,
+    });
+
+    console.log(shipping_options);
+
+    const shippingOption = shipping_options?.find(
+      (option) => option?.name === updatedCart?.shipping_address?.country_code
+    );
+
+    if (!shippingOption) {
+      toast({
+        title: "Error with payment details",
+        description: "Please select a shipping option",
+        variant: "destructive",
+      });
+
+      setIsLoading(false);
+      return;
+    }
+
+    await sdk.store.cart.addShippingMethod(updatedCart?.id as string, {
+      option_id: shippingOption?.id as string,
+    });
+
     sdk.store.payment
-      .initiatePaymentSession(updatedCard as StoreCart, {
+      .initiatePaymentSession(updatedCart as StoreCart, {
         provider_id: PAYMENT_PROVIDER_ID as string,
         data: {},
       })
@@ -427,6 +349,107 @@ const CustomerForm = () => {
   );
 };
 
+const CheckoutForm = () => {
+  const { cart, resetCart } = useContext(CartContext);
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePayment = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
+      ?.client_secret as string;
+
+    if (!stripe || !elements || !clientSecret || !cart)
+      throw new Error("handlePayment() is missing data");
+
+    const card = elements.getElement(CardElement);
+
+    const { error } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: card as StripeCardElement,
+        billing_details: {
+          name: cart?.billing_address?.first_name,
+          email: cart?.email,
+          phone: cart?.billing_address?.phone,
+          address: {
+            city: cart?.billing_address?.city,
+            country: cart?.billing_address?.country_code,
+            line1: cart?.billing_address?.address_1,
+            line2: cart?.billing_address?.address_2,
+            postal_code: cart?.billing_address?.postal_code,
+          },
+        },
+      },
+      receipt_email: cart?.email,
+    });
+
+    if (error) {
+      toast({
+        title: "Error with payment details",
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { type } = await sdk.store.cart.complete(cart?.id as string);
+
+    if (type === "cart" && cart) {
+      toast({
+        title: "Error with payment details",
+        description: error,
+        variant: "destructive",
+      });
+    } else if (type === "order") {
+      toast({
+        title: "Order placed succesfully!",
+        description:
+          "Thank you for choosing us. You should receive a confirmation email soon.",
+      });
+      resetCart();
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <form
+      className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between"
+      onSubmit={handlePayment}
+    >
+      <CardElement className="bg-white p-4" />
+
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="w-full flex justify-between">
+            <span className="text-2xl font-bold text-gray-400">TOTAL</span>
+            <span className="text-2xl font-bold">{`€${cart?.total ?? 0}`}</span>
+          </div>
+          <div className="flex justify-end">
+            <span className="text-lg font-light">{`SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0}`}</span>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="w-full font-bold tracking-widest text-2xl"
+          size={"lg"}
+          type="submit"
+          disabled={!cart?.items?.length || !stripe || !elements}
+        >
+          {isLoading ? <Spinner /> : "CHECKOUT"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
 export default function Basket() {
   const { cart } = useContext(CartContext);
 
@@ -475,30 +498,25 @@ export default function Basket() {
           </div>
 
           {hasItemsInBasket && (
-            <div>
-              <div className="flex flex-1 flex-col justify-end gap-4">
+            <div className="flex flex-1 flex-col justify-end gap-4 p-1">
+              {Boolean(clientSecret) ? (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret: clientSecret,
+                    loader: "auto",
+                    appearance: {
+                      theme: "night",
+                      labels: "floating",
+                      variables: { borderRadius: "0" },
+                    },
+                  }}
+                >
+                  <CheckoutForm />
+                </Elements>
+              ) : (
                 <CustomerForm />
-
-                {Boolean(clientSecret) && (
-                  <div>
-                    <hr className="h-1 mx-auto w-64 rounded-full bg-[#111111]" />
-                    <Elements
-                      stripe={stripePromise}
-                      options={{
-                        clientSecret: clientSecret,
-                        loader: "auto",
-                        appearance: {
-                          theme: "stripe",
-                          labels: "floating",
-                          variables: { borderRadius: "0" },
-                        },
-                      }}
-                    >
-                      <CheckoutForm />
-                    </Elements>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           )}
         </div>

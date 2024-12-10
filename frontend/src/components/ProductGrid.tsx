@@ -152,22 +152,41 @@ const ProductItem = ({ product }: ProductItemProps) => {
             }}
             render={{
               slideFooter: () => (
-                <Button
-                  variant="ghost"
-                  className="text-xl text-white border-2 fixed bottom-10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    isInBasket ? deleteItem.mutate() : add.mutate();
-                  }}
-                >
-                  {isLoading ? (
-                    <Spinner />
-                  ) : !isInBasket ? (
-                    <PlusIcon />
-                  ) : (
-                    <MinusIcon />
-                  )}
-                </Button>
+                <div className="flex flex-col  gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
+                  <div className="font-thin flex flex-col sm:flex-row ">
+                    {variant.width && (
+                      <Badge variant="outline" className="font-light">
+                        WIDTH: {variant.width} mm
+                      </Badge>
+                    )}
+                    {variant.height && (
+                      <Badge variant="outline" className="font-light">
+                        HEIGHT: {variant.height} mm
+                      </Badge>
+                    )}
+                    {variant.length && (
+                      <Badge variant="outline" className="font-light">
+                        LENGTH: {variant.length} mm
+                      </Badge>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    className="text-xl text-white border-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      isInBasket ? deleteItem.mutate() : add.mutate();
+                    }}
+                  >
+                    {isLoading ? (
+                      <Spinner />
+                    ) : !isInBasket ? (
+                      <PlusIcon />
+                    ) : (
+                      <MinusIcon />
+                    )}
+                  </Button>
+                </div>
               ),
             }}
           ></Lightbox>

@@ -32,7 +32,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
 } = ({
   order,
   shippingAddress,
-  preview = "Your order has been placed!",
+  preview = "Your order at aistudiocy",
   message,
 }) => {
   return (
@@ -55,7 +55,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
         </Text>
         <Text className="mb-5">
           Total: {order.summary.raw_current_order_total.value}{" "}
-          {order.currency_code}
+          {order.currency_code.toUpperCase()}
         </Text>
 
         <Hr className="my-5" />
@@ -64,10 +64,13 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
         <Text className="mb-1">{shippingAddress.address_1}</Text>
         <Text className="mb-1">
           {shippingAddress.city}, {shippingAddress.province}{" "}
-          {shippingAddress.postal_code}
+          {shippingAddress.postal_code}, {shippingAddress.country_code}
         </Text>
-        <Text className="mb-5">{shippingAddress.country_code}</Text>
-        <Text>Shipping Cost: {order?.shipping_total?.toString()}</Text>
+
+        <Text>
+          Shipping Cost: {order?.shipping_methods[0]?.amount.toString()}{" "}
+          {order.currency_code.toUpperCase()}
+        </Text>
 
         <Hr className="my-5" />
 
@@ -93,7 +96,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
               </Text>
               <Text>{item.quantity}</Text>
               <Text>
-                {item.unit_price} {order.currency_code}
+                {item.unit_price} {order.currency_code.toUpperCase()}
               </Text>
             </div>
           ))}

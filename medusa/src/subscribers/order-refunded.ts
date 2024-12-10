@@ -17,7 +17,7 @@ export default async function orderPlacedHandler({
   );
 
   const order = await orderModuleService.retrieveOrder(data.id, {
-    relations: ["items", "summary", "shipping_address"],
+    relations: ["items", "summary", "shipping_address", "shipping_methods"],
   });
   const shippingAddress = await (
     orderModuleService as any
@@ -35,7 +35,7 @@ export default async function orderPlacedHandler({
         },
         order,
         shippingAddress,
-        preview: "Order cancelled & refunded!",
+        preview: "Order cancelled & refunded",
         message:
           "Your order has been cancelles and refunded. You should expect a refund within the next business days.",
       },

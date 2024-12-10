@@ -17,7 +17,7 @@ export default async function shippedHandler({
   );
 
   const order = await orderModuleService.retrieveOrder(data.id, {
-    relations: ["items", "summary", "shipping_address"],
+    relations: ["items", "summary", "shipping_address", "shipping_methods"],
   });
   const shippingAddress = await (
     orderModuleService as any
@@ -35,7 +35,7 @@ export default async function shippedHandler({
         },
         order,
         shippingAddress,
-        preview: "Your order is on its way to you!",
+        preview: "Your order is on its way to you",
         message:
           "Your order has been shipped and is on its way to you. If the package doesn't arrive in 3-5 business days, please contact us.",
       },

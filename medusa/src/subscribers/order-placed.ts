@@ -17,7 +17,7 @@ export default async function orderPlacedHandler({
   );
 
   const order = await orderModuleService.retrieveOrder(data.id, {
-    relations: ["items", "summary", "shipping_address"],
+    relations: ["items", "summary", "shipping_address", "shipping_methods"],
   });
   const shippingAddress = await (
     orderModuleService as any
@@ -35,7 +35,7 @@ export default async function orderPlacedHandler({
         },
         order,
         shippingAddress,
-        preview: "Thank you for your order!",
+        preview: "Thank you for your order",
         message:
           "Your order has been placed successfully. You should expect a confirmation email soon about the shipment of your order.",
       },

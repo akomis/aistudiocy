@@ -11,7 +11,7 @@ import { get } from "@/lib/strapi";
 export default async function Catalogue() {
   const products = (
     await sdk.store.product.list({
-      fields: "*variants.calculated_price",
+      fields: "*variants.calculated_price,+variants.inventory_quantity",
       region_id: REGION_ID,
     })
   ).products;

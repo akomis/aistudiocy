@@ -17,6 +17,7 @@ import { useContext, useEffect, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Spinner from "./Spinner";
+import { Badge } from "./ui/badge";
 import { Label } from "./ui/label";
 
 type ProductItemProps = {
@@ -75,43 +76,64 @@ const ProductItem = ({ product }: ProductItemProps) => {
     src: image.url,
   }));
 
+  const isAvailable = Boolean(variant.inventory_quantity);
   const isInBasket = Boolean(lineItem);
 
   return (
     product.thumbnail && (
-      <div
-        className={cn(
-          "hover:cursor-pointer hover:opacity-75 transition-all relative aspect-square duration-500 ease-in-out ",
-          { "border-[1px] border-white": isInBasket }
-        )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Image
-          onClick={() => setLightboxPhoto(photos?.[0])}
-          src={product.thumbnail}
-          alt={product.title}
-          fill
-          style={{ objectFit: "contain" }}
-        />
-        {(isInBasket || isHovered || isMobile || isLoading) && (
-          <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
-            <span className="text-xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
-            <Button
-              variant="ghost"
-              className="text-xl text-white"
-              onClick={() => {
-                isInBasket ? deleteItem.mutate() : add.mutate();
-              }}
+      <div className="relative aspect-square hover:cursor-pointer">
+        {isAvailable ? (
+          <div
+            className={cn(
+              " hover:opacity-75 transition-all duration-500 ease-in-out",
+              { "border-[1px] border-white": isInBasket }
+            )}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <Image
+              onClick={() => setLightboxPhoto(photos?.[0])}
+              src={product.thumbnail}
+              alt={product.title}
+              fill
+              style={{ objectFit: "contain" }}
+            />
+            {(isInBasket || isHovered || isMobile || isLoading) && (
+              <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
+                <span className="text-xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
+                <Button
+                  variant="ghost"
+                  className="text-xl text-white"
+                  onClick={() => {
+                    isInBasket ? deleteItem.mutate() : add.mutate();
+                  }}
+                >
+                  {isLoading ? (
+                    <Spinner />
+                  ) : !isInBasket ? (
+                    <PlusIcon />
+                  ) : (
+                    <MinusIcon />
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="">
+            <Image
+              onClick={() => setLightboxPhoto(photos?.[0])}
+              src={product.thumbnail}
+              alt={product.title}
+              fill
+              style={{ objectFit: "contain" }}
+            />
+            <Badge
+              className="text-thin text-gray-300 absolute bottom-4 left-4 tracking-widest rounded-none"
+              variant={"outline"}
             >
-              {isLoading ? (
-                <Spinner />
-              ) : !isInBasket ? (
-                <PlusIcon />
-              ) : (
-                <MinusIcon />
-              )}
-            </Button>
+              UNAVAILABLE
+            </Badge>
           </div>
         )}
 

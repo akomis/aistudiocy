@@ -209,7 +209,7 @@ const CustomerForm = () => {
           .min(2, { message: "Country code is required" }),
         postal_code: z
           .string()
-          .length(4, { message: "Postal code is a 4 digit number" }),
+          .min(4, { message: "Postal code is a multiple digit number" }),
       }),
     []
   );

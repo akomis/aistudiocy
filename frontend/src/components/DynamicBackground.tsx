@@ -12,21 +12,26 @@ type Props = { data: { category: StoreProductCategory; url: string }[] };
 
 const DynamicBackground = ({ data }: Props) => {
   const [categoryId, setCategoryId] = useState(data[0].category.id);
+  const [isPaused, setIsPaused] = useState(false);
 
   const router = useRouter();
   const categories = data.map((e) => e.category);
 
   useEffect(() => {
+    if (isPaused) return;
+
     const currentCategoryIndex = data.findIndex(
       (e) => e.category.id === categoryId
     );
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       currentCategoryIndex < data.length - 1
         ? setCategoryId(data[currentCategoryIndex + 1].category.id)
         : setCategoryId(data[0].category.id);
     }, 5000);
-  }, [categoryId]);
+
+    return () => clearTimeout(timeout);
+  }, [categoryId, isPaused]);
 
   const displayedImageUrl = data.find((e) => {
     return e.category.id === categoryId;
@@ -36,7 +41,7 @@ const DynamicBackground = ({ data }: Props) => {
     <Section className="h-screen flex items-center p-0">
       <div
         key={displayedImageUrl}
-        className="absolute h-full w-full  -z-10 animate-in fade-in duration-1000 border-"
+        className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"
       >
         <Image
           src={displayedImageUrl as string}
@@ -47,7 +52,7 @@ const DynamicBackground = ({ data }: Props) => {
       </div>
       <div
         className={
-          "flex items-center justify-between max-w-[2000px] px-2 mx-auto h-full w-full hover:cursor-pointer "
+          "flex items-center justify-between max-w-[2000px] px-2 mx-auto h-full w-full hover:cursor-pointer"
         }
         onClick={() => {
           router.push("/catalogue");
@@ -59,8 +64,14 @@ const DynamicBackground = ({ data }: Props) => {
           categories={categories}
           activeId={categoryId}
           setActive={setCategoryId}
-          setOnHover
+          onHover={(categoryId: string) => {
+            setCategoryId(categoryId);
+          }}
+          onExitHover={() => {
+            setIsPaused(false);
+          }}
           navigateOnClick
+          setOnClick={false}
         />
       </div>
     </Section>

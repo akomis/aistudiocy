@@ -16,7 +16,6 @@ export default async function Catalogue() {
   ).products;
 
   const categories = (await sdk.store.category.list()).product_categories;
-
   const catalogueStaticImages = (await get("image")).data.Catalogue;
   const socials = (await get("socials")).data;
 

@@ -1,9 +1,11 @@
 "use client";
 
+import Loading from "@/app/loading";
 import { StoreProductCategory } from "@medusajs/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AssetPreloader, { Asset } from "./AssetPreloader";
 import CategoryPicker from "./CategoryPicker";
 import Logo from "./Logo";
 import Section from "./Section";
@@ -16,6 +18,7 @@ const DynamicBackground = ({ data }: Props) => {
 
   const router = useRouter();
   const categories = data.map((e) => e.category);
+  const assets = data.map((e) => ({ type: "image", url: e.url }));
 
   useEffect(() => {
     if (isPaused) return;
@@ -38,46 +41,48 @@ const DynamicBackground = ({ data }: Props) => {
   })?.url;
 
   return (
-    <Section className="h-screen flex items-center p-0">
-      <div
-        key={displayedImageUrl}
-        className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"
-      >
-        <Image
-          src={displayedImageUrl as string}
-          alt={categoryId}
-          fill
-          style={{ objectFit: "cover" }}
-        />
-      </div>
-      <div
-        className={
-          "flex items-center justify-between max-w-[2000px] px-2 md:px-10 mx-auto h-full w-full hover:cursor-pointer"
-        }
-        onClick={() => {
-          router.push("/catalogue");
-        }}
-      >
-        <Logo />
+    <AssetPreloader assets={assets as Asset[]} loadingComponent={<Loading />}>
+      <Section className="h-screen flex items-center p-0">
+        <div
+          key={displayedImageUrl}
+          className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"
+        >
+          <Image
+            src={displayedImageUrl as string}
+            alt={categoryId}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+        <div
+          className={
+            "flex items-center justify-between max-w-[2000px] px-2 md:px-10 mx-auto h-full w-full hover:cursor-pointer"
+          }
+          onClick={() => {
+            router.push("/catalogue");
+          }}
+        >
+          <Logo />
 
-        <CategoryPicker
-          categories={categories}
-          activeId={categoryId}
-          setActive={(categoryId: string | null) => {
-            setCategoryId(categoryId as string);
-          }}
-          onHover={(categoryId: string) => {
-            setCategoryId(categoryId);
-            setIsPaused(true);
-          }}
-          onExitHover={() => {
-            setIsPaused(false);
-          }}
-          navigateOnClick
-          setOnClick={false}
-        />
-      </div>
-    </Section>
+          <CategoryPicker
+            categories={categories}
+            activeId={categoryId}
+            setActive={(categoryId: string | null) => {
+              setCategoryId(categoryId as string);
+            }}
+            onHover={(categoryId: string) => {
+              setCategoryId(categoryId);
+              setIsPaused(true);
+            }}
+            onExitHover={() => {
+              setIsPaused(false);
+            }}
+            navigateOnClick
+            setOnClick={false}
+          />
+        </div>
+      </Section>
+    </AssetPreloader>
   );
 };
 

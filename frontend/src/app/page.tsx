@@ -68,7 +68,7 @@ const Footer = async () => {
               <a
                 href={social.URL}
                 target="_blank"
-                className="hover:opacity-70 hover:shadow-md transition-all duration-500"
+                className="hover:opacity-70 hover:shadow-md transition-all duration-500 tracking-widest"
               >
                 {social.Value}
               </a>

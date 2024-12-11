@@ -15,9 +15,15 @@ export default async function shippedHandler({
   const orderModuleService: IOrderModuleService = container.resolve(
     Modules.ORDER
   );
+  const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
 
-  const order = await orderModuleService.retrieveOrder(data.id, {
-    relations: ["items", "summary", "shipping_address", "shipping_methods"],
+  const fulfillment = await fulfillmentModuleService.retrieveFulfillment(
+    data.fulfillment_id,
+    { relations: ["shipping_option"] }
+  );
+
+  const order = await orderModuleService.retrieveOrder(data.order_id, {
+    relations: ["items", "summary", "shipping_address"],
   });
   const shippingAddress = await (
     orderModuleService as any
@@ -46,5 +52,5 @@ export default async function shippedHandler({
 }
 
 export const config: SubscriberConfig = {
-  event: ["order.shipment_created"],
+  event: ["order.fulfillment_created", "fulfillment.created"],
 };

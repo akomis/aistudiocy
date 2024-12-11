@@ -230,7 +230,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
     queryKey: ["filteredProducts", id],
     queryFn: () =>
       sdk.store.product.list({
-        fields: "*variants.calculated_price",
+        fields: "*variants.calculated_price,+variants.inventory_quantity",
         region_id: REGION_ID,
         category_id: id as string,
       }),

@@ -1,3 +1,5 @@
+"use client";
+
 import { useIsVisible } from "@/hooks/use-is-visible";
 import { ReactNode } from "react";
 

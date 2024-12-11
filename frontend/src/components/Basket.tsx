@@ -16,6 +16,7 @@ import {
 import { StripeCardElement } from "@stripe/stripe-js";
 import { useMutation } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
+import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -162,8 +163,6 @@ const CustomerForm = () => {
       cart_id: updatedCart?.id as string,
     });
 
-    console.log(shipping_options);
-
     const shippingOption = shipping_options?.find(
       (option) => option?.name === updatedCart?.shipping_address?.country_code
     );
@@ -188,8 +187,8 @@ const CustomerForm = () => {
         provider_id: PAYMENT_PROVIDER_ID as string,
         data: {},
       })
-      .then(() => {
-        refetchCart();
+      .then(async () => {
+        await refetchCart();
       })
       .catch((error) => {
         throw new Error("Error creating payment session:", error);
@@ -408,11 +407,12 @@ const CheckoutForm = () => {
       });
     } else if (type === "order") {
       toast({
-        title: "Order placed succesfully!",
+        title: "Order placed succesfully",
         description:
           "Thank you for choosing us. You should receive a confirmation email soon.",
       });
       resetCart();
+      revalidatePath("/catalogue");
     }
 
     setIsLoading(false);

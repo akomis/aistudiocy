@@ -1,8 +1,9 @@
 "use client";
 
 import { StoreProductCategory } from "@medusajs/types";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryPicker from "./CategoryPicker";
 import Logo from "./Logo";
 import Section from "./Section";
@@ -15,22 +16,38 @@ const DynamicBackground = ({ data }: Props) => {
   const router = useRouter();
   const categories = data.map((e) => e.category);
 
+  useEffect(() => {
+    const currentCategoryIndex = data.findIndex(
+      (e) => e.category.id === categoryId
+    );
+
+    setTimeout(() => {
+      currentCategoryIndex < data.length - 1
+        ? setCategoryId(data[currentCategoryIndex + 1].category.id)
+        : setCategoryId(data[0].category.id);
+    }, 5000);
+  }, [categoryId]);
+
   const displayedImageUrl = data.find((e) => {
     return e.category.id === categoryId;
   })?.url;
 
   return (
-    <Section
-      className="h-screen flex items-center px-14"
-      style={{
-        backgroundImage: `url(${displayedImageUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <Section className="h-screen flex items-center p-0">
+      <div
+        key={displayedImageUrl}
+        className="absolute h-full w-full  -z-10 animate-in fade-in duration-1000 border-"
+      >
+        <Image
+          src={displayedImageUrl as string}
+          alt={categoryId}
+          fill
+          style={{ objectFit: "cover" }}
+        />
+      </div>
       <div
         className={
-          "flex items-center justify-between h-full w-full hover:cursor-pointer "
+          "flex items-center justify-between max-w-[2000px] px-2 mx-auto h-full w-full hover:cursor-pointer "
         }
         onClick={() => {
           router.push("/catalogue");
@@ -40,7 +57,7 @@ const DynamicBackground = ({ data }: Props) => {
 
         <CategoryPicker
           categories={categories}
-          active={categoryId}
+          activeId={categoryId}
           setActive={setCategoryId}
           setOnHover
           navigateOnClick

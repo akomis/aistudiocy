@@ -1,11 +1,10 @@
 "use client";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { StoreProductCategory } from "@medusajs/types";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  active: string | number | null;
+  activeId: string | number | null;
   categories: StoreProductCategory[];
   setActive: (id: any) => void;
   setOnClick?: boolean;
@@ -14,7 +13,7 @@ type Props = {
 };
 
 export default function CategoryPicker({
-  active,
+  activeId,
   categories,
   setActive,
   setOnClick = true,
@@ -26,12 +25,12 @@ export default function CategoryPicker({
   return (
     <div className="flex flex-col gap-2 w-fit text-center">
       {categories.map((category: StoreProductCategory) => (
-        <Label
+        <div
           key={category.id}
           className={cn(
             "text-sm font-semibold hover:cursor-pointer hover:opacity-80 tracking-[0.3em] text-center w-full",
             {
-              "opacity-70": active === category.id,
+              "opacity-70": activeId === category.id,
             }
           )}
           onClick={
@@ -42,7 +41,7 @@ export default function CategoryPicker({
                 }
               : () => {
                   if (setOnClick) {
-                    if (category.id === active) setActive(null);
+                    if (category.id === activeId) setActive(null);
                     else setActive(category.id);
                   }
                 }
@@ -52,7 +51,7 @@ export default function CategoryPicker({
           }}
         >
           {category.name}
-        </Label>
+        </div>
       ))}
     </div>
   );

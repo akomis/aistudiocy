@@ -3,7 +3,6 @@ import Filter from "@/components/Filter";
 import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
-import { Label } from "@/components/ui/label";
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
@@ -39,13 +38,13 @@ export default async function Catalogue() {
           <HomeButton isIcon />
 
           {noProductsAvailable ? (
-            <Label className="text-center text-xl">
+            <div className="text-center text-xl">
               {`We currently don't have any available pieces. We are working to produce more beautiful silver pieces so feel free to follow us on social media `}
               <a
                 href={instagram.URL}
                 className="hover:opacity-75 transition-all"
               >{`@${instagram.Value}`}</a>
-            </Label>
+            </div>
           ) : (
             <Filter categories={categories} />
           )}

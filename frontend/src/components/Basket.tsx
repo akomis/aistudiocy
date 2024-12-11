@@ -97,15 +97,18 @@ const CustomerForm = () => {
         first_name: z.string().min(1, { message: "First name is required" }),
         last_name: z.string().min(1, { message: "Last name is required" }),
         email: z.string().email({ message: "Invalid email address" }),
-        phone: z.string().optional(),
+        phone: z.string().regex(/^$|^\+?\d{1,4}?\d{7}$/, {
+          message:
+            "Phone number must be at least 8 digits and may include country code with '+' prefix",
+        }),
         city: z.string().min(1, { message: "City is required" }),
         address_1: z.string().min(1, { message: "Address is required" }),
         country_code: z
           .string()
           .min(2, { message: "Country code is required" }),
-        postal_code: z
-          .string()
-          .min(4, { message: "Postal code is a multiple digit number" }),
+        postal_code: z.string().regex(/^\d{4,}$/, {
+          message: "Postal code must be at least 4 digits",
+        }),
       }),
     []
   );

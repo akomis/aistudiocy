@@ -78,9 +78,8 @@ const Footer = async () => {
 
         <div className="flex flex-col sm:flex-row font-normal gap-2 text-sm text-gray-300">
           {pages.map((page: any, index: number) => (
-            <>
+            <div key={page.Key}>
               <Link
-                key={page.Key}
                 href={`/${page.Key}`}
                 target="_blank"
                 className="hover:cursor-pointer hover:text-white transition-all"
@@ -88,7 +87,7 @@ const Footer = async () => {
                 {page.Title}
               </Link>
               {index < pages.length - 1 && " - "}
-            </>
+            </div>
           ))}
         </div>
       </div>

@@ -2,14 +2,11 @@
 import { cn } from "@/lib/utils";
 import { StoreProductCategory } from "@medusajs/types";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
 
 type Props = {
   activeId: string | number | null;
   categories: StoreProductCategory[];
-  setActive:
-    | Dispatch<SetStateAction<string | null>>
-    | Dispatch<SetStateAction<string>>;
+  setActive: (id: string | null) => void;
   setOnClick?: boolean;
   onHover?: (id: string) => void;
   onExitHover?: () => void;
@@ -55,6 +52,7 @@ export default function CategoryPicker({
             if (!onHover) return;
             onHover(category.id);
           }}
+          onMouseLeave={onExitHover}
         >
           {category.name}
         </div>

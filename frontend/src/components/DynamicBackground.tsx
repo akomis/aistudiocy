@@ -63,9 +63,12 @@ const DynamicBackground = ({ data }: Props) => {
         <CategoryPicker
           categories={categories}
           activeId={categoryId}
-          setActive={setCategoryId}
+          setActive={(categoryId: string | null) => {
+            setCategoryId(categoryId as string);
+          }}
           onHover={(categoryId: string) => {
             setCategoryId(categoryId);
+            setIsPaused(true);
           }}
           onExitHover={() => {
             setIsPaused(false);

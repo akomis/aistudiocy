@@ -1,10 +1,10 @@
-import CutoffText from "@/components/CutoffText";
-import Section from "../components/Section";
 import Block from "@/components/Block";
+import CutoffText from "@/components/CutoffText";
 import DynamicBackground from "@/components/DynamicBackground";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 import Link from "next/link";
+import Section from "../components/Section";
 
 const Header = async () => {
   const categories = (await sdk.store.category.list()).product_categories;
@@ -60,7 +60,7 @@ const Footer = async () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col justify-end items-end gap-10 mr-10 mb-10">
+      <div className="flex flex-col justify-end items-end gap-5 mr-10 mb-10">
         <div className="flex flex-col sm:flex-row font-bold gap-10">
           {socials.map((social: any) => (
             <div key={social.Key} className="flex flex-col">
@@ -68,7 +68,7 @@ const Footer = async () => {
               <a
                 href={social.URL}
                 target="_blank"
-                className="hover:text-gray-400"
+                className="hover:opacity-70 hover:shadow-md transition-all duration-500"
               >
                 {social.Value}
               </a>
@@ -76,16 +76,19 @@ const Footer = async () => {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row font-thin gap-2 text-sm">
-          {pages.map((page: any) => (
-            <Link
-              key={page.Key}
-              href={`/${page.Key}`}
-              target="_blank"
-              className="hover:cursor-pointer hover:text-gray-300"
-            >
-              {page.Title}
-            </Link>
+        <div className="flex flex-col sm:flex-row font-normal gap-2 text-sm text-gray-300">
+          {pages.map((page: any, index: number) => (
+            <>
+              <Link
+                key={page.Key}
+                href={`/${page.Key}`}
+                target="_blank"
+                className="hover:cursor-pointer hover:text-white transition-all"
+              >
+                {page.Title}
+              </Link>
+              {index < pages.length - 1 && " - "}
+            </>
           ))}
         </div>
       </div>

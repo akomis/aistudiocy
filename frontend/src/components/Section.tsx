@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import AnimateOnScroll from "./AnimateOnScroll";
 
 type Props = {
   children: React.ReactNode;
@@ -8,8 +11,13 @@ type Props = {
 
 export default function Section({ children, className, style }: Props) {
   return (
-    <section className={cn("", className)} style={style}>
-      {children}
-    </section>
+    <AnimateOnScroll
+      animation="fade-in"
+      className="duration-1000 transition-all"
+    >
+      <section className={cn("", className)} style={style}>
+        {children}
+      </section>
+    </AnimateOnScroll>
   );
 }

@@ -40,7 +40,7 @@ export default async function orderFullfilledHandler({
       },
     });
   } catch (error) {
-    console.error("Error sending order shipped notification:", error);
+    console.error("Error sending order fullfilled notification:", error);
   }
 }
 

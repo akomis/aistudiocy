@@ -28,9 +28,9 @@ type NotificationEmailOptions = Omit<
 
 export class ResendNotificationService extends AbstractNotificationProviderService {
   static identifier = "RESEND_NOTIFICATION_SERVICE";
-  protected config_: ResendServiceConfig; // Configuration for Resend API
-  protected logger_: Logger; // Logger for error and event logging
-  protected resend: Resend; // Instance of the Resend API client
+  protected config_: ResendServiceConfig;
+  protected logger_: Logger;
+  protected resend: Resend;
 
   constructor(
     { logger }: InjectedDependencies,
@@ -72,6 +72,7 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       if (error instanceof MedusaError) {
         throw error;
       }
+
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
         `Failed to generate email content for template: ${notification.template}`
@@ -107,14 +108,13 @@ export class ResendNotificationService extends AbstractNotificationProviderServi
       scheduledAt: emailOptions.scheduledAt,
     };
 
-    // Send the email via Resend
     try {
       await this.resend.emails.send(message);
       this.logger_.log(
         `Successfully sent "${notification.template}" email to ${notification.to} via Resend`
       );
 
-      return {}; // Return an empty object on success
+      return {};
     } catch (error) {
       const errorCode = error.code;
       const responseError = error.response?.body?.errors?.[0];

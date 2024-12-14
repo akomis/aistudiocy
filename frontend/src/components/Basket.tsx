@@ -16,7 +16,6 @@ import {
 import { StripeCardElement } from "@stripe/stripe-js";
 import { useMutation } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
-import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -415,7 +414,8 @@ const CheckoutForm = () => {
           "Thank you for choosing us. You should receive a confirmation email soon.",
       });
       resetCart();
-      revalidatePath("/catalogue");
+
+      //redirect to confirmation and then home
     }
 
     setIsLoading(false);

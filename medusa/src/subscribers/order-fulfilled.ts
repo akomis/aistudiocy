@@ -6,7 +6,7 @@ import {
 import { Modules } from "@medusajs/utils";
 import { EmailTemplates } from "../modules/email-notifications/templates";
 
-export default async function orderFullfilledHandler({
+export default async function orderFulfilledHandler({
   event: { data },
   container,
 }: SubscriberArgs<any>) {
@@ -16,7 +16,7 @@ export default async function orderFullfilledHandler({
     Modules.ORDER
   );
   const order = await orderModuleService.retrieveOrder(data.order_id, {
-    relations: ["items", "summary", "shipping_address"],
+    relations: ["items", "summary", "shipping_address", "shipping_methods"],
   });
   const shippingAddress = await (
     orderModuleService as any

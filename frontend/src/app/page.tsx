@@ -60,15 +60,15 @@ const Footer = async () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col justify-end items-end gap-5 mr-10 mb-10">
+      <div className="flex flex-col justify-end items-end gap-10 mr-10 mb-10">
         <div className="flex flex-col sm:flex-row font-bold gap-10">
           {socials.map((social: any) => (
-            <div key={social.Key} className="flex flex-col">
+            <div key={social.Key} className="flex flex-col text-end">
               <p>{social.Key}</p>
               <a
                 href={social.URL}
                 target="_blank"
-                className="hover:opacity-70 hover:shadow-md transition-all duration-500 tracking-widest"
+                className="hover:opacity-70 hover:shadow-md transition-all duration-500 "
               >
                 {social.Value}
               </a>
@@ -76,7 +76,7 @@ const Footer = async () => {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row font-normal gap-2 text-sm text-gray-300">
+        <div className="flex flex-col sm:flex-row font-normal gap-2 text-sm text-gray-300 text-end">
           {pages.map((page: any, index: number) => (
             <div key={page.Key}>
               <Link
@@ -86,7 +86,7 @@ const Footer = async () => {
               >
                 {page.Title}
               </Link>
-              {index < pages.length - 1 && " - "}
+              {index < pages.length - 1 && " | "}
             </div>
           ))}
         </div>

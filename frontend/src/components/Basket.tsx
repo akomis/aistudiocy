@@ -414,8 +414,6 @@ const CheckoutForm = () => {
           "Thank you for choosing us. You should receive a confirmation email soon.",
       });
       resetCart();
-
-      //redirect to confirmation and then home
     }
 
     setIsLoading(false);
@@ -474,7 +472,10 @@ export default function Basket() {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline">
+      <DrawerTrigger
+        className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline"
+        disabled={!cart}
+      >
         BASKET
       </DrawerTrigger>
       <DrawerContent className="p-4 max-w-[1200px] mx-auto bg-black/85">

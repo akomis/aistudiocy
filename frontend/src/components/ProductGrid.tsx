@@ -107,6 +107,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   onClick={() => {
                     isInBasket ? deleteItem.mutate() : add.mutate();
                   }}
+                  disabled={!cart}
                 >
                   {isLoading ? (
                     <Spinner />
@@ -179,6 +180,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                         e.stopPropagation();
                         isInBasket ? deleteItem.mutate() : add.mutate();
                       }}
+                      disabled={!cart}
                     >
                       {isLoading ? (
                         <Spinner />

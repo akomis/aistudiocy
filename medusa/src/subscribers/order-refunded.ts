@@ -35,7 +35,7 @@ export default async function orderPlacedHandler({
         },
         order,
         shippingAddress,
-        preview: "Order cancelled & refunded",
+        preview: "Order Refunded",
         message:
           "Your order has been cancelled and refunded. You should expect a refund within the next business days.",
       },

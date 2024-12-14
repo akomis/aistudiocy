@@ -6,7 +6,7 @@ import {
 import { Modules } from "@medusajs/utils";
 import { EmailTemplates } from "../modules/email-notifications/templates";
 
-export default async function orderFulfilledHandler({
+export default async function orderShippedHandler({
   event: { data },
   container,
 }: SubscriberArgs<any>) {
@@ -34,16 +34,16 @@ export default async function orderFulfilledHandler({
         },
         order,
         shippingAddress,
-        preview: "Your order is on its way to you",
+        preview: "Order Shipped",
         message:
           "Your order has been shipped and is on its way to you. If the package doesn't arrive in 3-5 business days, please contact us.",
       },
     });
   } catch (error) {
-    console.error("Error sending order fullfilled notification:", error);
+    console.error("Error sending order shipping notification:", error);
   }
 }
 
 export const config: SubscriberConfig = {
-  event: "order.fulfillment_created",
+  event: "order.shipment_created",
 };

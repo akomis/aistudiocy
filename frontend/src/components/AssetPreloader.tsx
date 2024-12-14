@@ -22,17 +22,6 @@ const AssetPreloader = ({
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    let loadedCount = 0;
-    const totalAssets = assets.length;
-
-    const checkComplete = () => {
-      loadedCount++;
-      if (loadedCount === totalAssets) {
-        setLoaded(true);
-        onLoadComplete?.();
-      }
-    };
-
     const preloadAsset = async (asset: Asset) => {
       try {
         switch (asset.type) {
@@ -65,8 +54,6 @@ const AssetPreloader = ({
       } catch (error) {
         console.error(`Failed to load asset: ${asset.url}`, error);
       }
-
-      checkComplete();
     };
 
     if (assets.length > 0) {
@@ -77,13 +64,7 @@ const AssetPreloader = ({
   }, [assets, onLoadComplete]);
 
   if (!loaded) {
-    return (
-      loadingComponent || (
-        <div className="fixed inset-0 flex items-center justify-center bg-white">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900" />
-        </div>
-      )
-    );
+    return loadingComponent;
   }
 
   return <>{children}</>;

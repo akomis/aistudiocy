@@ -52,6 +52,7 @@ const DynamicBackground = ({ data }: Props) => {
             alt={categoryId}
             fill
             style={{ objectFit: "cover" }}
+            priority
           />
         </div>
         <div

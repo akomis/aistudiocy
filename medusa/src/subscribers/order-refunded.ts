@@ -41,7 +41,7 @@ export default async function orderPlacedHandler({
       },
     });
   } catch (error) {
-    console.error("Error sending order confirmation notification:", error);
+    console.error("Error sending refund confirmation notification:", error);
   }
 }
 

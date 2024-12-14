@@ -6,7 +6,7 @@ import {
 import { Modules } from "@medusajs/utils";
 import { EmailTemplates } from "../modules/email-notifications/templates";
 
-export default async function shippedHandler({
+export default async function orderFullfilledHandler({
   event: { data },
   container,
 }: SubscriberArgs<any>) {
@@ -15,13 +15,6 @@ export default async function shippedHandler({
   const orderModuleService: IOrderModuleService = container.resolve(
     Modules.ORDER
   );
-  const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
-
-  const fulfillment = await fulfillmentModuleService.retrieveFulfillment(
-    data.fulfillment_id,
-    { relations: ["shipping_option"] }
-  );
-
   const order = await orderModuleService.retrieveOrder(data.order_id, {
     relations: ["items", "summary", "shipping_address"],
   });
@@ -52,5 +45,5 @@ export default async function shippedHandler({
 }
 
 export const config: SubscriberConfig = {
-  event: ["order.fulfillment_created", "fulfillment.created"],
+  event: "order.fulfillment_created",
 };

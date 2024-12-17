@@ -14,7 +14,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { StripeCardElement } from "@stripe/stripe-js";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MinusIcon } from "lucide-react";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -113,7 +113,7 @@ const CustomerForm = () => {
   );
   const form = useForm<z.infer<typeof customerFormSchema>>({
     resolver: zodResolver(customerFormSchema),
-    mode: "onTouched",
+    mode: "onChange",
     defaultValues: {
       first_name: cart?.billing_address?.first_name ?? "",
       last_name: cart?.billing_address?.last_name ?? "",
@@ -351,10 +351,11 @@ const CustomerForm = () => {
 };
 
 const CheckoutForm = () => {
-  const { cart, resetCart } = useContext(CartContext);
+  const { cart, resetCart, setCart } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -403,7 +404,7 @@ const CheckoutForm = () => {
 
     if (type === "cart" && cart) {
       toast({
-        title: "Error with payment details",
+        title: "Error with the order",
         description: error,
         variant: "destructive",
       });
@@ -413,41 +414,54 @@ const CheckoutForm = () => {
         description:
           "Thank you for choosing us. You should receive a confirmation email soon.",
       });
-      resetCart();
     }
 
+    await resetCart();
+    await queryClient.refetchQueries({ queryKey: ["filteredProducts"] });
     setIsLoading(false);
   };
 
+  const goBackToCustomerForm = () => {
+    setCart({
+      ...cart,
+      payment_collection: { payment_sessions: [] },
+    } as unknown as StoreCart);
+  };
+
   return (
-    <form
-      className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between"
-      onSubmit={handlePayment}
-    >
-      <CardElement className="bg-white p-4" />
+    <div className="h-fit flex flex-col gap-4">
+      <Button variant={"link"} className="p-0" onClick={goBackToCustomerForm}>
+        BACK
+      </Button>
+      <form
+        className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between"
+        onSubmit={handlePayment}
+      >
+        <CardElement className="bg-gray-300 p-4" />
 
-      <div className="flex w-full flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="w-full flex justify-between">
-            <span className="text-2xl font-bold text-gray-400">TOTAL</span>
-            <span className="text-2xl font-bold">{`€${cart?.total ?? 0}`}</span>
+        <div className="flex w-full flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="w-full flex justify-between">
+              <span className="text-2xl font-bold text-gray-400">TOTAL</span>
+              <span className="text-2xl font-bold">{`€${cart?.total ?? 0}`}</span>
+            </div>
+            <div className="flex justify-end">
+              <span className="text-lg font-light">{`SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0}`}</span>
+            </div>
           </div>
-          <div className="flex justify-end">
-            <span className="text-lg font-light">{`SHIPPING €${cart?.shipping_methods?.[0]?.amount ?? 0}`}</span>
-          </div>
+
+          <Button
+            variant="outline"
+            className="w-full font-bold tracking-widest text-2xl"
+            size={"lg"}
+            type="submit"
+            disabled={!cart?.items?.length || !stripe || !elements}
+          >
+            {isLoading ? <Spinner /> : "CHECKOUT"}
+          </Button>
         </div>
-
-        <Button
-          variant="outline"
-          className="w-full font-bold tracking-widest text-2xl"
-          size={"lg"}
-          type="submit"
-          disabled={!cart?.items?.length || !stripe || !elements}
-        >
-          {isLoading ? <Spinner /> : "CHECKOUT"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 
@@ -478,15 +492,15 @@ export default function Basket() {
       >
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[1200px] mx-auto bg-black/85">
-        <DrawerHeader className="p-0">
-          <DrawerTitle>
+      <DrawerContent className="p-4 max-w-[500px] ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh]">
+        <DrawerHeader>
+          <DrawerTitle className="text-center">
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex flex-1 flex-col md:flex-row gap-10 overflow-y-auto max-h-[70vh] ">
-          <div className="flex flex-1">
+        <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
+          <div className="flex ">
             {hasItemsInBasket ? (
               <BasketGrid items={items} />
             ) : (
@@ -509,11 +523,6 @@ export default function Basket() {
                   options={{
                     clientSecret: clientSecret,
                     loader: "auto",
-                    appearance: {
-                      theme: "night",
-                      labels: "floating",
-                      variables: { borderRadius: "0" },
-                    },
                   }}
                 >
                   <CheckoutForm />

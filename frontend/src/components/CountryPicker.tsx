@@ -21,6 +21,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import Spinner from "./Spinner";
 import { Button } from "./ui/button";
+import { Label } from "./ui/label";
 
 type Props = {
   value: string;
@@ -56,13 +57,16 @@ export default function CountryPicker({ value, setValue }: Props) {
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full h-full justify-between bg-black text-md text-gray-400",
+            "w-full h-full justify-between bg-black text-gray-400",
             { "text-white": Boolean(value) }
           )}
         >
-          {value
-            ? countries.find((country) => country.value === value)?.label
-            : "COUNTRY *"}
+          <Label className="tracking-tight">
+            {value
+              ? countries.find((country) => country.value === value)?.label
+              : "COUNTRY *"}
+          </Label>
+
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>

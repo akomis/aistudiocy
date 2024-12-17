@@ -4,8 +4,8 @@ type Props = {
 
 export default function CutoffText({ children }: Props) {
   return (
-    <div className="h-[84px] sm:h-[110px] lg:h-[140px] overflow-hidden">
-      <span className="text-8xl sm:text-9xl lg:text-[10rem] font-bold lg:self-end tracking-widest">
+    <div className="h-[52px] sm:h-[82px] overflow-hidden">
+      <span className="text-6xl sm:text-8xl font-bold tracking-widest">
         {children}
       </span>
     </div>

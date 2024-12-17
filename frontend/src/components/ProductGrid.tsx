@@ -12,7 +12,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Lightbox, { SlideImage } from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -221,12 +221,20 @@ const IMAGE_SIZE = 3000;
 
 export default function ProductGrid({ products, images, emailHref }: Props) {
   const { id, setId } = useContext(FilterContext);
-
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     setId(searchParams.get("category"));
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      const params = new URLSearchParams(searchParams);
+      params.set("category", id);
+      router.push(`?${params.toString()}`);
+    }
+  }, [id]);
 
   const { data: filteredProductsData, isLoading } = useQuery({
     queryKey: ["filteredProducts", id],
@@ -259,13 +267,18 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
   if (filteredProducts.length === 0) {
     return (
-      <div className="flex flex-col mx-auto">
-        <Label className="text-2xl text-center font-light">
-          No products found with the applied filter.
+      <div className="flex flex-col mx-auto px-10">
+        <Label className="text-lg md:text-2xl text-center font-light">
+          No products found with the applied filter. Feel free to explore more
+          through the categories on top.
         </Label>
-        <Label className="text-2xl text-center font-light">
-          Feel free to explore more categories through the categories on top.
-        </Label>
+        <Button
+          variant={"outline"}
+          className="mx-auto mt-10"
+          onClick={() => setId(null)}
+        >
+          EXPLORE
+        </Button>
       </div>
     );
   }
@@ -347,24 +360,21 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
         ) : null}
       </div>
 
-      <div className="mt-40">
+      <div className="mt-40 flex flex-col gap-20">
         <Link
           href="/sizing"
           target="_blank"
-          className="text-3xl md:text-5xl font-bold"
+          className="text-3xl md:text-5xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
         >
           RING SIZE GUIDE
         </Link>
-        <div className="text-md md:text-xl font-light">
-          If you have any questions feel free to{" "}
-          <a
-            href={emailHref}
-            target="_blank"
-            className="font-normal hover:cursor-pointer hover:opacity-75 transition-all"
-          >
-            contact us
-          </a>
-        </div>
+        <a
+          href={emailHref}
+          target="_blank"
+          className="text-3xl md:text-5xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
+        >
+          FEEL FREE TO ASK
+        </a>
       </div>
     </div>
   );

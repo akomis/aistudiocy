@@ -32,8 +32,8 @@ export default async function Catalogue() {
 
   return (
     <Screen className="px-5">
-      <div className="w-full max-w-[1200px] mx-auto">
-        <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/60 py-4">
+      <div className="w-full max-w-[1000px] mx-auto">
+        <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/90 py-4">
           <HomeButton isIcon />
 
           {noProductsAvailable ? (
@@ -45,7 +45,9 @@ export default async function Catalogue() {
               >{`@${instagram.Value}`}</a>
             </div>
           ) : (
-            <Filter categories={categories} />
+            <div className="ml-10">
+              <Filter categories={categories} />
+            </div>
           )}
 
           <Basket />

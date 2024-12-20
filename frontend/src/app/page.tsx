@@ -53,17 +53,17 @@ const Footer = async () => {
 
   return (
     <Section
-      className="h-[450px] flex flex-col justify-end items-end"
+      className="h-[450px] flex flex-col justify-end items-start px-5 sm:px-10"
       style={{
         backgroundImage: `url(${bgImageUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col justify-end items-end gap-10 mr-10 mb-10">
+      <div className="flex flex-col justify-end items-start gap-10 mr-10 mb-10">
         <div className="flex flex-col sm:flex-row font-bold gap-10">
           {socials.map((social: any) => (
-            <div key={social.Key} className="flex flex-col text-end">
+            <div key={social.Key} className="flex flex-col text-start">
               <p>{social.Key}</p>
               <a
                 href={social.URL}
@@ -76,7 +76,7 @@ const Footer = async () => {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row font-normal gap-2 text-sm text-gray-300 text-end">
+        <div className="flex flex-col sm:flex-row font-normal text-sm text-gray-300 text-start">
           {pages.map((page: any, index: number) => (
             <div key={page.Key}>
               <Link
@@ -86,7 +86,9 @@ const Footer = async () => {
               >
                 {page.Title}
               </Link>
-              {index < pages.length - 1 && " | "}
+              {index < pages.length - 1 && (
+                <span className="hidden sm:inline sm:mx-4">|</span>
+              )}
             </div>
           ))}
         </div>

@@ -206,6 +206,7 @@ type Props = {
 const IMAGE_SIZE = 3000;
 
 export default function ProductGrid({ products, images, emailHref }: Props) {
+  const { cart } = useContext(CartContext);
   const { id, setId } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -243,7 +244,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   const secondImage = images[1];
   const thirdImage = images[2];
 
-  if (isLoading) {
+  if (isLoading || !cart) {
     return (
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <Spinner />

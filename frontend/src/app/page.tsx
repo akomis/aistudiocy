@@ -97,12 +97,12 @@ const Footer = async () => {
   );
 };
 
-export default async function Home() {
+export default async function Landing() {
   return (
-    <>
+    <div>
       <Header />
       <About />
       <Footer />
-    </>
+    </div>
   );
 }

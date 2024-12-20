@@ -156,21 +156,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               slideFooter: () => (
                 <div className="flex flex-col  gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
                   <div className="font-thin flex flex-col sm:flex-row ">
-                    {variant.width && (
-                      <Badge variant="outline" className="font-light">
-                        WIDTH: {variant.width} mm
-                      </Badge>
-                    )}
-                    {variant.height && (
-                      <Badge variant="outline" className="font-light">
-                        HEIGHT: {variant.height} mm
-                      </Badge>
-                    )}
-                    {variant.length && (
-                      <Badge variant="outline" className="font-light">
-                        LENGTH: {variant.length} mm
-                      </Badge>
-                    )}
+                    {product.description}
                   </div>
                   {isAvailable && (
                     <Button

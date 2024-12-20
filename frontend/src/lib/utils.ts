@@ -12,3 +12,5 @@ export const formatDate = (date: Date) => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const formatPrice = (price: number) => price.toFixed(2);

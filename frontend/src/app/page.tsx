@@ -34,7 +34,7 @@ const About = async () => {
         <div className="flex flex-col gap-10 py-20 px-10">
           {abouts.map((about: any) => (
             <div key={about.Title} className="flex flex-col gap-2">
-              <p className="text-6xl font-bold">{about.Title}</p>
+              <p className="text-4xl sm:text-6xl font-bold">{about.Title}</p>
               <Block content={about.Content} />
             </div>
           ))}

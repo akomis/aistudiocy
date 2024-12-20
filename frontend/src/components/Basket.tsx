@@ -4,6 +4,7 @@ import { toast, useToast } from "@/hooks/use-toast";
 import { PAYMENT_PROVIDER_ID, REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { stripePromise } from "@/lib/stripe";
+import { formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StoreAddAddress, StoreCart, StoreCartLineItem } from "@medusajs/types";
@@ -14,8 +15,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { StripeCardElement } from "@stripe/stripe-js";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MinusIcon } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +35,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
+const BasketListItem = ({ item }: { item: StoreCartLineItem }) => {
   const { cart, setCart } = useContext(CartContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,34 +54,59 @@ const BasketGridItem = ({ item }: { item: StoreCartLineItem }) => {
     },
   });
 
+  const { data } = useQuery({
+    queryKey: ["product", item?.variant_id],
+    queryFn: () => {
+      return sdk.store.product.retrieve(item?.product_id as string);
+    },
+  });
+
+  console.log(data);
+
+  const description = data?.product.description;
+
   return (
-    <div className="relative aspect-square border-[1px] border-white p-3 bg-black min-h-36 min-w-36 max-h-52 max-w-52">
-      <Image
-        src={item.thumbnail as string}
-        alt={item.title}
-        width={200}
-        height={200}
-        style={{ objectFit: "contain" }}
-      />
-      <div className="absolute bottom-0 w-full flex items-center justify-between p-4 pr-8 animate-in fade-in ease-in">
-        <span className="text-xl font-light">{`€${item.unit_price}`}</span>
-        <Button
-          variant="ghost"
-          className="text-xl"
-          onClick={() => deleteItem.mutate()}
-        >
-          {isLoading ? <Spinner /> : <MinusIcon />}
-        </Button>
+    <div className="flex justify-between w-full border border-gray-400 px-4 py-2">
+      <div className="aspect-square bg-black min-h-36 min-w-36 max-h-52 max-w-52">
+        <Image
+          src={item.thumbnail as string}
+          alt={item.title}
+          width={200}
+          height={200}
+          style={{ objectFit: "contain" }}
+        />
+      </div>
+      <div className="flex flex-col justify-between items-end">
+        {isLoading ? (
+          <div className="p-2">
+            <Spinner />
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            className="text-xl p-0"
+            onClick={() => deleteItem.mutate()}
+          >
+            REMOVE
+          </Button>
+        )}
+
+        <div className="flex flex-col items-end justify-between">
+          {Boolean(description) && (
+            <div className="text-xl font-light">{`€${description}`}</div>
+          )}
+          <div className="text-2xl font-bold text-end">{`€${formatPrice(item.unit_price)}`}</div>
+        </div>
       </div>
     </div>
   );
 };
 
-const BasketGrid = ({ items }: { items: StoreCartLineItem[] }) => {
+const BasketList = ({ items }: { items: StoreCartLineItem[] }) => {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-fit overflow-y-auto overflow-x-hidden">
+    <div className="flex flex-col gap-4 h-fit w-full overflow-y-auto overflow-x-hidden">
       {items.map((item) => (
-        <BasketGridItem key={item?.id} item={item} />
+        <BasketListItem key={item?.id} item={item} />
       ))}
     </div>
   );
@@ -492,9 +517,9 @@ export default function Basket() {
       >
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[500px] ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh]">
+      <DrawerContent className="p-4 max-w-[700px] ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
-          <DrawerTitle className="text-center">
+          <DrawerTitle className="-mb-5 sm:-mb-7">
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
@@ -502,7 +527,7 @@ export default function Basket() {
         <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
           <div className="flex ">
             {hasItemsInBasket ? (
-              <BasketGrid items={items} />
+              <BasketList items={items} />
             ) : (
               <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center ">
                 <Label className="text-lg sm:text-2xl font-thin text-center">

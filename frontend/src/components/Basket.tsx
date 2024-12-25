@@ -93,7 +93,7 @@ const BasketListItem = ({ item }: { item: StoreCartLineItem }) => {
 
         <div className="flex flex-col items-end justify-between">
           {Boolean(description) && (
-            <div className="text-xl font-light">{`€${description}`}</div>
+            <div className="text-xl font-light">{`${description}`}</div>
           )}
           <div className="text-2xl font-bold text-end">{`€${formatPrice(item.unit_price)}`}</div>
         </div>
@@ -519,7 +519,7 @@ export default function Basket() {
       </DrawerTrigger>
       <DrawerContent className="p-4 max-w-[700px] ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
-          <DrawerTitle className="-mb-5 sm:-mb-7">
+          <DrawerTitle className="-mb-4 ">
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>

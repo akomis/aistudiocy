@@ -9,7 +9,6 @@ import { CartContext } from "@/providers/cart";
 import FilterContext from "@/providers/filter";
 import { StoreCart, StoreProduct, StoreProductVariant } from "@medusajs/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { MinusIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -99,23 +98,18 @@ const ProductItem = ({ product }: ProductItemProps) => {
               })}
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
-              <div className="absolute bottom-0 w-full flex items-center justify-between px-4 py-2 animate-in fade-in ease-in">
-                <span className="text-xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
+              <div className="absolute bottom-0 w-full flex items-center justify-between px-2 animate-in fade-in ease-in">
+                <span className="text-2xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
                 <Button
-                  variant="ghost"
-                  className="text-xl text-white"
+                  variant="link"
+                  className="font-light text-white p-0"
                   onClick={() => {
                     isInBasket ? deleteItem.mutate() : add.mutate();
                   }}
+                  size={"sm"}
                   disabled={!cart}
                 >
-                  {isLoading ? (
-                    <Spinner />
-                  ) : !isInBasket ? (
-                    <PlusIcon />
-                  ) : (
-                    <MinusIcon />
-                  )}
+                  {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
                 </Button>
               </div>
             )}
@@ -130,7 +124,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             <Badge
-              className="text-thin text-gray-300 absolute bottom-4 left-4"
+              className="text-thin text-gray-300 absolute bottom-2 left-2"
               variant={"outline"}
             >
               SOLD
@@ -160,21 +154,15 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   </div>
                   {isAvailable && (
                     <Button
-                      variant="ghost"
-                      className="text-xl text-white border-2"
+                      variant="outline"
+                      className="text-white font-light"
                       onClick={(e) => {
                         e.stopPropagation();
                         isInBasket ? deleteItem.mutate() : add.mutate();
                       }}
                       disabled={!cart}
                     >
-                      {isLoading ? (
-                        <Spinner />
-                      ) : !isInBasket ? (
-                        <PlusIcon />
-                      ) : (
-                        <MinusIcon />
-                      )}
+                      {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
                     </Button>
                   )}
                 </div>

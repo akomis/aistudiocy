@@ -29,7 +29,7 @@ export default function Block({
             />
           );
         },
-        paragraph: ({ children }) => <p className="leading-4">{children}</p>,
+        paragraph: ({ children }) => <p className="leading-7">{children}</p>,
 
         heading: ({ children, level }) => {
           switch (level) {

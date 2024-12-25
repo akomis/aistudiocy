@@ -6,6 +6,8 @@ import Screen from "@/components/Screen";
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
+import { Suspense } from "react";
+import Loading from "../loading";
 
 export default async function Catalogue() {
   const products = (
@@ -31,34 +33,36 @@ export default async function Catalogue() {
   );
 
   return (
-    <Screen className="px-5">
-      <div className="w-full max-w-[1000px] mx-auto">
-        <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/90 py-4">
-          <HomeButton isIcon />
+    <Suspense fallback={<Loading />}>
+      <Screen className="px-5">
+        <div className="w-full max-w-[1000px] mx-auto">
+          <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/90 py-4">
+            <HomeButton isIcon />
 
-          {noProductsAvailable ? (
-            <div className="text-center text-xl">
-              {`We currently don't have any available pieces. We are working to produce more beautiful silver pieces so feel free to follow us on social media `}
-              <a
-                href={instagram.URL}
-                className="hover:opacity-75 transition-all"
-              >{`@${instagram.Value}`}</a>
-            </div>
-          ) : (
-            <div className="ml-10">
-              <Filter categories={categories} />
-            </div>
-          )}
+            {noProductsAvailable ? (
+              <div className="text-center text-xl">
+                {`We currently don't have any available pieces. We are working to produce more beautiful silver pieces so feel free to follow us on social media `}
+                <a
+                  href={instagram.URL}
+                  className="hover:opacity-75 transition-all"
+                >{`@${instagram.Value}`}</a>
+              </div>
+            ) : (
+              <div className="ml-10">
+                <Filter categories={categories} />
+              </div>
+            )}
 
-          <Basket />
+            <Basket />
+          </div>
+
+          <ProductGrid
+            products={products}
+            images={catalogueStaticImages}
+            emailHref={emailHref}
+          />
         </div>
-
-        <ProductGrid
-          products={products}
-          images={catalogueStaticImages}
-          emailHref={emailHref}
-        />
-      </div>
-    </Screen>
+      </Screen>
+    </Suspense>
   );
 }

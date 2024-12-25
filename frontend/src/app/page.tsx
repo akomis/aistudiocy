@@ -4,7 +4,9 @@ import DynamicBackground from "@/components/DynamicBackground";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 import Link from "next/link";
+import { Suspense } from "react";
 import Section from "../components/Section";
+import Loading from "./loading";
 
 const Header = async () => {
   const categories = (await sdk.store.category.list()).product_categories;
@@ -28,16 +30,18 @@ const About = async () => {
 
   return (
     <Section>
-      <div className="flex flex-col lg:flex-row justify-between items-end">
+      <div className="flex flex-col xl:flex-row justify-between items-end leading-10">
         <CutoffText>ABOUT</CutoffText>
 
-        <div className="flex flex-col gap-10 py-20 px-10">
-          {abouts.map((about: any) => (
-            <div key={about.Title} className="flex flex-col gap-2">
-              <p className="text-4xl sm:text-6xl font-bold">{about.Title}</p>
-              <Block content={about.Content} />
-            </div>
-          ))}
+        <div className="flex flex-col gap-10 py-20 px-10 max-w-6xl">
+          {abouts
+            .sort((a: any, b: any) => b.id - a.id)
+            .map((about: any) => (
+              <div key={about.Title} className="flex flex-col gap-2">
+                <p className="text-4xl sm:text-7xl font-bold">{about.Title}</p>
+                <Block content={about.Content} />
+              </div>
+            ))}
         </div>
       </div>
     </Section>
@@ -99,10 +103,10 @@ const Footer = async () => {
 
 export default async function Landing() {
   return (
-    <div>
+    <Suspense fallback={<Loading />}>
       <Header />
       <About />
       <Footer />
-    </div>
+    </Suspense>
   );
 }

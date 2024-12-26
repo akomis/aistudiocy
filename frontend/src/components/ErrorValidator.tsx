@@ -1,0 +1,53 @@
+"use client";
+import { useEffect, useState } from "react";
+
+// This component should only be used for testing the error monitoring integration see https://www.highlight.io/docs/getting-started/fullstack-frameworks/next-js/app-router
+export default function ErrorValidator() {
+  const [isErrored, setIsErrored] = useState(false);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "20rem",
+        gridGap: "1rem",
+        padding: "2rem",
+      }}
+    >
+      <button
+        onClick={() => {
+          throw new Error("Threw client-side Error");
+        }}
+      >
+        Throw client-side onClick error
+      </button>
+
+      <ThrowerOfErrors isErrored={isErrored} setIsErrored={setIsErrored} />
+      <button onClick={() => setIsErrored(true)}>Trigger error boundary</button>
+      <button
+        onClick={async () => {
+          throw new Error("an async error occurred");
+        }}
+      >
+        Trigger promise error
+      </button>
+    </div>
+  );
+}
+
+function ThrowerOfErrors({
+  isErrored,
+  setIsErrored,
+}: {
+  isErrored: boolean;
+  setIsErrored: (isErrored: boolean) => void;
+}) {
+  useEffect(() => {
+    if (isErrored) {
+      setIsErrored(false);
+      throw new Error("Threw useEffect error");
+    }
+  }, [isErrored, setIsErrored]);
+
+  return null;
+}

@@ -80,7 +80,10 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   return (
     product.thumbnail && (
-      <div className="relative aspect-square hover:cursor-pointer animate-in fade-in transition-all duration-700 ease-in-out">
+      <div
+        onClick={() => setLightboxPhoto(photos?.[0])}
+        className="relative aspect-square hover:cursor-pointer animate-in fade-in transition-all duration-700 ease-in-out"
+      >
         {isAvailable ? (
           <div
             className=""
@@ -88,7 +91,6 @@ const ProductItem = ({ product }: ProductItemProps) => {
             onMouseLeave={() => setIsHovered(false)}
           >
             <Image
-              onClick={() => setLightboxPhoto(photos?.[0])}
               src={product.thumbnail}
               alt={product.title}
               fill
@@ -98,19 +100,22 @@ const ProductItem = ({ product }: ProductItemProps) => {
               })}
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
-              <div className="absolute bottom-0 w-full flex items-center justify-between px-2 animate-in fade-in ease-in">
-                <span className="text-2xl font-light">{`€${variant.calculated_price?.calculated_amount}`}</span>
-                <Button
-                  variant="link"
-                  className="font-light text-white p-0"
-                  onClick={() => {
-                    isInBasket ? deleteItem.mutate() : add.mutate();
-                  }}
-                  size={"sm"}
-                  disabled={!cart}
-                >
-                  {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
-                </Button>
+              <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-between px-2 py-1 animate-in fade-in ease-in">
+                <span>{product.description}</span>
+                <div className="flex w-full justify-between">
+                  <span className="text-2xl">{`€${variant.calculated_price?.calculated_amount}`}</span>
+                  <Button
+                    variant="link"
+                    className="font-regular tracking-normal text-white p-0"
+                    onClick={() => {
+                      isInBasket ? deleteItem.mutate() : add.mutate();
+                    }}
+                    size={"sm"}
+                    disabled={!cart}
+                  >
+                    {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -148,10 +153,13 @@ const ProductItem = ({ product }: ProductItemProps) => {
             }}
             render={{
               slideFooter: () => (
-                <div className="flex flex-col  gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
-                  <div className="font-thin flex flex-col sm:flex-row ">
+                <div className="flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
+                  <Badge
+                    variant={"default"}
+                    className="bg-black text-white flex flex-col sm:flex-row"
+                  >
                     {product.description}
-                  </div>
+                  </Badge>
                   {isAvailable && (
                     <Button
                       variant="outline"

@@ -10,7 +10,7 @@ export const useIsVisible = (options = {}) => {
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.5, ...options }
+      { threshold: 0.3, ...options }
     );
 
     const element = elementRef.current;

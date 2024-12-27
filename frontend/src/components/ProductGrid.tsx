@@ -80,7 +80,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   return (
     product.thumbnail && (
-      <div className="relative aspect-square hover:cursor-pointer transition-all duration-500 ease-in-out">
+      <div className="relative aspect-square hover:cursor-pointer animate-in fade-in transition-all duration-700 ease-in-out">
         {isAvailable ? (
           <div
             className=""
@@ -93,7 +93,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               alt={product.title}
               fill
               style={{ objectFit: "contain" }}
-              className={cn("hover:opacity-75", {
+              className={cn("hover:opacity-75 duration-700 transition-all", {
                 "border border-white": isInBasket,
               })}
             />

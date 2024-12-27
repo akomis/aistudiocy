@@ -30,10 +30,10 @@ const About = async () => {
 
   return (
     <Section>
-      <div className="flex flex-col xl:flex-row justify-between items-end leading-10">
+      <div className="flex flex-col 2xl:flex-row justify-between items-end leading-10">
         <CutoffText>ABOUT</CutoffText>
 
-        <div className="flex flex-col gap-10 py-20 px-10 max-w-6xl">
+        <div className="flex flex-col gap-10 py-20 px-10 w-full">
           {abouts
             .sort((a: any, b: any) => b.id - a.id)
             .map((about: any) => (

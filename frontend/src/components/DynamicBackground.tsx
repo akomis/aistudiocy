@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CategoryPicker from "./CategoryPicker";
+import ErrorValidator from "./ErrorValidator";
 import Logo from "./Logo";
 import Section from "./Section";
 
@@ -40,6 +41,7 @@ const DynamicBackground = ({ data }: Props) => {
 
   return (
     <Section className="h-screen flex items-center p-0">
+      <ErrorValidator />
       <div
         key={displayedImageUrl}
         className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"

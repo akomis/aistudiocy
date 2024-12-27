@@ -1,5 +1,9 @@
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme";
+import {
+  ErrorBoundary as HighlightErrorBoundary,
+  HighlightInit,
+} from "@highlight-run/next/client";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -36,19 +40,43 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const highlightProjectId = process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID;
+
+  if (!highlightProjectId?.length) {
+    throw new Error("Missing Highlight project ID");
+  }
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${ceraPro.variable} antialiased bg-black`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
-      </body>
-    </html>
+    <>
+      <HighlightInit
+        excludedHostnames={["localhost"]}
+        projectId={highlightProjectId}
+        serviceName="aistudiocy"
+        tracingOrigins
+        disableSessionRecording // respect user's privacy
+        networkRecording={{
+          enabled: true,
+          recordHeadersAndBody: true,
+          urlBlocklist: [],
+        }}
+      />
+
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${ceraPro.variable} antialiased bg-black`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <HighlightErrorBoundary showDialog>
+              {children}
+            </HighlightErrorBoundary>
+
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }

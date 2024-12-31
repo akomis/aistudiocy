@@ -107,13 +107,22 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   <Button
                     variant="link"
                     className="font-regular tracking-normal text-white p-0"
-                    onClick={() => {
+                    onClick={(event: any) => {
+                      event.stopPropagation();
                       isInBasket ? deleteItem.mutate() : add.mutate();
                     }}
                     size={"sm"}
                     disabled={!cart}
                   >
-                    {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
+                    {isLoading ? (
+                      <div className="mr-4">
+                        <Spinner />
+                      </div>
+                    ) : !isInBasket ? (
+                      "ADD"
+                    ) : (
+                      "REMOVE"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -163,7 +172,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   {isAvailable && (
                     <Button
                       variant="outline"
-                      className="text-white font-light"
+                      className="text-white font-regular tracking-normal"
                       onClick={(e) => {
                         e.stopPropagation();
                         isInBasket ? deleteItem.mutate() : add.mutate();

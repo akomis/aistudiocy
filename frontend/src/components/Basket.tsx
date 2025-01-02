@@ -227,15 +227,16 @@ const CustomerForm = () => {
     value: country.iso_2 as string,
   })) ?? [{ label: "CYPRUS", value: "cy" }];
 
-  const shippingOptions =
-    shippingData?.shipping_options
-      ?.filter((option) => option.name.toLowerCase().includes(countryCode))
-      .map((option) => ({
-        label: (option.name.replace(countryCode.toUpperCase(), "") +
-          " - €" +
-          option.amount) as string,
-        value: option.id as string,
-      })) ?? [];
+  const shippingOptions = countryCode
+    ? shippingData?.shipping_options
+        ?.filter((option) => option.name.toLowerCase().includes(countryCode))
+        .map((option) => ({
+          label: (option.name.replace(countryCode.toUpperCase(), "") +
+            " - €" +
+            option.amount) as string,
+          value: option.id as string,
+        }))
+    : [];
 
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;

@@ -363,13 +363,13 @@ const CustomerForm = () => {
             <FormItem className="col-span-2 sm:col-span-1 h-10">
               <FormControl>
                 <DropdownPicker
-                  options={shippingOptions}
+                  options={shippingOptions ?? []}
                   value={form.getValues("shipping_option")}
                   setValue={(event: any) =>
                     form.setValue("shipping_option", event)
                   }
                   title={"shipping"}
-                  disabled={!shippingOptions.length}
+                  disabled={!shippingOptions?.length}
                 />
               </FormControl>
 

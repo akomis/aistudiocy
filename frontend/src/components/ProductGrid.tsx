@@ -83,15 +83,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
           event.stopPropagation();
           setIsLightboxOpen(true);
         }}
-        className="relative aspect-square hover:cursor-pointer animate-in fade-in transition-all duration-700 ease-in-out"
+        className={cn(
+          "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out",
+          {
+            "border border-white": isInBasket,
+          }
+        )}
       >
         {isAvailable ? (
           <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className={cn("hover:opacity-85 duration-700 transition-all", {
-              "border border-white": isInBasket,
-            })}
           >
             <Image
               src={product.thumbnail}
@@ -115,7 +117,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                     disabled={!cart}
                   >
                     {isLoading ? (
-                      <div className="mr-4">
+                      <div className="mr-4 mb-2">
                         <Spinner />
                       </div>
                     ) : !isInBasket ? (

@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import Lightbox, { SlideImage } from "yet-another-react-lightbox";
+import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
@@ -25,9 +25,7 @@ type ProductItemProps = {
 
 const ProductItem = ({ product }: ProductItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [lightboxPhoto, setLightboxPhoto] = useState<SlideImage | undefined>(
-    undefined
-  );
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { cart, setCart } = useContext(CartContext);
@@ -70,8 +68,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   const photos = product.images?.map((image) => ({
     key: image.id,
-    label: image.id,
-    alt: image.id,
+    label: image.rank,
+    alt: image.url,
     src: image.url,
   }));
 
@@ -81,26 +79,28 @@ const ProductItem = ({ product }: ProductItemProps) => {
   return (
     product.thumbnail && (
       <div
-        onClick={() => setLightboxPhoto(photos?.[0])}
+        onClick={(event: any) => {
+          event.stopPropagation();
+          setIsLightboxOpen(true);
+        }}
         className="relative aspect-square hover:cursor-pointer animate-in fade-in transition-all duration-700 ease-in-out"
       >
         {isAvailable ? (
           <div
-            className=""
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            className={cn("hover:opacity-85 duration-700 transition-all", {
+              "border border-white": isInBasket,
+            })}
           >
             <Image
               src={product.thumbnail}
               alt={product.title}
               fill
               style={{ objectFit: "contain" }}
-              className={cn("hover:opacity-75 duration-700 transition-all", {
-                "border border-white": isInBasket,
-              })}
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
-              <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-between px-2 py-1 animate-in fade-in ease-in">
+              <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-between px-1 animate-in fade-in ease-in">
                 <span>{product.description}</span>
                 <div className="flex w-full justify-between">
                   <span className="text-2xl">{`€${variant.calculated_price?.calculated_amount}`}</span>
@@ -131,7 +131,6 @@ const ProductItem = ({ product }: ProductItemProps) => {
         ) : (
           <div>
             <Image
-              onClick={() => setLightboxPhoto(photos?.[0])}
               src={product.thumbnail}
               alt={product.title}
               fill
@@ -148,10 +147,10 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
         {photos?.length && (
           <Lightbox
-            open={Boolean(lightboxPhoto)}
-            close={() => setLightboxPhoto(undefined)}
+            open={isLightboxOpen}
+            close={() => setIsLightboxOpen(false)}
             slides={photos}
-            carousel={{ finite: false }}
+            carousel={{ finite: true }}
             styles={{
               root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" },
             }}
@@ -165,7 +164,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                 <div className="flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
                   <Badge
                     variant={"default"}
-                    className="bg-black text-white flex flex-col sm:flex-row"
+                    className="bg-black text-lg text-white flex flex-col sm:flex-row"
                   >
                     {product.description}
                   </Badge>

@@ -20,8 +20,8 @@ import Image from "next/image";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import CountryPicker from "./CountryPicker";
 import CutoffText from "./CutoffText";
+import DropdownPicker from "./DropdownPicker";
 import Spinner from "./Spinner";
 import { Button } from "./ui/button";
 import {
@@ -60,8 +60,6 @@ const BasketListItem = ({ item }: { item: StoreCartLineItem }) => {
       return sdk.store.product.retrieve(item?.product_id as string);
     },
   });
-
-  console.log(data);
 
   const description = data?.product.description;
 
@@ -113,7 +111,21 @@ const BasketList = ({ items }: { items: StoreCartLineItem[] }) => {
 };
 
 const CustomerForm = () => {
+  const [isProceeding, setIsProceeding] = useState<boolean>(false);
   const { cart, refetchCart } = useContext(CartContext);
+
+  const { data: countryData, isLoading: countriesLoading } = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => sdk.store.region.retrieve(REGION_ID),
+  });
+
+  const { data: shippingData, isLoading: shippingLoading } = useQuery({
+    queryKey: ["shipping_methods"],
+    queryFn: () =>
+      sdk.store.fulfillment.listCartOptions({
+        cart_id: cart?.id as string,
+      }),
+  });
 
   const customerFormSchema = useMemo(
     () =>
@@ -133,9 +145,13 @@ const CustomerForm = () => {
         postal_code: z.string().regex(/^\d{4,}$/, {
           message: "Postal code must be at least 4 digits",
         }),
+        shipping_option: z
+          .string()
+          .min(1, { message: "Shipping option is required" }),
       }),
     []
   );
+
   const form = useForm<z.infer<typeof customerFormSchema>>({
     resolver: zodResolver(customerFormSchema),
     mode: "onChange",
@@ -148,16 +164,15 @@ const CustomerForm = () => {
       country_code: cart?.billing_address?.country_code ?? "",
       postal_code: cart?.billing_address?.postal_code ?? "",
       email: cart?.email ?? "",
+      shipping_option: cart?.shipping_methods?.[0]?.id ?? "",
     },
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
-    ?.client_secret as string;
+  const { watch } = form;
+  const countryCode = watch("country_code");
 
   const initializePayment = async () => {
-    setIsLoading(true);
+    setIsProceeding(true);
 
     try {
       await sdk.store.cart.update(cart?.id as string, {
@@ -170,13 +185,18 @@ const CustomerForm = () => {
         description: e.message,
         variant: "destructive",
       });
-      setIsLoading(false);
+      setIsProceeding(false);
     }
 
     const address = {
       ...form.getValues(),
       email: undefined,
+      shipping_option: undefined,
     } as StoreAddAddress;
+
+    await sdk.store.cart.addShippingMethod(cart?.id as string, {
+      option_id: form.getValues().shipping_option as string,
+    });
 
     const { cart: updatedCart } = await sdk.store.cart.update(
       cart?.id as string,
@@ -185,29 +205,6 @@ const CustomerForm = () => {
         billing_address: address,
       }
     );
-
-    const { shipping_options } = await sdk.store.fulfillment.listCartOptions({
-      cart_id: updatedCart?.id as string,
-    });
-
-    const shippingOption = shipping_options?.find(
-      (option) => option?.name === updatedCart?.shipping_address?.country_code
-    );
-
-    if (!shippingOption) {
-      toast({
-        title: "Error with payment details",
-        description: "Please select a shipping option",
-        variant: "destructive",
-      });
-
-      setIsLoading(false);
-      return;
-    }
-
-    await sdk.store.cart.addShippingMethod(updatedCart?.id as string, {
-      option_id: shippingOption?.id as string,
-    });
 
     sdk.store.payment
       .initiatePaymentSession(updatedCart as StoreCart, {
@@ -221,9 +218,29 @@ const CustomerForm = () => {
         throw new Error("Error creating payment session:", error);
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsProceeding(false);
       });
   };
+
+  const countries = countryData?.region.countries?.map((country) => ({
+    label: country.name as string,
+    value: country.iso_2 as string,
+  })) ?? [{ label: "CYPRUS", value: "cy" }];
+
+  const shippingOptions =
+    shippingData?.shipping_options
+      ?.filter((option) => option.name.toLowerCase().includes(countryCode))
+      .map((option) => ({
+        label: (option.name.replace(countryCode.toUpperCase(), "") +
+          " - €" +
+          option.amount) as string,
+        value: option.id as string,
+      })) ?? [];
+
+  const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
+    ?.client_secret as string;
+
+  const isLoading = isProceeding || countriesLoading || shippingLoading;
 
   return (
     <Form {...form}>
@@ -238,20 +255,6 @@ const CustomerForm = () => {
             <FormItem className="col-span-2">
               <FormControl>
                 <Input placeholder="EMAIL *" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormControl>
-                <Input placeholder="PHONE" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -318,15 +321,16 @@ const CustomerForm = () => {
         <FormField
           control={form.control}
           name="country_code"
-          render={({ field }) => (
+          render={({}) => (
             <FormItem className="col-span-2 sm:col-span-1 h-10">
               <FormControl>
-                <CountryPicker
-                  {...field}
+                <DropdownPicker
+                  options={countries}
                   value={form.getValues("country_code")}
                   setValue={(event: any) =>
                     form.setValue("country_code", event)
                   }
+                  title="country"
                 />
               </FormControl>
 
@@ -348,6 +352,49 @@ const CustomerForm = () => {
             </FormItem>
           )}
         />
+
+        <hr className="w-full col-span-2" />
+
+        <FormField
+          control={form.control}
+          name="shipping_option"
+          render={({}) => (
+            <FormItem className="col-span-2 sm:col-span-1 h-10">
+              <FormControl>
+                <DropdownPicker
+                  options={shippingOptions}
+                  value={form.getValues("shipping_option")}
+                  setValue={(event: any) =>
+                    form.setValue("shipping_option", event)
+                  }
+                  title={"shipping"}
+                  disabled={!shippingOptions.length}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem className="col-span-2 sm:col-span-1">
+              <FormControl>
+                <Input placeholder="PHONE" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Label className="col-span-2 text-md font-light -my-2">
+          * We will ship your order to the closest pickup point based on your
+          address.
+        </Label>
 
         {!clientSecret && (
           <div className="h-12 col-span-2">
@@ -512,7 +559,7 @@ export default function Basket() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger
-        className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline"
+        className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait"
         disabled={!cart}
       >
         BASKET
@@ -525,11 +572,11 @@ export default function Basket() {
         </DrawerHeader>
 
         <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
-          <div className="flex ">
+          <div className="flex">
             {hasItemsInBasket ? (
               <BasketList items={items} />
             ) : (
-              <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center ">
+              <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
                 <Label className="text-lg sm:text-2xl font-thin text-center">
                   Your basket is empty.
                 </Label>{" "}

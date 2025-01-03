@@ -139,7 +139,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             <Badge
-              className="text-thin text-gray-300 absolute bottom-2 left-2"
+              className="text-thin text-sm text-gray-300 absolute bottom-2 left-2"
               variant={"outline"}
             >
               SOLD
@@ -243,9 +243,11 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   const filteredProducts = filteredProductsData?.products ?? products;
 
   const firstSet = filteredProducts.slice(0, 4);
-  const secondSet = filteredProducts.slice(4, 6);
-  const thirdSet = filteredProducts.slice(6, 10);
-  const fourthSet = filteredProducts.slice(10);
+  const intermediateSet = filteredProducts.slice(4, 12);
+  const secondSet = filteredProducts.slice(12, 14);
+  const thirdSet = filteredProducts.slice(14, 26);
+  const fourthSet = filteredProducts.slice(26);
+
   const firstImage = images[0];
   const secondImage = images[1];
   const thirdImage = images[2];
@@ -300,6 +302,16 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
               />
             )}
           </div>
+        ) : null}
+
+        {intermediateSet.length ? (
+          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {intermediateSet.map((product) => (
+              <div key={product.id} className="col-span-1">
+                <ProductItem product={product} />
+              </div>
+            ))}
+          </SubGrid>
         ) : null}
 
         {secondSet.length ? (

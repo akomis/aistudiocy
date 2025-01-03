@@ -11,18 +11,23 @@ import "./globals.css";
 const ceraPro = localFont({
   src: [
     {
-      path: "../fonts/CeraPro-Light.woff2",
-      weight: "100",
+      path: "../fonts/CeraProLight.otf",
+      style: "light",
+    },
+    {
+      path: "../fonts/CeraProMedium.otf",
+      style: "medium",
+    },
+    {
+      path: "../fonts/CeraProRegular.otf",
+      style: "regular",
+    },
+    {
+      path: "../fonts/CeraProBlack.otf",
       style: "normal",
     },
     {
-      path: "../fonts/CeraPro-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/CeraPro-Black.woff2",
-      weight: "900",
+      path: "../fonts/CeraProBold.otf",
       style: "bold",
     },
   ],

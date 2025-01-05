@@ -1,11 +1,11 @@
 import Block from "@/components/Block";
+import Gallery from "@/components/Gallery";
+import HomeButton from "@/components/HomeButton";
 import Screen from "@/components/Screen";
+import Title from "@/components/Title";
 import { Label } from "@/components/ui/label";
 import { get } from "@/lib/strapi";
 import { notFound } from "next/navigation";
-import Gallery from "@/components/Gallery";
-import HomeButton from "@/components/HomeButton";
-import Title from "@/components/Title";
 
 export async function generateStaticParams() {
   const pages = (await get("pages")).data;
@@ -36,7 +36,7 @@ export default async function Page({
   }));
 
   return (
-    <Screen>
+    <Screen className="gap-5">
       <HomeButton />
 
       <div className="flex flex-col">

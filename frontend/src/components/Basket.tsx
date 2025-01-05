@@ -560,14 +560,14 @@ export default function Basket() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger
-        className="font-bold text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait"
+        className="font-black text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait tracking-widest"
         disabled={!cart}
       >
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[700px] ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
+      <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
-          <DrawerTitle className="-mb-4 ">
+          <DrawerTitle className="-mb-4 mx-auto">
             <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>

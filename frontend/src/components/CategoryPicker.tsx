@@ -25,12 +25,12 @@ export default function CategoryPicker({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col gap-2 w-fit text-center">
+    <div className="flex flex-col gap-1 w-fit text-center">
       {categories.map((category: StoreProductCategory) => (
         <div
           key={category.id}
           className={cn(
-            "text-sm font-semibold hover:cursor-pointer hover:opacity-80 tracking-[0.3em] text-center w-full",
+            "text-sm font-black hover:cursor-pointer hover:opacity-80 tracking-[0.3em] text-center w-full",
             {
               "opacity-70": activeId === category.id,
             }

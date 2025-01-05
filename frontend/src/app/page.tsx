@@ -29,11 +29,13 @@ const About = async () => {
   const abouts = (await get("abouts")).data;
 
   return (
-    <Section>
-      <div className="flex flex-col 2xl:flex-row justify-between items-end leading-10">
-        <CutoffText>ABOUT</CutoffText>
+    <Section className="pt-12">
+      <div className="flex flex-col 2xl:flex-row justify-between items-start 2xl:items-end leading-10">
+        <div className="px-10 2xl:p-0">
+          <CutoffText>ABOUT</CutoffText>
+        </div>
 
-        <div className="flex flex-col gap-10 py-20 px-10 w-full">
+        <div className="flex flex-col gap-10 pt-12 pb-20 px-10 w-full">
           {abouts
             .sort((a: any, b: any) => b.id - a.id)
             .map((about: any) => (

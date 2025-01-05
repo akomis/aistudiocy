@@ -9,6 +9,7 @@ import { CartContext } from "@/providers/cart";
 import FilterContext from "@/providers/filter";
 import { StoreCart, StoreProduct, StoreProductVariant } from "@medusajs/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -86,7 +87,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
         className={cn(
           "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out",
           {
-            "border border-white": isInBasket,
+            "border border-white/5": isInBasket,
           }
         )}
       >
@@ -102,30 +103,39 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
-              <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-between px-1 animate-in fade-in ease-in">
-                <span>{product.description}</span>
-                <div className="flex w-full justify-between">
-                  <span className="text-2xl">{`€${variant.calculated_price?.calculated_amount}`}</span>
-                  <Button
-                    variant="link"
-                    className="font-regular tracking-normal text-white p-0"
-                    onClick={(event: any) => {
-                      event.stopPropagation();
-                      isInBasket ? deleteItem.mutate() : add.mutate();
-                    }}
-                    size={"sm"}
-                    disabled={!cart}
-                  >
-                    {isLoading ? (
-                      <div className="mr-4 mb-2">
+              <div>
+                <Badge
+                  className={cn(
+                    "bg-black/80 w-full text-center absolute top-2 animate-in fade-in duration-500 transition-none",
+                    { "bg-white/5": isInBasket }
+                  )}
+                >
+                  <div className="animate-in slide-in-from-left-2 ease-out font-bold">
+                    {product.description}
+                  </div>
+                </Badge>
+                <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-end pl-4 p-2">
+                  <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
+                    <span className="text-xl font-black">{`€${variant.calculated_price?.calculated_amount}`}</span>
+                    <Button
+                      variant="outline"
+                      className="font-bold bg-black/80 border-0"
+                      onClick={(event: any) => {
+                        event.stopPropagation();
+                        isInBasket ? deleteItem.mutate() : add.mutate();
+                      }}
+                      size={"sm"}
+                      disabled={!cart}
+                    >
+                      {isLoading ? (
                         <Spinner />
-                      </div>
-                    ) : !isInBasket ? (
-                      "ADD"
-                    ) : (
-                      "REMOVE"
-                    )}
-                  </Button>
+                      ) : !isInBasket ? (
+                        <Plus strokeWidth={5} />
+                      ) : (
+                        <Minus strokeWidth={5} />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -139,7 +149,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             <Badge
-              className="text-thin text-sm text-gray-300 absolute bottom-2 left-2"
+              className="text-thin text-sm text-gray-300 absolute bottom-3 left-5"
               variant={"outline"}
             >
               SOLD
@@ -154,7 +164,14 @@ const ProductItem = ({ product }: ProductItemProps) => {
             slides={photos}
             carousel={{ finite: true }}
             styles={{
-              root: { "--yarl__color_backdrop": "rgba(0, 0, 0, .8)" },
+              root: {
+                "--yarl__color_backdrop": "rgba(0, 0, 0, .9)",
+              },
+              slide: {
+                width: "60vw",
+                height: "60vh",
+                margin: "auto",
+              },
             }}
             controller={{
               closeOnBackdropClick: true,
@@ -180,7 +197,13 @@ const ProductItem = ({ product }: ProductItemProps) => {
                       }}
                       disabled={!cart}
                     >
-                      {isLoading ? <Spinner /> : !isInBasket ? "ADD" : "REMOVE"}
+                      {isLoading ? (
+                        <Spinner />
+                      ) : !isInBasket ? (
+                        <Plus />
+                      ) : (
+                        <Minus />
+                      )}
                     </Button>
                   )}
                 </div>
@@ -200,7 +223,11 @@ const SubGrid = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return <div className={cn("grid gap-8", className)}>{children}</div>;
+  return (
+    <div className={cn("grid grid-cols-2 lg:grid-cols-4 gap-8", className)}>
+      {children}
+    </div>
+  );
 };
 
 type Props = {
@@ -279,11 +306,11 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   }
 
   return (
-    <div className="">
+    <div>
       <div className="flex flex-col gap-8">
         {firstSet.length ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4">
-            <SubGrid className="grid-cols-1 sm:grid-cols-2 col-span-2 ">
+          <SubGrid>
+            <SubGrid className="col-span-2 lg:grid-cols-2">
               {firstSet.map((product) => (
                 <div key={product.id} className="col-span-1">
                   <ProductItem product={product} />
@@ -293,7 +320,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {firstImage && (
               <Image
-                className="aspect-square h-full col-span-4 md:col-span-2"
+                className="aspect-square h-full col-span-2"
                 src={firstImage.url}
                 alt={firstImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -301,11 +328,11 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
                 style={{ objectFit: "contain" }}
               />
             )}
-          </div>
+          </SubGrid>
         ) : null}
 
         {intermediateSet.length ? (
-          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <SubGrid>
             {intermediateSet.map((product) => (
               <div key={product.id} className="col-span-1">
                 <ProductItem product={product} />
@@ -315,10 +342,10 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
         ) : null}
 
         {secondSet.length ? (
-          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <SubGrid>
             {secondImage && (
               <Image
-                className="col-span-2 h-full hidden lg:block"
+                className="col-span-2 h-full hidden lg:block "
                 src={secondImage.url}
                 alt={secondImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -336,7 +363,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
         ) : null}
 
         {thirdSet.length ? (
-          <SubGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 ">
+          <SubGrid>
             {thirdSet.map((product) => (
               <div key={product.id} className="col-span-1">
                 <ProductItem product={product} />
@@ -345,7 +372,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {thirdImage && (
               <Image
-                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px]"
+                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px] "
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}

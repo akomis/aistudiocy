@@ -36,7 +36,7 @@ export default async function Catalogue() {
     <Suspense fallback={<Loading />}>
       <Screen className="px-5">
         <div className="w-full max-w-[1200px] mx-auto">
-          <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black/90 py-4">
+          <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-16 pt-10">
             <HomeButton isIcon />
 
             {noProductsAvailable ? (

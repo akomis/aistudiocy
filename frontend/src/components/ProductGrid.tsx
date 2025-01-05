@@ -224,7 +224,12 @@ const SubGrid = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("grid grid-cols-2 lg:grid-cols-4 gap-8", className)}>
+    <div
+      className={cn(
+        "grid grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-8",
+        className
+      )}
+    >
       {children}
     </div>
   );

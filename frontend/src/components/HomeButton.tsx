@@ -10,7 +10,7 @@ export default function HomeButton({ isIcon }: Props) {
   return (
     <Link href="/">
       {isIcon ? (
-        <Logo className="hover:opacity-75 transition-all max-h-20" />
+        <Logo className="hover:opacity-75 transition-all h-20" />
       ) : (
         <Label className="text-xl hover:cursor-pointer hover:opacity-75 transform transition-all">
           HOME

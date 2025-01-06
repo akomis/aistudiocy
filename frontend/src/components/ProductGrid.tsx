@@ -74,6 +74,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     src: image.url,
   }));
 
+  const iconStrokeWidth = isMobile ? 2 : 5;
   const isAvailable = Boolean(variant.inventory_quantity);
   const isInBasket = Boolean(lineItem);
 
@@ -87,7 +88,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
         className={cn(
           "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out",
           {
-            "border border-white/5": isInBasket,
+            "border border-white": isInBasket,
           }
         )}
       >
@@ -106,17 +107,17 @@ const ProductItem = ({ product }: ProductItemProps) => {
               <div>
                 <Badge
                   className={cn(
-                    "bg-black/80 w-full text-center absolute top-2 animate-in fade-in duration-500 transition-none",
-                    { "bg-white/5": isInBasket }
+                    "bg-black/80 w-full text-center text-xs sm:text-lg absolute top-2 animate-in fade-in duration-500 transition-none",
+                    { "bg-white text-black": isInBasket }
                   )}
                 >
-                  <div className="animate-in slide-in-from-left-2 ease-out font-bold">
+                  <div className="animate-in slide-in-from-left duration-500 ease-out font-normal text-xs sm:font-bold sm:text-sm">
                     {product.description}
                   </div>
                 </Badge>
-                <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-end pl-4 p-2">
+                <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-end pl-2 sm:pl-4 sm:p-2">
                   <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
-                    <span className="text-xl font-black">{`€${variant.calculated_price?.calculated_amount}`}</span>
+                    <span className="text-sm font-bold sm:text-xl sm:font-black">{`€${variant.calculated_price?.calculated_amount}`}</span>
                     <Button
                       variant="outline"
                       className="font-bold bg-black/80 border-0"
@@ -130,9 +131,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
                       {isLoading ? (
                         <Spinner />
                       ) : !isInBasket ? (
-                        <Plus strokeWidth={5} />
+                        <Plus strokeWidth={iconStrokeWidth} />
                       ) : (
-                        <Minus strokeWidth={5} />
+                        <Minus strokeWidth={iconStrokeWidth} />
                       )}
                     </Button>
                   </div>
@@ -149,7 +150,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               style={{ objectFit: "contain" }}
             />
             <Badge
-              className="text-thin text-sm text-gray-300 absolute bottom-3 left-5"
+              className="text-thin text-xs sm:text-sm text-gray-300 absolute bottom-3 left-5"
               variant={"outline"}
             >
               SOLD
@@ -200,9 +201,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
                       {isLoading ? (
                         <Spinner />
                       ) : !isInBasket ? (
-                        <Plus />
+                        <Plus strokeWidth={iconStrokeWidth} />
                       ) : (
-                        <Minus />
+                        <Minus strokeWidth={iconStrokeWidth} />
                       )}
                     </Button>
                   )}
@@ -226,7 +227,7 @@ const SubGrid = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-8",
+        "grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-8",
         className
       )}
     >
@@ -350,7 +351,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
           <SubGrid>
             {secondImage && (
               <Image
-                className="col-span-2 h-full hidden lg:block "
+                className="col-span-2 h-full hidden lg:block"
                 src={secondImage.url}
                 alt={secondImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -377,7 +378,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {thirdImage && (
               <Image
-                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px] "
+                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px]"
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}

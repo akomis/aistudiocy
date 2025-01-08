@@ -1,20 +1,21 @@
-import debounce from "lodash/debounce";
-import { useLayoutEffect, useState } from "react";
+import * as React from "react";
 
-const useIsMobile = (): boolean => {
-  const [isMobile, setIsMobile] = useState(false);
+const MOBILE_BREAKPOINT = 640;
 
-  useLayoutEffect(() => {
-    const updateSize = (): void => {
-      setIsMobile(window.innerWidth < 768);
+export default function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
+    undefined
+  );
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
-
-    window.addEventListener("resize", debounce(updateSize, 250));
-
-    return (): void => window.removeEventListener("resize", updateSize);
+    mql.addEventListener("change", onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    return () => mql.removeEventListener("change", onChange);
   }, []);
 
-  return isMobile;
-};
-
-export default useIsMobile;
+  return !!isMobile;
+}

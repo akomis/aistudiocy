@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import useIsMobile from "@/hooks/use-is-mobile";
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import FilterContext from "@/providers/filter";
 import { StoreCart, StoreProduct, StoreProductVariant } from "@medusajs/types";
@@ -75,7 +75,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
   }));
 
   const iconStrokeWidth = isMobile ? 2 : 5;
-  const isAvailable = Boolean(variant.inventory_quantity);
+  const price = variant.calculated_price?.calculated_amount as number;
+  const isAvailable = Boolean(variant.inventory_quantity) && Boolean(price);
   const isInBasket = Boolean(lineItem);
 
   return (
@@ -86,9 +87,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
           setIsLightboxOpen(true);
         }}
         className={cn(
-          "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out",
+          "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out ",
           {
-            "border border-white": isInBasket,
+            "border border-white/30": isInBasket,
           }
         )}
       >
@@ -105,19 +106,14 @@ const ProductItem = ({ product }: ProductItemProps) => {
             />
             {(isInBasket || isHovered || isMobile || isLoading) && (
               <div>
-                <Badge
+                <div
                   className={cn(
-                    "bg-black/80 w-full text-center text-xs sm:text-lg absolute top-2 animate-in fade-in duration-500 transition-none",
-                    { "bg-white text-black": isInBasket }
+                    "absolute h-full w-full flex flex-col items-center justify-end ",
+                    { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile }
                   )}
                 >
-                  <div className="animate-in slide-in-from-left duration-500 ease-out font-normal text-xs sm:font-bold sm:text-sm">
-                    {product.description}
-                  </div>
-                </Badge>
-                <div className="absolute bottom-0 h-full w-full flex flex-col items-center justify-end pl-2 sm:pl-4 sm:p-2">
                   <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
-                    <span className="text-sm font-bold sm:text-xl sm:font-black">{`€${variant.calculated_price?.calculated_amount}`}</span>
+                    <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(price)}`}</span>
                     <Button
                       variant="outline"
                       className="font-bold bg-black/80 border-0"
@@ -138,6 +134,21 @@ const ProductItem = ({ product }: ProductItemProps) => {
                     </Button>
                   </div>
                 </div>
+                <div
+                  className={cn(
+                    "bg-black/80 w-full text-center text-xs sm:text-lg absolute animate-in fade-in duration-500 transition-none ",
+                    {
+                      "bg-white/30 text-black": isInBasket,
+                      "-bottom-14 text-start bg-transparent text-gray-400":
+                        isMobile,
+                      "top-2": !isMobile,
+                    }
+                  )}
+                >
+                  <div className="animate-in slide-in-from-left duration-500 ease-out font-bold text-xs sm:text-sm">
+                    {product.description}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -148,9 +159,16 @@ const ProductItem = ({ product }: ProductItemProps) => {
               alt={product.title}
               fill
               style={{ objectFit: "contain" }}
+              className="opacity-70"
             />
             <Badge
-              className="text-thin text-xs sm:text-sm text-gray-300 absolute bottom-3 left-5"
+              className={cn(
+                "text-thin text-xs sm:text-sm text-gray-300 absolute left-5",
+                {
+                  "-bottom-10": isMobile,
+                  "bottom-3 ": !isMobile,
+                }
+              )}
               variant={"outline"}
             >
               SOLD
@@ -227,7 +245,7 @@ const SubGrid = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-8",
+        "grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-24 sm:gap-8",
         className
       )}
     >
@@ -312,7 +330,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
   }
 
   return (
-    <div>
+    <>
       <div className="flex flex-col gap-8">
         {firstSet.length ? (
           <SubGrid>
@@ -326,7 +344,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {firstImage && (
               <Image
-                className="aspect-square h-full col-span-2"
+                className="aspect-square col-span-2"
                 src={firstImage.url}
                 alt={firstImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -351,7 +369,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
           <SubGrid>
             {secondImage && (
               <Image
-                className="col-span-2 h-full hidden lg:block"
+                className="col-span-2 mt-24 sm:m-0 sm:h-full"
                 src={secondImage.url}
                 alt={secondImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -378,7 +396,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {thirdImage && (
               <Image
-                className="col-span-1 sm:col-span-2 lg:col-span-4 max-h-[400px]"
+                className="col-span-2 lg:col-span-4 aspect-video mt-10 sm:m-0"
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -397,23 +415,22 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
           </SubGrid>
         ) : null}
       </div>
-
-      <div className="mt-40 flex flex-col gap-20">
+      <div className="mt-40 flex flex-col gap-10 sm:gap-16">
         <Link
           href="/sizing"
           target="_blank"
-          className="text-3xl md:text-5xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
+          className="text-2xl md:text-4xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
         >
           RING SIZE GUIDE
         </Link>
         <a
           href={emailHref}
           target="_blank"
-          className="text-3xl md:text-5xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
+          className="text-2xl md:text-4xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
         >
           FEEL FREE TO ASK
         </a>
       </div>
-    </div>
+    </>
   );
 }

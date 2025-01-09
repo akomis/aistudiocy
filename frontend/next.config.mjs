@@ -3,11 +3,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname:
-          process.env.BUCKET_HOST ??
-          process.env.NEXT_PUBLIC_BUCKET_HOST ??
-          "bucket-dev.aistudiocy.com",
-        port: "",
+        hostname: process.env.NEXT_PUBLIC_BUCKET_HOST,
         pathname: "/**",
       },
     ],

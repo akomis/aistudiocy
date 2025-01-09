@@ -396,7 +396,7 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
 
             {thirdImage && (
               <Image
-                className="col-span-2 lg:col-span-4 aspect-video mt-10 sm:m-0"
+                className="col-span-2 lg:col-span-4 aspect-video max-h-[300px] mt-10 sm:m-0"
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}

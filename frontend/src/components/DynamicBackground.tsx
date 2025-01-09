@@ -16,7 +16,6 @@ const DynamicBackground = ({ data }: Props) => {
 
   const router = useRouter();
   const categories = data.map((e) => e.category);
-  //const assets = data.map((e) => ({ type: "image", url: e.url }));
 
   useEffect(() => {
     if (isPaused) return;

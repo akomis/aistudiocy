@@ -57,6 +57,7 @@ export default function RootLayout({
         excludedHostnames={["localhost"]}
         projectId={highlightProjectId}
         serviceName="aistudiocy"
+        inlineImages={false}
         tracingOrigins
         disableSessionRecording // respect user's privacy
         networkRecording={{

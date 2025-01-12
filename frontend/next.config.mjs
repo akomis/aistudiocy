@@ -1,3 +1,5 @@
+import { withHighlightConfig } from "@highlight-run/next/config";
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -10,4 +12,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withHighlightConfig(nextConfig);

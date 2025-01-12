@@ -66,7 +66,10 @@ const Footer = async () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-col justify-end items-start gap-10 mr-10 mb-10">
+      <div
+        id="footer"
+        className="flex flex-col justify-end items-start gap-10 mr-10 mb-10"
+      >
         <div className="flex flex-col sm:flex-row font-bold gap-10">
           {socials.map((social: any) => (
             <div key={social.Key} className="flex flex-col text-start">

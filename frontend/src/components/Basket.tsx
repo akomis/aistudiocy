@@ -114,12 +114,25 @@ const CustomerForm = () => {
   const [isProceeding, setIsProceeding] = useState<boolean>(false);
   const { cart, refetchCart } = useContext(CartContext);
 
-  const { data: countryData, isLoading: countriesLoading } = useQuery({
+  console.log(REGION_ID);
+
+  const {
+    data: countryData,
+    isLoading: countriesLoading,
+    error: countriesError,
+  } = useQuery({
     queryKey: ["countries"],
-    queryFn: () => sdk.store.region.retrieve(REGION_ID),
+    queryFn: () =>
+      sdk.store.region.retrieve(REGION_ID, {
+        fields: "id,*countries",
+      }),
   });
 
-  const { data: shippingData, isLoading: shippingLoading } = useQuery({
+  const {
+    data: shippingData,
+    isLoading: shippingLoading,
+    error: shippingError,
+  } = useQuery({
     queryKey: ["shipping_methods"],
     queryFn: () =>
       sdk.store.fulfillment.listCartOptions({
@@ -243,6 +256,10 @@ const CustomerForm = () => {
 
   const isLoading = isProceeding || countriesLoading || shippingLoading;
 
+  if (countriesError || shippingError) {
+    throw new Error("Error loading basket.");
+  }
+
   return (
     <Form {...form}>
       <form
@@ -332,6 +349,7 @@ const CustomerForm = () => {
                     form.setValue("country_code", event)
                   }
                   title="country"
+                  disabled={!shippingOptions?.length}
                 />
               </FormControl>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import HomeButton from "@/components/HomeButton";
-import { Label } from "@radix-ui/react-label";
+import Link from "next/link";
 
 type Props = {
   error: Error & { digest?: string };
@@ -11,13 +11,14 @@ export default function Error({ error }: Props) {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-20">
       <div className="flex flex-col items-center justify-center">
-        <div>
-          <Label className="text-2xl">
-            An error occured but you can always go back to{" "}
-          </Label>
-          <HomeButton />
+        <div className="text-center">
+          <p className="text-2xl">We are so sorry about this.</p>
+          <p className="text-2xl">
+            If you think this was our fault please{" "}
+            <Link href="/#footer">contact us</Link>.
+          </p>
         </div>
-        <Label className="font-thin text-lg">{`Error: ${error.message}`}</Label>
+        <p className="font-thin text-lg">{`Error: ${error.message}`}</p>
       </div>
 
       <HomeButton isIcon />

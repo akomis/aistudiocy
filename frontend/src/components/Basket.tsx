@@ -140,6 +140,8 @@ const CustomerForm = () => {
       }),
   });
 
+  console.log(shippingData);
+
   const customerFormSchema = useMemo(
     () =>
       z.object({
@@ -251,6 +253,8 @@ const CustomerForm = () => {
         }))
     : [];
 
+  console.log(shippingOptions);
+
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
@@ -349,7 +353,6 @@ const CustomerForm = () => {
                     form.setValue("country_code", event)
                   }
                   title="country"
-                  disabled={!shippingOptions?.length}
                 />
               </FormControl>
 

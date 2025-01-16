@@ -41,7 +41,33 @@ export default async function orderPlacedHandler({
       },
     });
   } catch (error) {
-    console.error("Error sending order confirmation notification:", error);
+    console.error(
+      "Error sending order confirmation notification to customer:",
+      error
+    );
+  }
+
+  try {
+    await notificationModuleService.createNotifications({
+      to: process.env.ADMIN_EMAIL,
+      channel: "email",
+      template: EmailTemplates.ORDER,
+      data: {
+        emailOptions: {
+          replyTo: process.env.ADMIN_EMAIL,
+          subject: "New order has been placed",
+        },
+        order,
+        shippingAddress,
+        preview: "New order",
+        message: `Order has been placed successfully by ${order.email}.`,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Error sending order confirmation notification to admin:",
+      error
+    );
   }
 }
 

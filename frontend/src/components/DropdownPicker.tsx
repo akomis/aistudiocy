@@ -1,14 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { Label } from "@radix-ui/react-label";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { FormControl } from "./ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 type Props = {
   options: Array<{ label: string; value: string }>;
@@ -26,39 +25,27 @@ const DropdownPicker = ({
   disabled,
 }: Props) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
+    <Select disabled={disabled} onValueChange={setValue} defaultValue={value}>
+      <FormControl>
+        <SelectTrigger
           className={cn(
-            "w-full h-full justify-between bg-black text-gray-400",
-            { "text-white": Boolean(value) }
+            "w-full h-full justify-between bg-transparent text-gray-400 rounded-none text-[16px]",
+            {
+              "text-white": Boolean(value),
+            }
           )}
-          disabled={disabled}
         >
-          <Label className="tracking-tight text-[16px]">
-            {value
-              ? options.find((option) => option.value === value)?.label
-              : `${title.toUpperCase()} *`}
-          </Label>
-          <ChevronsUpDown className="opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-full rounded-none">
+          <SelectValue placeholder={title.toUpperCase()} />
+        </SelectTrigger>
+      </FormControl>
+      <SelectContent>
         {options.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => setValue(option.value)}
-            className="hover:cursor-pointer hover:opacity-75"
-          >
+          <SelectItem key={option.value} value={option.value}>
             {option.label}
-            {value === option.value && (
-              <Check className="ml-auto opacity-100" />
-            )}
-          </DropdownMenuItem>
+          </SelectItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </SelectContent>
+    </Select>
   );
 };
 

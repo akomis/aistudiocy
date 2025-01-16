@@ -114,8 +114,6 @@ const CustomerForm = () => {
   const [isProceeding, setIsProceeding] = useState<boolean>(false);
   const { cart, refetchCart } = useContext(CartContext);
 
-  console.log(REGION_ID);
-
   const {
     data: countryData,
     isLoading: countriesLoading,
@@ -139,8 +137,6 @@ const CustomerForm = () => {
         cart_id: cart?.id as string,
       }),
   });
-
-  console.log(shippingData);
 
   const customerFormSchema = useMemo(
     () =>
@@ -169,7 +165,7 @@ const CustomerForm = () => {
 
   const form = useForm<z.infer<typeof customerFormSchema>>({
     resolver: zodResolver(customerFormSchema),
-    mode: "onChange",
+    mode: "all",
     defaultValues: {
       first_name: cart?.billing_address?.first_name ?? "",
       last_name: cart?.billing_address?.last_name ?? "",
@@ -194,6 +190,39 @@ const CustomerForm = () => {
         region_id: REGION_ID,
         email: form.getValues().email,
       });
+
+      const address = {
+        ...form.getValues(),
+        email: undefined,
+        shipping_option: undefined,
+      } as StoreAddAddress;
+
+      await sdk.store.cart.addShippingMethod(cart?.id as string, {
+        option_id: form.getValues().shipping_option as string,
+      });
+
+      const { cart: updatedCart } = await sdk.store.cart.update(
+        cart?.id as string,
+        {
+          shipping_address: address,
+          billing_address: address,
+        }
+      );
+
+      sdk.store.payment
+        .initiatePaymentSession(updatedCart as StoreCart, {
+          provider_id: PAYMENT_PROVIDER_ID as string,
+          data: {},
+        })
+        .then(async () => {
+          await refetchCart();
+        })
+        .catch((error) => {
+          throw new Error("Error creating payment session:", error);
+        })
+        .finally(() => {
+          setIsProceeding(false);
+        });
     } catch (e: any) {
       toast({
         title: "Error with customer registration",
@@ -202,39 +231,6 @@ const CustomerForm = () => {
       });
       setIsProceeding(false);
     }
-
-    const address = {
-      ...form.getValues(),
-      email: undefined,
-      shipping_option: undefined,
-    } as StoreAddAddress;
-
-    await sdk.store.cart.addShippingMethod(cart?.id as string, {
-      option_id: form.getValues().shipping_option as string,
-    });
-
-    const { cart: updatedCart } = await sdk.store.cart.update(
-      cart?.id as string,
-      {
-        shipping_address: address,
-        billing_address: address,
-      }
-    );
-
-    sdk.store.payment
-      .initiatePaymentSession(updatedCart as StoreCart, {
-        provider_id: PAYMENT_PROVIDER_ID as string,
-        data: {},
-      })
-      .then(async () => {
-        await refetchCart();
-      })
-      .catch((error) => {
-        throw new Error("Error creating payment session:", error);
-      })
-      .finally(() => {
-        setIsProceeding(false);
-      });
   };
 
   const countries = countryData?.region.countries?.map((country) => ({
@@ -253,12 +249,13 @@ const CustomerForm = () => {
         }))
     : [];
 
-  console.log(shippingOptions);
-
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
   const isLoading = isProceeding || countriesLoading || shippingLoading;
+
+  const isProceedDisabled =
+    !cart?.items?.length || Boolean(clientSecret) || !form.formState.isValid;
 
   if (countriesError || shippingError) {
     throw new Error("Error loading basket.");
@@ -343,18 +340,14 @@ const CustomerForm = () => {
         <FormField
           control={form.control}
           name="country_code"
-          render={({}) => (
+          render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1 h-10">
-              <FormControl>
-                <DropdownPicker
-                  options={countries}
-                  value={form.getValues("country_code")}
-                  setValue={(event: any) =>
-                    form.setValue("country_code", event)
-                  }
-                  title="country"
-                />
-              </FormControl>
+              <DropdownPicker
+                options={countries}
+                value={field.value}
+                setValue={field.onChange}
+                title="country"
+              />
 
               <FormMessage />
             </FormItem>
@@ -380,15 +373,13 @@ const CustomerForm = () => {
         <FormField
           control={form.control}
           name="shipping_option"
-          render={({}) => (
+          render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1 h-10">
               <FormControl>
                 <DropdownPicker
                   options={shippingOptions ?? []}
-                  value={form.getValues("shipping_option")}
-                  setValue={(event: any) =>
-                    form.setValue("shipping_option", event)
-                  }
+                  value={field.value}
+                  setValue={field.onChange}
                   title={"shipping"}
                   disabled={!shippingOptions?.length}
                 />
@@ -427,11 +418,7 @@ const CustomerForm = () => {
             ) : (
               <Button
                 type="submit"
-                disabled={
-                  !cart?.items?.length ||
-                  Boolean(clientSecret) ||
-                  !form.formState.isValid
-                }
+                disabled={isProceedDisabled}
                 className="w-full text-xl tracking-widest h-full"
               >
                 PROCEED
@@ -511,7 +498,10 @@ const CheckoutForm = () => {
     }
 
     await resetCart();
-    await queryClient.refetchQueries({ queryKey: ["filteredProducts"] });
+    await queryClient.invalidateQueries({
+      queryKey: ["filteredProducts"],
+      refetchType: "all",
+    });
     setIsLoading(false);
   };
 
@@ -570,7 +560,7 @@ export default function Basket() {
   const clientSecret = cart?.payment_collection?.payment_sessions?.[0]?.data
     ?.client_secret as string;
 
-  const hasItemsInBasket = Boolean(cart?.items?.length);
+  const hasItemsInBasket = Boolean(items.length);
 
   useEffect(() => {
     if (open && !clientSecret) {

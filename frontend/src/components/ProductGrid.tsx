@@ -8,7 +8,7 @@ import { cn, formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import FilterContext from "@/providers/filter";
 import { StoreCart, StoreProduct, StoreProductVariant } from "@medusajs/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +18,6 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
-import { Label } from "./ui/label";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -77,7 +76,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const iconStrokeWidth = isMobile ? 2 : 5;
   const price = variant.calculated_price?.calculated_amount as number;
   const isAvailable = Boolean(variant.inventory_quantity) && Boolean(price);
-  const isInBasket = Boolean(lineItem);
+  const isInBasket = Boolean(variant.inventory_quantity) && Boolean(lineItem);
 
   return (
     product.thumbnail && (
@@ -255,15 +254,15 @@ const SubGrid = ({
 };
 
 type Props = {
-  products: StoreProduct[];
   images: any[];
   emailHref: string;
 };
 
 const IMAGE_SIZE = 3000;
+const REFETCH_PRODUCTS_INTERVAL = 1000 * 60 * 2;
 
-export default function ProductGrid({ products, images, emailHref }: Props) {
-  const { cart } = useContext(CartContext);
+export default function ProductGrid({ images, emailHref }: Props) {
+  const { cart, refetchCart } = useContext(CartContext);
   const { id, setId } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -280,44 +279,67 @@ export default function ProductGrid({ products, images, emailHref }: Props) {
     }
   }, [id]);
 
-  const { data: filteredProductsData, isLoading } = useQuery({
-    queryKey: ["filteredProducts", id],
-    queryFn: () =>
-      sdk.store.product.list({
+  const { data: productData, error } = useSuspenseQuery({
+    queryKey: ["products", id, cart?.id],
+    queryFn: async () => {
+      const data = await sdk.store.product.list({
         fields: "*variants.calculated_price,+variants.inventory_quantity",
         region_id: REGION_ID,
-        category_id: id as string,
-      }),
-    enabled: Boolean(id),
+        category_id: id ?? undefined,
+      });
+
+      const unavailableProducts = data.products.filter(
+        (product) => product?.variants?.[0].inventory_quantity === 0
+      );
+
+      if (cart) {
+        await cart.items?.map((item) => {
+          if (
+            unavailableProducts.find(
+              (product) => product?.id === item?.product_id
+            )
+          ) {
+            sdk.store.cart.deleteLineItem(
+              cart?.id as string,
+              item?.id as string
+            );
+          }
+        });
+
+        refetchCart();
+      }
+
+      return data;
+    },
+    refetchInterval: REFETCH_PRODUCTS_INTERVAL,
+    refetchIntervalInBackground: true,
   });
 
-  const filteredProducts = filteredProductsData?.products ?? products;
+  if (error) throw new Error("Couldn't load products");
 
-  const firstSet = filteredProducts.slice(0, 4);
-  const intermediateSet = filteredProducts.slice(4, 12);
-  const secondSet = filteredProducts.slice(12, 14);
-  const thirdSet = filteredProducts.slice(14, 26);
-  const fourthSet = filteredProducts.slice(26);
+  const products = productData?.products;
+
+  console.log(products);
+  console.log(cart);
+
+  const firstSet = products.slice(0, 4);
+  const intermediateSet = products.slice(4, 12);
+  const secondSet = products.slice(12, 14);
+  const thirdSet = products.slice(14, 26);
+  const fourthSet = products.slice(26);
 
   const firstImage = images[0];
   const secondImage = images[1];
   const thirdImage = images[2];
 
-  if (isLoading || !cart) {
-    return (
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (filteredProducts.length === 0) {
+  if (products.length === 0) {
     return (
       <div className="flex flex-col mx-auto px-10">
-        <Label className="text-lg md:text-2xl text-center font-light">
-          No products found with the applied filter. Feel free to explore more
-          through the categories on top.
-        </Label>
+        <p className="text-lg md:text-2xl text-center font-light">
+          {id
+            ? "No products found with the applied filter. Feel free to explore more through the categories on top."
+            : "We currently don't have any available pieces. Feel free to stalk us on social media for any updates!"}
+        </p>
         <Button
           variant={"outline"}
           className="mx-auto mt-10"

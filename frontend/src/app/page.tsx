@@ -4,9 +4,7 @@ import DynamicBackground from "@/components/DynamicBackground";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 import Link from "next/link";
-import { Suspense } from "react";
 import Section from "../components/Section";
-import Loading from "./loading";
 
 const Header = async () => {
   const categories = (await sdk.store.category.list()).product_categories;
@@ -77,7 +75,7 @@ const Footer = async () => {
               <a
                 href={social.URL}
                 target="_blank"
-                className="hover:opacity-70 hover:shadow-md transition-all duration-500 "
+                className="hover:opacity-70 transition-all duration-500 "
               >
                 {social.Value}
               </a>
@@ -108,10 +106,10 @@ const Footer = async () => {
 
 export default async function Landing() {
   return (
-    <Suspense fallback={<Loading />}>
+    <>
       <Header />
       <About />
       <Footer />
-    </Suspense>
+    </>
   );
 }

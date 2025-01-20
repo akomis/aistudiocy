@@ -392,7 +392,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
           <SubGrid>
             {secondImage && (
               <Image
-                className="col-span-2 mt-24 sm:m-0 sm:h-full"
+                className="col-span-2 aspect-video max-h-[300px] mt-14 sm:m-0"
                 src={secondImage.url}
                 alt={secondImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -400,9 +400,8 @@ export default function ProductGrid({ images, emailHref }: Props) {
                 style={{ objectFit: "cover" }}
               />
             )}
-
             {secondSet.map((product) => (
-              <div key={product.id} className="col-span-1">
+              <div key={product.id} className="col-span-1 mb-24">
                 <ProductItem product={product} />
               </div>
             ))}
@@ -419,7 +418,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
 
             {thirdImage && (
               <Image
-                className="col-span-2 lg:col-span-4 aspect-video max-h-[300px] mt-10 sm:m-0"
+                className="col-span-2 lg:col-span-4 aspect-video max-h-[300px] m-0"
                 src={thirdImage.url}
                 alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
                 height={IMAGE_SIZE}
@@ -428,7 +427,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
               />
             )}
 
-            {fourthSet.length
+            {Boolean(fourthSet.length)
               ? fourthSet.map((product) => (
                   <div key={product.id}>
                     <ProductItem product={product} />

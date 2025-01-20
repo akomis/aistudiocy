@@ -91,7 +91,7 @@ const BasketListItem = ({ item }: { item: StoreCartLineItem }) => {
 
         <div className="flex flex-col items-end justify-between">
           {Boolean(description) && (
-            <div className="text-xl font-light">{`${description}`}</div>
+            <div className="text-xl font-light text-end">{`${description}`}</div>
           )}
           <div className="text-2xl font-bold text-end">{`€${formatPrice(item.unit_price)}`}</div>
         </div>
@@ -432,7 +432,7 @@ const CustomerForm = () => {
 };
 
 const CheckoutForm = () => {
-  const { cart, resetCart, setCart } = useContext(CartContext);
+  const { cart, resetCart, refetchCart, setCart } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -481,21 +481,28 @@ const CheckoutForm = () => {
       return;
     }
 
-    const { type } = await sdk.store.cart.complete(cart?.id as string);
+    try {
+      const { type } = await sdk.store.cart.complete(cart?.id as string);
 
-    if (type === "cart" && cart) {
+      if (type === "cart" && cart) {
+        throw new Error("There was a problem with the order");
+      } else if (type === "order") {
+        toast({
+          title: "Order placed succesfully",
+          description:
+            "Thank you for choosing us. You should receive a confirmation email soon.",
+        });
+        resetCart();
+      }
+    } catch (error: unknown) {
       toast({
-        title: "Error with the order",
-        description: error,
+        title: "There was a problem with the order",
+        description: (error as Error).message,
         variant: "destructive",
       });
-    } else if (type === "order") {
-      toast({
-        title: "Order placed succesfully",
-        description:
-          "Thank you for choosing us. You should receive a confirmation email soon.",
-      });
-      resetCart();
+      setIsLoading(false);
+      refetchCart();
+      return;
     }
 
     await queryClient.invalidateQueries({

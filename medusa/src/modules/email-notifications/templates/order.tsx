@@ -64,7 +64,8 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
         <Text className="mb-1">{shippingAddress.address_1}</Text>
         <Text className="mb-1">
           {shippingAddress.city}, {shippingAddress.province}{" "}
-          {shippingAddress.postal_code}, {shippingAddress.country_code}
+          {shippingAddress.postal_code},{" "}
+          {shippingAddress.country_code.toUpperCase()}
         </Text>
 
         <Text>

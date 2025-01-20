@@ -36,7 +36,7 @@ export default async function orderShippedHandler({
         shippingAddress,
         preview: "Order Shipped",
         message:
-          "Your order has been shipped and is on its way to you. If the package doesn't arrive in 3-5 business days, please contact us.",
+          "Your order has been shipped and is on its way to you. If you dont hear from the delivery provider soon, please contact us.",
       },
     });
   } catch (error) {

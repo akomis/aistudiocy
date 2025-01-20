@@ -4,6 +4,7 @@ import DynamicBackground from "@/components/DynamicBackground";
 import { sdk } from "@/lib/medusa";
 import { get } from "@/lib/strapi";
 import Link from "next/link";
+import { Suspense } from "react";
 import Section from "../components/Section";
 
 const Header = async () => {
@@ -106,10 +107,10 @@ const Footer = async () => {
 
 export default async function Landing() {
   return (
-    <>
+    <Suspense>
       <Header />
       <About />
       <Footer />
-    </>
+    </Suspense>
   );
 }

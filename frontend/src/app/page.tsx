@@ -35,14 +35,12 @@ const About = async () => {
         </div>
 
         <div className="flex flex-col gap-10 pt-12 pb-20 px-10 w-full">
-          {abouts
-            .sort((a: any, b: any) => b.id - a.id)
-            .map((about: any) => (
-              <div key={about.Title} className="flex flex-col gap-2">
-                <p className="text-4xl sm:text-7xl font-bold">{about.Title}</p>
-                <Block content={about.Content} />
-              </div>
-            ))}
+          {abouts.map((about: any) => (
+            <div key={about.Title} className="flex flex-col gap-2">
+              <p className="text-4xl sm:text-7xl font-bold">{about.Title}</p>
+              <Block content={about.Content} />
+            </div>
+          ))}
         </div>
       </div>
     </Section>

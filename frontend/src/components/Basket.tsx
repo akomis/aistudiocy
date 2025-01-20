@@ -495,9 +495,9 @@ const CheckoutForm = () => {
         description:
           "Thank you for choosing us. You should receive a confirmation email soon.",
       });
+      resetCart();
     }
 
-    await resetCart();
     await queryClient.invalidateQueries({
       queryKey: ["filteredProducts"],
       refetchType: "all",

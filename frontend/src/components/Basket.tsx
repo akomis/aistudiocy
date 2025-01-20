@@ -175,7 +175,7 @@ const CustomerForm = () => {
       country_code: cart?.billing_address?.country_code ?? "",
       postal_code: cart?.billing_address?.postal_code ?? "",
       email: cart?.email ?? "",
-      shipping_option: cart?.shipping_methods?.[0]?.id ?? "",
+      shipping_option: cart?.shipping_methods?.[0]?.shipping_option_id ?? "",
     },
   });
 

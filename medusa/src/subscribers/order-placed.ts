@@ -23,6 +23,7 @@ export default async function orderPlacedHandler({
     orderModuleService as any
   ).orderAddressService_.retrieve(order.shipping_address.id);
 
+  // Notify customer
   try {
     await notificationModuleService.createNotifications({
       to: order.email,
@@ -47,6 +48,7 @@ export default async function orderPlacedHandler({
     );
   }
 
+  // Notify Admin
   try {
     await notificationModuleService.createNotifications({
       to: process.env.ADMIN_EMAIL,
@@ -58,7 +60,11 @@ export default async function orderPlacedHandler({
           subject: "New order has been placed",
         },
         order,
-        shippingAddress,
+        shippingAddress: {
+          ...shippingAddress,
+          first_name: "Admin",
+          last_name: "",
+        },
         preview: "New order",
         message: `Order has been placed successfully by ${order.email}.`,
       },

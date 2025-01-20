@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import useIsMobile from "@/hooks/use-is-mobile";
+import { toast } from "@/hooks/use-toast";
 import { REGION_ID } from "@/lib/constants";
 import { sdk } from "@/lib/medusa";
 import { cn, formatPrice } from "@/lib/utils";
@@ -198,7 +199,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             }}
             render={{
               slideFooter: () => (
-                <div className="flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2">
+                <div className=" flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto">
                   <Badge
                     variant={"default"}
                     className="bg-black text-lg text-white flex flex-col sm:flex-row"
@@ -294,15 +295,18 @@ export default function ProductGrid({ images, emailHref }: Props) {
 
       if (cart) {
         await cart.items?.map((item) => {
-          if (
-            unavailableProducts.find(
-              (product) => product?.id === item?.product_id
-            )
-          ) {
-            sdk.store.cart.deleteLineItem(
-              cart?.id as string,
-              item?.id as string
-            );
+          const unavailableProduct = unavailableProducts?.find(
+            (product) => product?.id === item?.product_id
+          );
+
+          if (Boolean(unavailableProduct)) {
+            sdk.store.cart
+              .deleteLineItem(cart?.id as string, item?.id as string)
+              .then(() => {
+                toast({
+                  title: `Product is no longer available and was removed from your cart.`,
+                });
+              });
           }
         });
 
@@ -318,9 +322,6 @@ export default function ProductGrid({ images, emailHref }: Props) {
   if (error) throw new Error("Couldn't load products");
 
   const products = productData?.products;
-
-  console.log(products);
-  console.log(cart);
 
   const firstSet = products.slice(0, 4);
   const intermediateSet = products.slice(4, 12);

@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Section from "../components/Section";
 
+export const revalidate = 3600;
+
 const Header = async () => {
   const categories = (await sdk.store.category.list()).product_categories;
   const headers = (await get("headers")).data;

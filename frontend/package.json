@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "load-env": "railway link af60ba60-9d5f-4da4-bb99-416334c3b312 Frontend && railway shell",
+    "load-env": "railway link -p af60ba60-9d5f-4da4-bb99-416334c3b312 -s 9f60a70f-2189-4574-b8cf-03e6d644caab && railway shell",
     "fetch-types": "./src/utils/fetch-types.sh"
   },
   "dependencies": {

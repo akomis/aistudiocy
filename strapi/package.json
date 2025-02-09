@@ -9,7 +9,7 @@
     "dev": "strapi develop",
     "develop": "strapi develop",
     "generate-ts-types": "strapi ts:generate-types",
-    "load-env": "railway link af60ba60-9d5f-4da4-bb99-416334c3b312 Strapi && railway shell",
+    "load-env": "railway link -p af60ba60-9d5f-4da4-bb99-416334c3b312 -s ca0f311c-627b-425d-b28a-1bf2d77ce90c && railway shell",
     "start": "strapi start",
     "strapi": "strapi"
   },

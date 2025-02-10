@@ -19,6 +19,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
+import { Props } from "next/script";
 
 type ProductItemProps = {
   product: StoreProduct;
@@ -211,7 +212,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
                   <Badge
                     variant={"outline"}
-                    className="text-2xl"
+                    className="text-lg sm:text-2xl"
                   >{`€${formatPrice(price)}`}</Badge>
 
                   {isAvailable && (

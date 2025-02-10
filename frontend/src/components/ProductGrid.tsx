@@ -208,6 +208,12 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   >
                     {product.description}
                   </Badge>
+
+                  <Badge
+                    variant={"outline"}
+                    className="text-2xl"
+                  >{`€${formatPrice(price)}`}</Badge>
+
                   {isAvailable && (
                     <Button
                       variant="outline"

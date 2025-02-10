@@ -16,10 +16,14 @@ const Header = async () => {
   const data = categories.map((category) => {
     return {
       category: category,
-      url: headers.find(
+      desktopUrl: headers.find(
         (header: any) =>
           header.Category.toLowerCase() === category.name.toLowerCase()
-      )?.Image?.url,
+      )?.Desktop?.url,
+      mobileUrl: headers.find(
+        (header: any) =>
+          header.Category.toLowerCase() === category.name.toLowerCase()
+      )?.Mobile?.url,
     };
   });
 

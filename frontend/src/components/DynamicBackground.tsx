@@ -1,5 +1,6 @@
 "use client";
 
+import useIsMobile from "@/hooks/use-is-mobile";
 import { StoreProductCategory } from "@medusajs/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -8,12 +9,19 @@ import CategoryPicker from "./CategoryPicker";
 import Logo from "./Logo";
 import Section from "./Section";
 
-type Props = { data: { category: StoreProductCategory; url: string }[] };
+type Props = {
+  data: {
+    category: StoreProductCategory;
+    desktopUrl: string;
+    mobileUrl: string;
+  }[];
+};
 
 const DynamicBackground = ({ data }: Props) => {
   const [categoryId, setCategoryId] = useState(data[0].category.id);
   const [isPaused, setIsPaused] = useState(false);
 
+  const isMobile = useIsMobile();
   const router = useRouter();
   const categories = data.map((e) => e.category);
 
@@ -33,9 +41,13 @@ const DynamicBackground = ({ data }: Props) => {
     return () => clearTimeout(timeout);
   }, [categoryId, isPaused]);
 
-  const displayedImageUrl = data.find((e) => {
+  const displayedHeaderUrls = data.find((e) => {
     return e.category.id === categoryId;
-  })?.url;
+  });
+
+  const displayedImageUrl = isMobile
+    ? displayedHeaderUrls?.mobileUrl
+    : displayedHeaderUrls?.desktopUrl;
 
   return (
     <Section className="h-screen flex items-center p-0">

@@ -210,29 +210,30 @@ const ProductItem = ({ product }: ProductItemProps) => {
                     {product.description}
                   </Badge>
 
-                  <Badge
-                    variant={"outline"}
-                    className="text-lg sm:text-2xl"
-                  >{`€${formatPrice(price)}`}</Badge>
-
                   {isAvailable && (
-                    <Button
-                      variant="outline"
-                      className="text-white font-regular tracking-normal"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        isInBasket ? deleteItem.mutate() : add.mutate();
-                      }}
-                      disabled={!cart}
-                    >
-                      {isLoading ? (
-                        <Spinner />
-                      ) : !isInBasket ? (
-                        <Plus strokeWidth={iconStrokeWidth} />
-                      ) : (
-                        <Minus strokeWidth={iconStrokeWidth} />
-                      )}
-                    </Button>
+                    <>
+                      <Badge
+                        variant={"outline"}
+                        className="text-base sm:text-2xl"
+                      >{`€${formatPrice(price)}`}</Badge>
+                      <Button
+                        variant="outline"
+                        className="text-white font-regular tracking-normal"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          isInBasket ? deleteItem.mutate() : add.mutate();
+                        }}
+                        disabled={!cart}
+                      >
+                        {isLoading ? (
+                          <Spinner />
+                        ) : !isInBasket ? (
+                          <Plus strokeWidth={iconStrokeWidth} />
+                        ) : (
+                          <Minus strokeWidth={iconStrokeWidth} />
+                        )}
+                      </Button>
+                    </>
                   )}
                 </div>
               ),

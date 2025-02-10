@@ -50,7 +50,7 @@ const DynamicBackground = ({ data }: Props) => {
     : displayedHeaderUrls?.desktopUrl;
 
   return (
-    <Section className="h-screen flex items-center p-0">
+    <Section className="h-[100dvh] flex items-center p-0">
       <div
         key={displayedImageUrl}
         className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"

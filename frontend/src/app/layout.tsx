@@ -4,6 +4,7 @@ import {
   ErrorBoundary as HighlightErrorBoundary,
   HighlightInit,
 } from "@highlight-run/next/client";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -36,8 +37,7 @@ const ceraPro = localFont({
 
 export const metadata: Metadata = {
   title: "ai studio",
-  description:
-    "Jewellery Handmade Brand / Silver art. Based in CY / Shipping Worldwide",
+  description: "Jewellery Handmade Brand / Silver Art",
 };
 
 export default function RootLayout({
@@ -46,6 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const highlightProjectId = process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID;
+  const gaId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 
   if (!highlightProjectId?.length) {
     throw new Error("Missing Highlight project ID");
@@ -66,6 +67,8 @@ export default function RootLayout({
           urlBlocklist: [],
         }}
       />
+
+      {gaId && <GoogleAnalytics gaId={gaId} />}
 
       <html lang="en" suppressHydrationWarning>
         <body className={`${ceraPro.variable} antialiased bg-black`}>

@@ -17,6 +17,7 @@ import {
 import { StripeCardElement } from "@stripe/stripe-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -113,6 +114,7 @@ const BasketList = ({ items }: { items: StoreCartLineItem[] }) => {
 const CustomerForm = () => {
   const [isProceeding, setIsProceeding] = useState<boolean>(false);
   const { cart, refetchCart } = useContext(CartContext);
+  const router = useRouter();
 
   const {
     data: countryData,
@@ -144,7 +146,7 @@ const CustomerForm = () => {
         first_name: z.string().min(1, { message: "First name is required" }),
         last_name: z.string().min(1, { message: "Last name is required" }),
         email: z.string().email({ message: "Invalid email address" }),
-        phone: z.string().regex(/^$|^\+?\d{1,4}?\d{7}$/, {
+        phone: z.string().regex(/^\+?\d{1,4}?\d{7}$/, {
           message:
             "Phone number must be at least 8 digits and may include country code with '+' prefix",
         }),
@@ -230,6 +232,7 @@ const CustomerForm = () => {
         variant: "destructive",
       });
       setIsProceeding(false);
+      router.refresh();
     }
   };
 

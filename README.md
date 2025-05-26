@@ -1,5 +1,5 @@
 ### [www.aistudiocy.com](https://www.aistudiocy.com) 
-built with [Next.js 15](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/), [Medusa v2](https://medusajs.com/), [Strapi v5](https://strapi.io/) and [Minio](https://min.io/)
+built with [Next.js 14](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/), [Medusa v2](https://medusajs.com/), [Strapi v5](https://strapi.io/) and [Minio](https://min.io/)
 
 ![image](https://github.com/user-attachments/assets/ac87c322-a070-4e43-ac53-d30e94be9903)
 

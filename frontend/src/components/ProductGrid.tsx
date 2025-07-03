@@ -113,7 +113,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   )}
                 >
                   <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
-                    <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(price)}`}</span>
+                    <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(
+                      price
+                    )}`}</span>
                     <Button
                       variant="outline"
                       className="font-bold bg-black/80 border-0"
@@ -184,7 +186,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             carousel={{ finite: true }}
             styles={{
               root: {
-                "--yarl__color_backdrop": "rgba(0, 0, 0, .9)",
+                "--yarl__color_backdrop": "rgba(0, 0, 0, .8)",
               },
               slide: {
                 width: "60vw",
@@ -198,8 +200,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
               closeOnPullDown: true,
             }}
             render={{
-              slideFooter: () => (
-                <div className=" flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto">
+              controls: () => (
+                <div className="flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto z-[999]">
                   <Badge
                     variant={"default"}
                     className="bg-black text-lg text-white flex flex-col sm:flex-row"

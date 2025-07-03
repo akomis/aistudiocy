@@ -19,7 +19,6 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
-import { Props } from "next/script";
 
 type ProductItemProps = {
   product: StoreProduct;

@@ -22,7 +22,7 @@ export const Base: React.FC<BaseProps> = ({ preview, children }) => {
       <Tailwind>
         <Body className="bg-black text-white my-auto mx-auto font-sans px-2">
           <Img
-            alt="aistudiocy logo"
+            alt="φως logo"
             className="mx-auto p-10"
             height={100}
             src={`https://${process.env.MINIO_ENDPOINT}/assets/logo.png`}

@@ -32,7 +32,7 @@ export const OrderTemplate: React.FC<OrderTemplateProps> & {
 } = ({
   order,
   shippingAddress,
-  preview = "Your order at aistudiocy",
+  preview = "Your order at φως",
   message,
 }) => {
   return (

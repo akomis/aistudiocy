@@ -36,7 +36,7 @@ const ceraPro = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ai studio",
+  title: "φως",
   description: "Jewellery Handmade Brand / Silver Art",
 };
 
@@ -57,7 +57,7 @@ export default function RootLayout({
       <HighlightInit
         excludedHostnames={["localhost"]}
         projectId={highlightProjectId}
-        serviceName="aistudiocy"
+        serviceName="fos"
         inlineImages={false}
         tracingOrigins
         disableSessionRecording // respect user's privacy

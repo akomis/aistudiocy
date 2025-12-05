@@ -378,7 +378,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
               <Image
                 className="aspect-square col-span-2"
                 src={firstImage.url}
-                alt={firstImage.alternativeText ?? "ai studio catalogue image"}
+                alt={firstImage.alternativeText ?? "φως catalogue image"}
                 height={IMAGE_SIZE}
                 width={IMAGE_SIZE}
                 style={{ objectFit: "contain" }}
@@ -403,7 +403,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
               <Image
                 className="col-span-2 aspect-video max-h-[300px] mt-14 sm:m-0"
                 src={secondImage.url}
-                alt={secondImage.alternativeText ?? "ai studio catalogue image"}
+                alt={secondImage.alternativeText ?? "φως catalogue image"}
                 height={IMAGE_SIZE}
                 width={IMAGE_SIZE}
                 style={{ objectFit: "cover" }}
@@ -429,7 +429,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
               <Image
                 className="col-span-2 lg:col-span-4 aspect-video max-h-[300px] m-0"
                 src={thirdImage.url}
-                alt={thirdImage.alternativeText ?? "ai studio catalogue image"}
+                alt={thirdImage.alternativeText ?? "φως catalogue image"}
                 height={IMAGE_SIZE}
                 width={IMAGE_SIZE}
                 style={{ objectFit: "cover" }}

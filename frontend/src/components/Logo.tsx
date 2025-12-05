@@ -9,11 +9,11 @@ const Logo = ({ className }: Props) => {
   return (
     <div className="flex items-center">
       <Image
-        className={cn("w-[50px]", className)}
+        className={cn("w-[100px]", className)}
         src="/logo.png"
-        alt="aistudiocy"
-        width={209}
-        height={415}
+        alt="φως"
+        width={378}
+        height={172}
         style={{ objectFit: "contain" }}
       />
     </div>

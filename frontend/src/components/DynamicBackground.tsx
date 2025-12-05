@@ -51,19 +51,21 @@ const DynamicBackground = ({ data }: Props) => {
 
   return (
     <Section className="h-[100dvh] flex items-center p-0">
-      <div
-        key={displayedImageUrl}
-        className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"
-      >
-        <Image
-          src={displayedImageUrl as string}
-          alt={categoryId}
-          fill
-          style={{ objectFit: "cover" }}
-          quality={100}
-          priority
-        />
-      </div>
+      {displayedImageUrl && (
+        <div
+          key={displayedImageUrl}
+          className="absolute h-full w-full -z-10 animate-in fade-in duration-1000"
+        >
+          <Image
+            src={displayedImageUrl}
+            alt={categoryId}
+            fill
+            style={{ objectFit: "cover" }}
+            quality={100}
+            priority
+          />
+        </div>
+      )}
       <div
         className={
           "flex items-center justify-between max-w-[2000px] px-2 md:px-10 mx-auto h-full w-full hover:cursor-pointer"

@@ -4,92 +4,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-E-commerce platform for φως (fos) - handmade jewellery - built as a monorepo with three independent workspaces:
-- **frontend/** - Next.js 14 storefront
-- **medusa/** - Medusa v2 headless commerce backend
-- **strapi/** - Strapi v5 CMS
+E-commerce platform for φως (fos) - handmade jewellery - built with Next.js 15 and Payload CMS.
 
 ## Development Commands
 
 ```bash
-# Start all services (from root)
-yarn dev                    # All services in parallel
-yarn dev:frontend          # Next.js on port 3000
-yarn dev:medusa            # Medusa on port 9000
-yarn dev:strapi            # Strapi on port 1337
+# Development
+yarn dev                    # Next.js dev server on port 3000
 
 # Build
-yarn build                 # Build all workspaces
-yarn build:frontend
-yarn build:medusa
-yarn build:strapi
+yarn build                  # Build the application
+
+# Start production
+yarn start                  # Start production server
+
+# Linting
+yarn lint                   # ESLint
 
 # Type generation
-yarn generate-types        # Generate TS types from Strapi
+yarn generate:types         # Generate TS types from Payload
+
+# Email development
+yarn email:dev              # React Email dev server (port 3002)
 
 # Environment setup (Railway deployment)
-yarn env-init             # Login to Railway and load env vars
-```
-
-### Service-specific commands
-
-**Medusa:**
-```bash
-yarn test:unit                    # Unit tests
-yarn test:integration:http        # HTTP integration tests
-yarn test:integration:modules     # Module integration tests
-yarn email:dev                    # React Email dev server (port 3002)
-```
-
-**Frontend:**
-```bash
-yarn lint                  # ESLint
-yarn fetch-types           # Generate types from Strapi API
+yarn init                   # Login to Railway and load env vars
 ```
 
 ## Architecture
 
 ```
-Next.js Frontend (SSR/CSR)
+Next.js 15 (App Router)
     ↓
-Medusa Commerce API ← Stripe (Payments)
+Payload CMS (embedded) ← Stripe (Payments)
     ↓
-Strapi CMS
-    ↓
-PostgreSQL ← Redis (Cache/Events) ← MinIO (Files) ← Resend (Emails)
+PostgreSQL ← S3 (Files) ← Resend (Emails)
 ```
 
-### Frontend (`frontend/src/`)
-- **App Router** with React Server Components
-- `providers/` - CartProvider (global cart state via Context API), ThemeProvider
-- `lib/` - SDK clients for Medusa, Strapi, Stripe
-- `components/` - shadcn/ui components with TailwindCSS
-- Cart stored in localStorage, synced with Medusa backend
+### Source Structure (`src/`)
 
-### Medusa Backend (`medusa/src/`)
-- Event-driven architecture with Redis event bus
-- `modules/minio-file/` - Custom MinIO file storage provider
-- `modules/email-notifications/` - Resend email provider with React Email templates
-- `workflows/` - Business process workflows (order fulfillment)
-- `subscribers/` - Event handlers for order-placed, order-shipped, store-invite
-- `api/` - Custom REST endpoints
-
-### Strapi CMS (`strapi/src/`)
-- Content served via REST API with dynamic population
-- TypeScript types auto-generated from schema
-- Bearer token authentication
+- **app/** - Next.js App Router pages and API routes
+  - `(payload)/` - Payload admin interface
+  - `api/` - API routes for store operations
+- **collections/** - Payload CMS collections (Products, Categories, Orders, Carts, etc.)
+- **globals/** - Payload global settings (SiteSettings)
+- **components/** - shadcn/ui components with TailwindCSS
+- **providers/** - CartProvider (global cart state via Context API), ThemeProvider
+- **lib/** - Utility functions and Payload client
+- **email/** - React Email templates
 
 ## Key Patterns
 
-- **TypeScript everywhere** - Full type safety with generated types from Strapi
+- **TypeScript everywhere** - Full type safety with Payload generated types
 - **Form validation** - React Hook Form + Zod
 - **Data fetching** - React Query/TanStack Query
-- **Path aliases** - `@/*` maps to `src/*` in frontend
-- **Image sources** - MinIO bucket configured in `next.config.mjs` remotePatterns
+- **Path aliases** - `@/*` maps to `src/*`
+- **Image sources** - S3 bucket configured in `next.config.mjs` remotePatterns
 
 ## Configuration Files
 
-- `medusa/medusa-config.ts` - Database, Redis, file storage, payment, email providers
-- `frontend/next.config.mjs` - Image remotePatterns, Highlight.io error tracking
-- `frontend/tailwind.config.ts` - Custom color system, dark mode support
-- `frontend/components.json` - shadcn/ui component configuration
+- `payload.config.ts` - Payload CMS configuration (database, storage, email)
+- `next.config.mjs` - Next.js config with Payload plugin
+- `tailwind.config.ts` - Custom color system, dark mode support
+- `components.json` - shadcn/ui component configuration

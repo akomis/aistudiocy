@@ -35,6 +35,13 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        dashboard: {
+          Component: '@/components/admin/Dashboard',
+        },
+      },
+    },
   },
   collections: [Users, Media, Categories, Products, Shipping, Carts, Orders],
   globals: [Catalogue, LandingPage],

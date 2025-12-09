@@ -12,6 +12,9 @@ export const Carts: CollectionConfig = {
     {
       name: 'items',
       type: 'array',
+      admin: {
+        readOnly: true,
+      },
       fields: [
         {
           name: 'product',
@@ -39,10 +42,16 @@ export const Carts: CollectionConfig = {
     {
       name: 'email',
       type: 'email',
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'shippingAddress',
       type: 'group',
+      admin: {
+        readOnly: true,
+      },
       fields: [
         { name: 'firstName', type: 'text' },
         { name: 'lastName', type: 'text' },
@@ -56,6 +65,9 @@ export const Carts: CollectionConfig = {
     {
       name: 'billingAddress',
       type: 'group',
+      admin: {
+        readOnly: true,
+      },
       fields: [
         { name: 'firstName', type: 'text' },
         { name: 'lastName', type: 'text' },
@@ -70,6 +82,9 @@ export const Carts: CollectionConfig = {
       name: 'shippingOption',
       type: 'relationship',
       relationTo: 'shipping',
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'subtotal',

@@ -133,7 +133,7 @@ const getStoredFormValues = () => {
 
 const CustomerForm = () => {
   const [isProceeding, setIsProceeding] = useState<boolean>(false)
-  const { cart, setCart, refetchCart } = useContext(CartContext)
+  const { cart, setCart } = useContext(CartContext)
   const router = useRouter()
 
   const { data: shippingData, isLoading: shippingLoading } = useQuery({
@@ -451,43 +451,13 @@ const CustomerForm = () => {
   )
 }
 
-const ThankYouView = () => {
-  const { resetCart, setBasketOpen, setOrderComplete } = useContext(CartContext)
-  const router = useRouter()
-
-  const handleClose = () => {
-    setOrderComplete(false)
-    resetCart()
-    setBasketOpen(false)
-    router.push("/")
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-8 py-16 px-4 text-center animate-in fade-in">
-      <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-bold tracking-widest">THANK YOU</h2>
-        <p className="text-xl font-light">Your order has been placed successfully.</p>
-        <p className="text-lg font-light text-gray-400">
-          You will receive a confirmation email shortly.
-        </p>
-      </div>
-      <Button
-        onClick={handleClose}
-        className="text-xl tracking-widest px-8 py-6"
-        variant="outline"
-      >
-        CONTINUE
-      </Button>
-    </div>
-  )
-}
-
 const CheckoutForm = () => {
-  const { cart, setCart, setOrderComplete, resetCart, refetchCart } = useContext(CartContext)
+  const { cart, setCart, resetCart, refetchCart, setBasketOpen } = useContext(CartContext)
   const stripe = useStripe()
   const elements = useElements()
   const { toast } = useToast()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -535,18 +505,12 @@ const CheckoutForm = () => {
 
       if (result.type === "cart") {
         throw new Error(result.error || "There was a problem with the order")
-      } else if (result.type === "order") {
+      } else if (result.type === "order" || result.type === "processing") {
+        // Payment successful - reset cart and redirect to confirmation
         resetCart()
-        setOrderComplete(true)
-      } else if (result.type === "processing") {
-        // Payment successful but order creation is still processing
-        // Show success message anyway - user will get email confirmation
-        resetCart()
-        setOrderComplete(true)
-        toast({
-          title: "Payment successful",
-          description: result.message,
-        })
+        setBasketOpen(false)
+        router.push("/confirmation?status=success")
+        return
       }
     } catch (error: unknown) {
       toast({
@@ -617,8 +581,7 @@ const CheckoutForm = () => {
 }
 
 export default function Basket() {
-  const { cart, setCart, basketOpen, setBasketOpen, orderComplete, setOrderComplete } =
-    useContext(CartContext)
+  const { cart, setCart, basketOpen, setBasketOpen } = useContext(CartContext)
 
   const items: BasketItem[] =
     (cart?.items?.filter(
@@ -641,15 +604,8 @@ export default function Basket() {
     }
   }, [basketOpen])
 
-  const handleOpenChange = (open: boolean) => {
-    setBasketOpen(open)
-    if (!open && orderComplete) {
-      setOrderComplete(false)
-    }
-  }
-
   return (
-    <Drawer open={basketOpen} onOpenChange={handleOpenChange}>
+    <Drawer open={basketOpen} onOpenChange={setBasketOpen}>
       <DrawerTrigger
         className="font-black text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait tracking-widest"
         disabled={!cart}
@@ -659,19 +615,16 @@ export default function Basket() {
       <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
           <DrawerTitle className="-mb-4 mx-auto">
-            <CutoffText>{orderComplete ? "ORDER" : "BASKET"}</CutoffText>
+            <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
-        {orderComplete ? (
-          <ThankYouView />
-        ) : (
-          <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
-            <div className="flex">
-              {hasItemsInBasket ? (
-                <BasketList items={items} />
-              ) : (
-                <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
+        <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
+          <div className="flex">
+            {hasItemsInBasket ? (
+              <BasketList items={items} />
+            ) : (
+              <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
                 <Label className="text-lg sm:text-2xl font-thin text-center">
                   Your basket is empty.
                 </Label>{" "}
@@ -699,8 +652,7 @@ export default function Basket() {
               )}
             </div>
           )}
-          </div>
-        )}
+        </div>
       </DrawerContent>
     </Drawer>
   )

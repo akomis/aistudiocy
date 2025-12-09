@@ -27,11 +27,17 @@ export const Orders: CollectionConfig = {
       name: 'email',
       type: 'email',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'items',
       type: 'array',
       required: true,
+      admin: {
+        readOnly: true,
+      },
       fields: [
         { name: 'productId', type: 'text', required: true },
         { name: 'productTitle', type: 'text', required: true },
@@ -44,6 +50,9 @@ export const Orders: CollectionConfig = {
     {
       name: 'shippingAddress',
       type: 'group',
+      admin: {
+        readOnly: true,
+      },
       fields: [
         { name: 'firstName', type: 'text', required: true },
         { name: 'lastName', type: 'text', required: true },
@@ -57,6 +66,9 @@ export const Orders: CollectionConfig = {
     {
       name: 'shippingMethod',
       type: 'group',
+      admin: {
+        readOnly: true,
+      },
       fields: [
         { name: 'name', type: 'text' },
         { name: 'amount', type: 'number' },
@@ -66,25 +78,40 @@ export const Orders: CollectionConfig = {
       name: 'subtotal',
       type: 'number',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'shippingTotal',
       type: 'number',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'total',
       type: 'number',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'currencyCode',
       type: 'text',
       defaultValue: 'EUR',
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'stripePaymentIntentId',
       type: 'text',
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'status',

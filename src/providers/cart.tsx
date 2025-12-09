@@ -15,8 +15,6 @@ type ContextType = {
   resetCart: () => void
   basketOpen: boolean
   setBasketOpen: (open: boolean) => void
-  orderComplete: boolean
-  setOrderComplete: (complete: boolean) => void
 }
 
 export const CartContext = createContext<ContextType>({
@@ -26,14 +24,11 @@ export const CartContext = createContext<ContextType>({
   resetCart: () => {},
   basketOpen: false,
   setBasketOpen: () => {},
-  orderComplete: false,
-  setOrderComplete: () => {},
 })
 
 export const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<Cart | undefined>(undefined)
   const [basketOpen, setBasketOpen] = useState(false)
-  const [orderComplete, setOrderComplete] = useState(false)
 
   useEffect(() => {
     if (cart) return
@@ -84,8 +79,6 @@ export const CartProvider = ({ children }: Props) => {
         resetCart,
         basketOpen,
         setBasketOpen,
-        orderComplete,
-        setOrderComplete,
       }}
     >
       {children}

@@ -71,7 +71,6 @@ export function OrderConfirmationEmail({
             <Hr style={styles.hr} />
 
             <Text style={styles.sectionTitle}>Order Summary</Text>
-            <Text style={styles.text}>Order ID: {order.displayId}</Text>
             <Text style={styles.text}>
               Order Date: {new Date(order.createdAt).toLocaleDateString()}
             </Text>

@@ -1,99 +1,106 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import useIsMobile from "@/hooks/use-is-mobile"
-import { toast } from "@/hooks/use-toast"
-import { store, Product } from "@/lib/store"
-import { cn, formatPrice } from "@/lib/utils"
-import { CartContext } from "@/providers/cart"
-import FilterContext from "@/providers/filter"
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
-import { Minus, Plus } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useContext, useEffect, useState } from "react"
-import Lightbox from "yet-another-react-lightbox"
-import "yet-another-react-lightbox/styles.css"
-import Spinner from "./Spinner"
-import { Badge } from "./ui/badge"
+import { Button } from "@/components/ui/button";
+import useIsMobile from "@/hooks/use-is-mobile";
+import { toast } from "@/hooks/use-toast";
+import { Product, store } from "@/lib/store";
+import { cn, formatPrice } from "@/lib/utils";
+import { CartContext } from "@/providers/cart";
+import FilterContext from "@/providers/filter";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { Minus, Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import Spinner from "./Spinner";
+import { Badge } from "./ui/badge";
+
+type Social = {
+  key: string;
+  value: string;
+  url?: string;
+};
 
 type ProductItemProps = {
-  product: Product
-}
+  product: Product;
+};
 
 const ProductItem = ({ product }: ProductItemProps) => {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { cart, setCart } = useContext(CartContext)
-  const isMobile = useIsMobile()
+  const { cart, setCart } = useContext(CartContext);
+  const isMobile = useIsMobile();
+  const router = useRouter();
 
   const lineItemIndex = cart?.items?.findIndex((item) => {
-    const productId = typeof item.product === "string" ? item.product : item.product?.id
-    return productId === product.id
-  })
-  const lineItem = lineItemIndex !== undefined && lineItemIndex >= 0 ? cart?.items?.[lineItemIndex] : undefined
+    const productId =
+      typeof item.product === "string" ? item.product : item.product?.id;
+    return productId === product.id;
+  });
+  const lineItem =
+    lineItemIndex !== undefined && lineItemIndex >= 0
+      ? cart?.items?.[lineItemIndex]
+      : undefined;
 
   const add = useMutation({
     mutationKey: ["add", product.id],
     mutationFn: async () => {
-      setIsLoading(true)
-      return store.cart.addLineItem(cart?.id as string, product.id, 1)
+      setIsLoading(true);
+      return store.cart.addLineItem(cart?.id as string, product.id, 1);
     },
     onSuccess: (response) => {
-      setCart(response.cart)
-      setIsLoading(false)
+      setCart(response.cart);
+      setIsLoading(false);
     },
     onError: () => {
-      setIsLoading(false)
+      setIsLoading(false);
     },
-  })
+  });
 
   const deleteItem = useMutation({
     mutationKey: ["delete", product.id],
     mutationFn: async () => {
-      setIsLoading(true)
-      return store.cart.deleteLineItem(cart?.id as string, lineItemIndex as number)
+      setIsLoading(true);
+      return store.cart.deleteLineItem(
+        cart?.id as string,
+        lineItemIndex as number
+      );
     },
     onSuccess: (response) => {
-      setCart(response.cart)
-      setIsLoading(false)
+      setCart(response.cart);
+      setIsLoading(false);
     },
     onError: () => {
-      setIsLoading(false)
+      setIsLoading(false);
     },
-  })
+  });
 
   const thumbnailUrl =
-    typeof product.thumbnail === "string" ? product.thumbnail : product.thumbnail?.url
+    typeof product.thumbnail === "string"
+      ? product.thumbnail
+      : product.thumbnail?.url;
 
-  if (!thumbnailUrl) return null
+  if (!thumbnailUrl) return null;
 
-  const photos = product.images?.map((img, idx) => ({
-    key: `${product.id}-${idx}`,
-    label: idx,
-    alt: product.title,
-    src: typeof img.image === "string" ? img.image : img.image?.url || "",
-  }))
+  const iconStrokeWidth = isMobile ? 2 : 5;
+  const price = product.price;
+  const isAvailable = product.available !== false && Boolean(price);
+  const isInBasket = product.available !== false && Boolean(lineItem);
 
-  const iconStrokeWidth = isMobile ? 2 : 5
-  const price = product.price
-  const isAvailable = product.inventory > 0 && Boolean(price)
-  const isInBasket = product.inventory > 0 && Boolean(lineItem)
+  const handleClick = () => {
+    router.push(`/catalogue/${product.handle}`);
+  };
 
   return (
     <div
-      onClick={(event) => {
-        event.stopPropagation()
-        setIsLightboxOpen(true)
-      }}
+      onClick={handleClick}
       className={cn(
         "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out ",
         {
           "border border-white/30": isInBasket,
-        },
+        }
       )}
     >
       {isAvailable ? (
@@ -112,7 +119,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               <div
                 className={cn(
                   "absolute h-full w-full flex flex-col items-center justify-end ",
-                  { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile },
+                  { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile }
                 )}
               >
                 <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
@@ -121,8 +128,8 @@ const ProductItem = ({ product }: ProductItemProps) => {
                     variant="outline"
                     className="font-bold bg-black/80 border-0"
                     onClick={(event) => {
-                      event.stopPropagation()
-                      isInBasket ? deleteItem.mutate() : add.mutate()
+                      event.stopPropagation();
+                      isInBasket ? deleteItem.mutate() : add.mutate();
                     }}
                     size={"sm"}
                     disabled={!cart}
@@ -142,9 +149,10 @@ const ProductItem = ({ product }: ProductItemProps) => {
                   "bg-black/80 w-full text-center text-xs sm:text-lg absolute animate-in fade-in duration-500 transition-none ",
                   {
                     "bg-white/30 text-black": isInBasket,
-                    "-bottom-14 text-start bg-transparent text-gray-400": isMobile,
+                    "-bottom-14 text-start bg-transparent text-gray-400":
+                      isMobile,
                     "top-2": !isMobile,
-                  },
+                  }
                 )}
               >
                 <div className="animate-in slide-in-from-left duration-500 ease-out font-bold text-xs sm:text-sm">
@@ -169,7 +177,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               {
                 "-bottom-10": isMobile,
                 "bottom-3 ": !isMobile,
-              },
+              }
             )}
             variant={"outline"}
           >
@@ -177,186 +185,147 @@ const ProductItem = ({ product }: ProductItemProps) => {
           </Badge>
         </div>
       )}
-
-      {photos?.length && (
-        <Lightbox
-          open={isLightboxOpen}
-          close={() => setIsLightboxOpen(false)}
-          slides={photos}
-          carousel={{ finite: true }}
-          styles={{
-            root: {
-              "--yarl__color_backdrop": "rgba(0, 0, 0, .8)",
-            },
-            slide: {
-              width: "60vw",
-              height: "60vh",
-              margin: "auto",
-            },
-          }}
-          controller={{
-            closeOnBackdropClick: true,
-            closeOnPullUp: true,
-            closeOnPullDown: true,
-          }}
-          render={{
-            controls: () => (
-              <div className="flex flex-col gap-4 items-center fixed bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto z-[999]">
-                <Badge
-                  variant={"default"}
-                  className="bg-black text-lg text-white flex flex-col sm:flex-row"
-                >
-                  {product.description}
-                </Badge>
-
-                {isAvailable && (
-                  <>
-                    <Badge
-                      variant={"outline"}
-                      className="text-base sm:text-2xl"
-                    >{`€${formatPrice(price)}`}</Badge>
-                    <Button
-                      variant="outline"
-                      className="text-white font-regular tracking-normal"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        isInBasket ? deleteItem.mutate() : add.mutate()
-                      }}
-                      disabled={!cart}
-                    >
-                      {isLoading ? (
-                        <Spinner />
-                      ) : !isInBasket ? (
-                        <Plus strokeWidth={iconStrokeWidth} />
-                      ) : (
-                        <Minus strokeWidth={iconStrokeWidth} />
-                      )}
-                    </Button>
-                  </>
-                )}
-              </div>
-            ),
-          }}
-        ></Lightbox>
-      )}
     </div>
-  )
-}
+  );
+};
 
 const SubGrid = ({
   children,
   className,
 }: {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }) => {
   return (
     <div
       className={cn(
         "grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-24 sm:gap-8",
-        className,
+        className
       )}
     >
       {children}
     </div>
-  )
-}
+  );
+};
 
 type Props = {
-  images: { url: string; alternativeText?: string }[]
-  emailHref: string
-}
+  images: { url: string; alternativeText?: string }[];
+  socials: Social[];
+};
 
-const IMAGE_SIZE = 3000
-const REFETCH_PRODUCTS_INTERVAL = 1000 * 60 * 2
+const IMAGE_SIZE = 3000;
+const REFETCH_PRODUCTS_INTERVAL = 1000 * 60 * 2;
 
-export default function ProductGrid({ images, emailHref }: Props) {
-  const { cart, refetchCart } = useContext(CartContext)
-  const { id, setId } = useContext(FilterContext)
-  const searchParams = useSearchParams()
-  const router = useRouter()
+export default function ProductGrid({ images, socials }: Props) {
+  const { cart, refetchCart } = useContext(CartContext);
+  const { id, setId } = useContext(FilterContext);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    setId(searchParams.get("category"))
-  }, [])
+    setId(searchParams.get("category"));
+  }, []);
 
   useEffect(() => {
     if (id) {
-      const params = new URLSearchParams(searchParams)
-      params.set("category", id)
-      router.push(`?${params.toString()}`)
+      const params = new URLSearchParams(searchParams);
+      params.set("category", id);
+      router.push(`?${params.toString()}`);
     }
-  }, [id])
+  }, [id]);
 
   const { data: productData, error } = useSuspenseQuery({
     queryKey: ["products", id, cart?.id],
     queryFn: async () => {
-      const data = await store.product.list(id ?? undefined)
+      const data = await store.product.list(id ?? undefined);
 
       const unavailableProducts = data.products.filter(
-        (product) => product.inventory === 0,
-      )
+        (product) => product.available === false
+      );
 
       if (cart && cart.items) {
         for (let i = cart.items.length - 1; i >= 0; i--) {
-          const item = cart.items[i]
-          const productId = typeof item.product === "string" ? item.product : item.product?.id
+          const item = cart.items[i];
+          const productId =
+            typeof item.product === "string" ? item.product : item.product?.id;
           const unavailableProduct = unavailableProducts?.find(
-            (product) => product.id === productId,
-          )
+            (product) => product.id === productId
+          );
 
           if (unavailableProduct) {
             try {
-              await store.cart.deleteLineItem(cart.id, i)
+              await store.cart.deleteLineItem(cart.id, i);
               toast({
                 title: `Product is no longer available and was removed from your cart.`,
-              })
+              });
             } catch {
               // ignore
             }
           }
         }
 
-        refetchCart()
+        refetchCart();
       }
 
-      return data
+      return data;
     },
     refetchInterval: REFETCH_PRODUCTS_INTERVAL,
     refetchIntervalInBackground: true,
-  })
+  });
 
-  if (error) throw new Error("Couldn't load products")
+  if (error) throw new Error("Couldn't load products");
 
-  const products = productData?.products ?? []
+  const products = productData?.products ?? [];
 
-  const firstSet = products.slice(0, 4)
-  const intermediateSet = products.slice(4, 12)
-  const secondSet = products.slice(12, 14)
-  const thirdSet = products.slice(14, 26)
-  const fourthSet = products.slice(26)
+  const firstSet = products.slice(0, 4);
+  const intermediateSet = products.slice(4, 12);
+  const secondSet = products.slice(12, 14);
+  const thirdSet = products.slice(14, 26);
+  const fourthSet = products.slice(26);
 
-  const firstImage = images[0]
-  const secondImage = images[1]
-  const thirdImage = images[2]
+  const firstImage = images[0];
+  const secondImage = images[1];
+  const thirdImage = images[2];
 
   if (products.length === 0) {
     return (
-      <div className="flex flex-col mx-auto px-10">
-        <p className="text-lg md:text-2xl text-center font-light">
-          {id
-            ? "No products found with the applied filter. Feel free to explore more through the categories on top."
-            : "We currently don't have any available pieces. Feel free to stalk us on social media for any updates!"}
-        </p>
-        <Button
-          variant={"outline"}
-          className="mx-auto mt-10"
-          onClick={() => setId(null)}
-        >
-          EXPLORE
-        </Button>
+      <div className="flex flex-col items-center w-full">
+        {id ? (
+          <>
+            <p className="text-lg md:text-2xl text-center font-light">
+              No products found with the applied filter. Feel free to explore
+              more through the categories on top.
+            </p>
+            <Button
+              variant={"outline"}
+              className="mx-auto mt-10"
+              onClick={() => {
+                setId(null);
+                router.push("/catalogue");
+              }}
+            >
+              EXPLORE
+            </Button>
+          </>
+        ) : (
+          <p className="text-lg md:text-2xl text-center font-light max-w-2xl">
+            We currently don&apos;t have any available pieces. Feel free to
+            stalk us on{" "}
+            <a
+              href={
+                socials.find((s) => s.key.toLowerCase() === "instagram")?.url
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-75 transition-all"
+            >
+              instagram
+            </a>{" "}
+            for any updates!
+          </p>
+        )}
       </div>
-    )
+    );
   }
 
   return (
@@ -453,7 +422,7 @@ export default function ProductGrid({ images, emailHref }: Props) {
           RING SIZE GUIDE
         </Link>
         <a
-          href={emailHref}
+          href={socials.find((s) => s.key.toLowerCase() === "email")?.url}
           target="_blank"
           className="text-2xl md:text-4xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
         >
@@ -461,5 +430,5 @@ export default function ProductGrid({ images, emailHref }: Props) {
         </a>
       </div>
     </>
-  )
+  );
 }

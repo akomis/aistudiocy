@@ -42,7 +42,7 @@ export async function POST(
           ? String(cart.shippingOption)
           : cart.shippingOption.id
       const shippingOption = await payload.findByID({
-        collection: 'shipping-options',
+        collection: 'shipping',
         id: shippingOptionId,
       })
       if (shippingOption) {
@@ -78,20 +78,16 @@ export async function POST(
       },
     })
 
-    // Decrement inventory
+    // Mark sold products as unavailable
     for (const item of cart.items || []) {
       const productId =
         typeof item.product === 'string' || typeof item.product === 'number'
           ? String(item.product)
           : item.product.id
-      const product = await payload.findByID({
-        collection: 'products',
-        id: productId,
-      })
       await payload.update({
         collection: 'products',
         id: productId,
-        data: { inventory: Math.max(0, product.inventory - item.quantity) },
+        data: { available: false },
       })
     }
 

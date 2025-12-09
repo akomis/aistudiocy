@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const ShippingOptions: CollectionConfig = {
-  slug: 'shipping-options',
+export const Shipping: CollectionConfig = {
+  slug: 'shipping',
   admin: {
     useAsTitle: 'name',
   },

@@ -1,10 +1,11 @@
 "use client";
 
+import useImagePreloader from "@/hooks/use-image-preloader";
 import useIsMobile from "@/hooks/use-is-mobile";
 import { Category } from "@/lib/store";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CategoryPicker from "./CategoryPicker";
 import Logo from "./Logo";
 import Section from "./Section";
@@ -25,6 +26,12 @@ const DynamicBackground = ({ data }: Props) => {
   const router = useRouter();
   const categories = data.map((e) => e.category);
 
+  const allImageUrls = useMemo(() => {
+    return data.flatMap((e) => [e.desktopUrl, e.mobileUrl]);
+  }, [data]);
+
+  const imagesLoaded = useImagePreloader(allImageUrls);
+
   useEffect(() => {
     if (isPaused || !data.length) return;
 
@@ -41,7 +48,7 @@ const DynamicBackground = ({ data }: Props) => {
     return () => clearTimeout(timeout);
   }, [categoryId, isPaused, data]);
 
-  if (!data.length) {
+  if (!data.length || !imagesLoaded) {
     return (
       <Section className="h-[100dvh] flex items-center justify-center p-0">
         <Logo />

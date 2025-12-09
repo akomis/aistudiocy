@@ -1,4 +1,5 @@
 import Block from "@/components/Block";
+import Contact from "@/components/Contact";
 import CutoffText from "@/components/CutoffText";
 import DynamicBackground from "@/components/DynamicBackground";
 import Section from "@/components/Section";
@@ -31,24 +32,18 @@ const Header = async () => {
   return <DynamicBackground data={data} />;
 };
 
-const About = async () => {
-  const payload = await getPayloadClient();
-
-  const landingPage = (await payload.findGlobal({
-    slug: "landing-page" as "site-settings",
-  })) as unknown as LandingPage;
-
-  const abouts = landingPage.abouts || [];
+const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
+  const aboutsList = abouts || [];
 
   return (
     <Section className="pt-12">
       <div className="flex flex-col 2xl:flex-row justify-between items-start lg:items-end leading-10">
-        <div className="px-10 2xl:p-0">
+        <div className="mb-2 px-10 2xl:p-0">
           <CutoffText>ABOUT</CutoffText>
         </div>
 
-        <div className="flex flex-col gap-10 py-0 px-10 w-full">
-          {abouts.map((about) => (
+        <div className="flex flex-col gap-10 py-0 m-0 px-10 w-full">
+          {aboutsList.map((about) => (
             <div key={about.title} className="flex flex-col gap-2">
               <p className="text-4xl sm:text-7xl font-bold">{about.title}</p>
               <Block content={about.content} />
@@ -60,16 +55,15 @@ const About = async () => {
   );
 };
 
-const Footer = async () => {
-  const payload = await getPayloadClient();
-
-  const landingPage = (await payload.findGlobal({
-    slug: "landing-page" as "site-settings",
-    depth: 2,
-  })) as unknown as LandingPage;
-
-  const socials = landingPage.socials || [];
-  const bgImageUrl = landingPage.footerImage?.url;
+const Footer = ({
+  socials,
+  footerImage,
+}: {
+  socials: LandingPage["socials"];
+  footerImage: LandingPage["footerImage"];
+}) => {
+  const socialsList = socials || [];
+  const bgImageUrl = footerImage?.url;
 
   return (
     <Section
@@ -84,20 +78,7 @@ const Footer = async () => {
         id="footer"
         className="flex flex-col justify-end items-start gap-10 mr-10 mb-10"
       >
-        <div className="flex flex-col sm:flex-row font-bold gap-10">
-          {socials.map((social) => (
-            <div key={social.key} className="flex flex-col text-start">
-              <p>{social.key}</p>
-              <a
-                href={social.url}
-                target="_blank"
-                className="hover:opacity-70 transition-all duration-500 "
-              >
-                {social.value}
-              </a>
-            </div>
-          ))}
-        </div>
+        <Contact socials={socialsList} />
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {pages.map((page) => (
             <Link
@@ -115,11 +96,18 @@ const Footer = async () => {
 };
 
 export default async function Landing() {
+  const payload = await getPayloadClient();
+
+  const landingPage = (await payload.findGlobal({
+    slug: "landing-page",
+    depth: 2,
+  })) as unknown as LandingPage;
+
   return (
     <Suspense>
       <Header />
-      <About />
-      <Footer />
+      <About abouts={landingPage.abouts} />
+      <Footer socials={landingPage.socials} footerImage={landingPage.footerImage} />
     </Suspense>
   );
 }

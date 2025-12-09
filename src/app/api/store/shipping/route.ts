@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const countryCode = searchParams.get('country_code')?.toLowerCase()
 
     const options = await payload.find({
-      collection: 'shipping-options',
+      collection: 'shipping',
       where: {
         isActive: { equals: true },
       },

@@ -71,7 +71,7 @@ export interface Config {
     media: Media;
     categories: Category;
     products: Product;
-    'shipping-options': ShippingOption;
+    shipping: Shipping;
     carts: Cart;
     orders: Order;
     'payload-kv': PayloadKv;
@@ -85,7 +85,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
-    'shipping-options': ShippingOptionsSelect<false> | ShippingOptionsSelect<true>;
+    shipping: ShippingSelect<false> | ShippingSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -98,11 +98,11 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
-    'site-settings': SiteSetting;
+    catalogue: Catalogue;
     'landing-page': LandingPage;
   };
   globalsSelect: {
-    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    catalogue: CatalogueSelect<false> | CatalogueSelect<true>;
     'landing-page': LandingPageSelect<false> | LandingPageSelect<true>;
   };
   locale: null;
@@ -245,7 +245,10 @@ export interface Product {
    * Original price in cents for sale display (optional)
    */
   compareAtPrice?: number | null;
-  inventory: number;
+  /**
+   * Whether this piece is available for purchase
+   */
+  available?: boolean | null;
   category: number | Category;
   thumbnail: number | Media;
   images?:
@@ -272,9 +275,9 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "shipping-options".
+ * via the `definition` "shipping".
  */
-export interface ShippingOption {
+export interface Shipping {
   id: number;
   name: string;
   /**
@@ -336,7 +339,7 @@ export interface Cart {
     countryCode?: string | null;
     phone?: string | null;
   };
-  shippingOption?: (number | null) | ShippingOption;
+  shippingOption?: (number | null) | Shipping;
   /**
    * Sum of item prices (cents)
    */
@@ -440,8 +443,8 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
-        relationTo: 'shipping-options';
-        value: number | ShippingOption;
+        relationTo: 'shipping';
+        value: number | Shipping;
       } | null)
     | ({
         relationTo: 'carts';
@@ -591,7 +594,7 @@ export interface ProductsSelect<T extends boolean = true> {
   handle?: T;
   price?: T;
   compareAtPrice?: T;
-  inventory?: T;
+  available?: T;
   category?: T;
   thumbnail?: T;
   images?:
@@ -607,9 +610,9 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "shipping-options_select".
+ * via the `definition` "shipping_select".
  */
-export interface ShippingOptionsSelect<T extends boolean = true> {
+export interface ShippingSelect<T extends boolean = true> {
   name?: T;
   amount?: T;
   countries?:
@@ -758,32 +761,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-settings".
+ * via the `definition` "catalogue".
  */
-export interface SiteSetting {
+export interface Catalogue {
   id: number;
   /**
    * Static images displayed in the catalogue
    */
-  catalogueImages?:
+  showcaseImages?:
     | {
         image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Countries available for shipping
-   */
-  supportedCountries?:
-    | {
-        /**
-         * Country name (e.g., "Greece")
-         */
-        name: string;
-        /**
-         * ISO code (e.g., "gr")
-         */
-        code: string;
         id?: string | null;
       }[]
     | null;
@@ -849,20 +836,13 @@ export interface LandingPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-settings_select".
+ * via the `definition` "catalogue_select".
  */
-export interface SiteSettingsSelect<T extends boolean = true> {
-  catalogueImages?:
+export interface CatalogueSelect<T extends boolean = true> {
+  showcaseImages?:
     | T
     | {
         image?: T;
-        id?: T;
-      };
-  supportedCountries?:
-    | T
-    | {
-        name?: T;
-        code?: T;
         id?: T;
       };
   updatedAt?: T;

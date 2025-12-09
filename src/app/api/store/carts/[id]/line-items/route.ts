@@ -27,8 +27,8 @@ export async function POST(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    if (product.inventory < quantity) {
-      return NextResponse.json({ error: 'Insufficient inventory' }, { status: 400 })
+    if (product.available === false) {
+      return NextResponse.json({ error: 'Product is no longer available' }, { status: 400 })
     }
 
     // Check if item already exists in cart

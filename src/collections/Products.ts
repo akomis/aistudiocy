@@ -4,7 +4,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'price', 'inventory', 'status'],
+    defaultColumns: ['title', 'category', 'price', 'available', 'status'],
   },
   access: {
     read: () => true,
@@ -50,11 +50,12 @@ export const Products: CollectionConfig = {
       },
     },
     {
-      name: 'inventory',
-      type: 'number',
-      required: true,
-      defaultValue: 0,
-      min: 0,
+      name: 'available',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        description: 'Whether this piece is available for purchase',
+      },
     },
     {
       name: 'category',

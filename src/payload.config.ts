@@ -11,12 +11,12 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
 import { Products } from './collections/Products'
-import { ShippingOptions } from './collections/ShippingOptions'
+import { Shipping } from './collections/Shipping'
 import { Carts } from './collections/Carts'
 import { Orders } from './collections/Orders'
 
 // Globals
-import { SiteSettings } from './globals/SiteSettings'
+import { Catalogue } from './globals/Catalogue'
 import { LandingPage } from './globals/LandingPage'
 
 const filename = fileURLToPath(import.meta.url)
@@ -35,11 +35,11 @@ export default buildConfig({
     Media,
     Categories,
     Products,
-    ShippingOptions,
+    Shipping,
     Carts,
     Orders,
   ],
-  globals: [SiteSettings, LandingPage],
+  globals: [Catalogue, LandingPage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'your-secret-key',
   typescript: {

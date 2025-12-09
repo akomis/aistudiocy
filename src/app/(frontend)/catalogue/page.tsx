@@ -4,7 +4,7 @@ import HomeButton from "@/components/HomeButton"
 import ProductGrid from "@/components/ProductGrid"
 import Screen from "@/components/Screen"
 import { getPayloadClient } from "@/lib/payload"
-import { Category, SiteSettings, LandingPage } from "@/lib/store"
+import { Category, Catalogue as CatalogueType, LandingPage } from "@/lib/store"
 
 // Use dynamic rendering for pages that need database access
 export const dynamic = 'force-dynamic'
@@ -12,18 +12,18 @@ export const dynamic = 'force-dynamic'
 export default async function Catalogue() {
   const payload = await getPayloadClient()
 
-  const [categoriesResult, siteSettings, landingPage] = await Promise.all([
+  const [categoriesResult, catalogue, landingPage] = await Promise.all([
     payload.find({
       collection: "categories",
       depth: 2,
       limit: 100,
     }),
     payload.findGlobal({
-      slug: "site-settings",
+      slug: "catalogue",
       depth: 2,
-    }) as Promise<SiteSettings>,
+    }) as Promise<CatalogueType>,
     payload.findGlobal({
-      slug: "landing-page" as "site-settings",
+      slug: "landing-page" as "catalogue",
     }) as unknown as Promise<LandingPage>,
   ])
 
@@ -33,14 +33,9 @@ export default async function Catalogue() {
   if (!categories) throw new Error("Couldn't load categories")
 
   const catalogueStaticImages =
-    siteSettings.catalogueImages?.map((item) => ({
+    catalogue.showcaseImages?.map((item) => ({
       url: item.image?.url || "",
     })) || []
-
-  const emailSocial = socials.find(
-    (social) => social.key.toLowerCase() === "email"
-  )
-  const emailHref = emailSocial?.url || ""
 
   return (
     <Screen className="px-5">
@@ -55,7 +50,7 @@ export default async function Catalogue() {
           <Basket />
         </div>
 
-        <ProductGrid images={catalogueStaticImages} emailHref={emailHref} />
+        <ProductGrid images={catalogueStaticImages} socials={socials} />
       </div>
     </Screen>
   )

@@ -39,7 +39,7 @@ export interface Product {
   handle: string
   price: number
   compareAtPrice?: number
-  inventory: number
+  available?: boolean
   category: Category | string
   thumbnail: Media
   images?: { image: Media }[]
@@ -113,9 +113,8 @@ export interface LandingPage {
   footerImage?: Media
 }
 
-export interface SiteSettings {
-  catalogueImages?: { image: Media }[]
-  supportedCountries?: { name: string; code: string }[]
+export interface Catalogue {
+  showcaseImages?: { image: Media }[]
 }
 
 // Store API client
@@ -200,6 +199,12 @@ export const store = {
       if (!res.ok) throw new Error('Failed to fetch products')
       return res.json()
     },
+
+    async get(handle: string): Promise<{ product: Product }> {
+      const res = await fetch(`${API_BASE}/products/${handle}`)
+      if (!res.ok) throw new Error('Failed to fetch product')
+      return res.json()
+    },
   },
 
   // Category operations
@@ -215,7 +220,7 @@ export const store = {
   shipping: {
     async listOptions(countryCode?: string): Promise<{ shipping_options: ShippingOption[] }> {
       const params = countryCode ? `?country_code=${countryCode}` : ''
-      const res = await fetch(`${API_BASE}/shipping-options${params}`)
+      const res = await fetch(`${API_BASE}/shipping${params}`)
       if (!res.ok) throw new Error('Failed to fetch shipping options')
       return res.json()
     },
@@ -229,9 +234,9 @@ export const store = {
       return res.json()
     },
 
-    async getSiteSettings(): Promise<{ siteSettings: SiteSettings }> {
-      const res = await fetch(`${API_BASE}/site-settings`)
-      if (!res.ok) throw new Error('Failed to fetch site settings')
+    async getCatalogue(): Promise<{ catalogue: Catalogue }> {
+      const res = await fetch(`${API_BASE}/catalogue`)
+      if (!res.ok) throw new Error('Failed to fetch catalogue')
       return res.json()
     },
   },

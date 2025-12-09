@@ -6,7 +6,7 @@ export async function GET() {
     const payload = await getPayloadClient()
 
     const landingPage = await payload.findGlobal({
-      slug: 'landing-page' as 'site-settings',
+      slug: 'landing-page',
       depth: 2,
     })
 

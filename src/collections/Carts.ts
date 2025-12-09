@@ -69,7 +69,7 @@ export const Carts: CollectionConfig = {
     {
       name: 'shippingOption',
       type: 'relationship',
-      relationTo: 'shipping-options',
+      relationTo: 'shipping',
     },
     {
       name: 'subtotal',
@@ -138,7 +138,7 @@ export const Carts: CollectionConfig = {
         if (data.shippingOption && typeof data.shippingOption === 'string') {
           try {
             const shippingOptionDoc = await req.payload.findByID({
-              collection: 'shipping-options',
+              collection: 'shipping',
               id: data.shippingOption,
             })
             if (shippingOptionDoc) {

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { countryOptions } from '@/lib/countries'
 
 export const Shipping: CollectionConfig = {
   slug: 'shipping',
@@ -23,38 +24,15 @@ export const Shipping: CollectionConfig = {
       required: true,
       min: 0,
       admin: {
-        description: 'Shipping cost in cents (EUR). E.g., 500 = 5.00 EUR',
+        description: 'Shipping cost in EUR',
       },
     },
     {
       name: 'countries',
-      type: 'array',
+      type: 'select',
+      hasMany: true,
       required: true,
-      minRows: 1,
-      admin: {
-        description: 'Country codes this shipping option applies to',
-      },
-      fields: [
-        {
-          name: 'countryCode',
-          type: 'text',
-          required: true,
-          admin: {
-            description: 'ISO country code (e.g., "gr", "de", "us")',
-          },
-        },
-      ],
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-    },
-    {
-      name: 'estimatedDays',
-      type: 'text',
-      admin: {
-        description: 'Estimated delivery time (e.g., "3-5 business days")',
-      },
+      options: countryOptions,
     },
     {
       name: 'isActive',

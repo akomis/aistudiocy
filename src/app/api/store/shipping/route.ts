@@ -19,9 +19,7 @@ export async function GET(request: NextRequest) {
     let filteredOptions = options.docs
     if (countryCode) {
       filteredOptions = options.docs.filter((option: any) =>
-        option.countries?.some(
-          (c: { countryCode: string }) => c.countryCode.toLowerCase() === countryCode,
-        ),
+        option.countries?.some((c: string) => c.toLowerCase() === countryCode),
       )
     }
 

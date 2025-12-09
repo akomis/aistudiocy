@@ -1,6 +1,5 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { FormControl } from "./ui/form";
 import {
   Select,
   SelectContent,
@@ -25,19 +24,17 @@ const DropdownPicker = ({
   disabled,
 }: Props) => {
   return (
-    <Select disabled={disabled} onValueChange={setValue} defaultValue={value}>
-      <FormControl>
-        <SelectTrigger
-          className={cn(
-            "w-full h-full justify-between bg-transparent text-gray-400 rounded-none text-[16px]",
-            {
-              "text-white": Boolean(value),
-            }
-          )}
-        >
-          <SelectValue placeholder={title.toUpperCase()} />
-        </SelectTrigger>
-      </FormControl>
+    <Select disabled={disabled} onValueChange={setValue} value={value}>
+      <SelectTrigger
+        className={cn(
+          "w-full h-full justify-between bg-transparent text-gray-400 rounded-none text-[16px]",
+          {
+            "text-white": Boolean(value),
+          }
+        )}
+      >
+        <SelectValue placeholder={title.toUpperCase()} />
+      </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>

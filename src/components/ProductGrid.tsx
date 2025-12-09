@@ -10,11 +10,11 @@ import FilterContext from "@/providers/filter";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
+import RingSizeGuide from "./RingSizeGuide";
 
 type Social = {
   key: string;
@@ -30,7 +30,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { cart, setCart } = useContext(CartContext);
+  const { cart, setCart, setBasketOpen } = useContext(CartContext);
   const isMobile = useIsMobile();
   const router = useRouter();
 
@@ -53,6 +53,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     onSuccess: (response) => {
       setCart(response.cart);
       setIsLoading(false);
+      setBasketOpen(true);
     },
     onError: () => {
       setIsLoading(false);
@@ -115,49 +116,49 @@ const ProductItem = ({ product }: ProductItemProps) => {
             style={{ objectFit: "contain" }}
           />
           {(isInBasket || isHovered || isMobile || isLoading) && (
-            <div>
-              <div
-                className={cn(
-                  "absolute h-full w-full flex flex-col items-center justify-end ",
-                  { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile }
-                )}
-              >
-                <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
-                  <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(price)}`}</span>
-                  <Button
-                    variant="outline"
-                    className="font-bold bg-black/80 border-0"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      isInBasket ? deleteItem.mutate() : add.mutate();
-                    }}
-                    size={"sm"}
-                    disabled={!cart}
-                  >
-                    {isLoading ? (
-                      <Spinner />
-                    ) : !isInBasket ? (
-                      <Plus strokeWidth={iconStrokeWidth} />
-                    ) : (
-                      <Minus strokeWidth={iconStrokeWidth} />
-                    )}
-                  </Button>
-                </div>
+            <div
+              className={cn(
+                "absolute h-full w-full flex flex-col items-center justify-end ",
+                { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile }
+              )}
+            >
+              <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
+                <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(price)}`}</span>
+                <Button
+                  variant="outline"
+                  className="font-bold bg-black/80 border-0"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    isInBasket ? deleteItem.mutate() : add.mutate();
+                  }}
+                  size={"sm"}
+                  disabled={!cart}
+                >
+                  {isLoading ? (
+                    <Spinner />
+                  ) : !isInBasket ? (
+                    <Plus strokeWidth={iconStrokeWidth} />
+                  ) : (
+                    <Minus strokeWidth={iconStrokeWidth} />
+                  )}
+                </Button>
               </div>
-              <div
-                className={cn(
-                  "bg-black/80 w-full text-center text-xs sm:text-lg absolute animate-in fade-in duration-500 transition-none ",
-                  {
-                    "bg-white/30 text-black": isInBasket,
-                    "-bottom-14 text-start bg-transparent text-gray-400":
-                      isMobile,
-                    "top-2": !isMobile,
-                  }
-                )}
-              >
-                <div className="animate-in slide-in-from-left duration-500 ease-out font-bold text-xs sm:text-sm">
-                  {product.description}
-                </div>
+            </div>
+          )}
+          {(isHovered || isMobile || isLoading) && (
+            <div
+              className={cn(
+                "bg-black/80 w-full text-center text-xs sm:text-lg absolute animate-in fade-in duration-500 transition-none ",
+                {
+                  "bg-white/30 text-black": isInBasket,
+                  "-bottom-14 text-start bg-transparent text-gray-400":
+                    isMobile,
+                  "top-2": !isMobile,
+                }
+              )}
+            >
+              <div className="animate-in slide-in-from-left duration-500 ease-out font-bold text-xs sm:text-sm">
+                {product.description}
               </div>
             </div>
           )}
@@ -414,13 +415,7 @@ export default function ProductGrid({ images, socials }: Props) {
         ) : null}
       </div>
       <div className="mt-40 flex flex-col gap-10 sm:gap-16">
-        <Link
-          href="/sizing"
-          target="_blank"
-          className="text-2xl md:text-4xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
-        >
-          RING SIZE GUIDE
-        </Link>
+        <RingSizeGuide />
         <a
           href={socials.find((s) => s.key.toLowerCase() === "email")?.url}
           target="_blank"

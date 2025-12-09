@@ -38,7 +38,7 @@ export default async function Catalogue() {
     })) || []
 
   return (
-    <Screen className="px-5">
+    <Screen className="px-5 animate-in fade-in">
       <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-16 pt-10">
           <HomeButton isIcon />

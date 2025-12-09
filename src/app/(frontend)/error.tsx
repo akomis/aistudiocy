@@ -18,7 +18,7 @@ export default function Error({ error }: Props) {
             <Link href="/#footer">contact us</Link>.
           </p>
         </div>
-        <p className="font-thin text-lg max-w-lg">{`Error: ${error.message}`}</p>
+        <p className="font-thin text-lg max-w-lg">{`Error: (${error.message})`}</p>
       </div>
 
       <HomeButton isIcon />

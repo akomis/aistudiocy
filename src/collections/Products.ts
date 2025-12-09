@@ -38,7 +38,7 @@ export const Products: CollectionConfig = {
       required: true,
       min: 0,
       admin: {
-        description: 'Price in cents (EUR). E.g., 2500 = 25.00 EUR',
+        description: 'Price in EUR',
       },
     },
     {
@@ -46,7 +46,7 @@ export const Products: CollectionConfig = {
       type: 'number',
       min: 0,
       admin: {
-        description: 'Original price in cents for sale display (optional)',
+        description: 'Original price in EUR for sale display (optional)',
       },
     },
     {
@@ -84,20 +84,13 @@ export const Products: CollectionConfig = {
     {
       name: 'status',
       type: 'select',
-      defaultValue: 'draft',
+      defaultValue: 'published',
       options: [
         { label: 'Draft', value: 'draft' },
         { label: 'Published', value: 'published' },
         { label: 'Archived', value: 'archived' },
       ],
       required: true,
-    },
-    {
-      name: 'metadata',
-      type: 'json',
-      admin: {
-        description: 'Additional product data (JSON)',
-      },
     },
   ],
   hooks: {

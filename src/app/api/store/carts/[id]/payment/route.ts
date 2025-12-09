@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
 import Stripe from 'stripe'
 
-const getStripe = () => new Stripe(process.env.STRIPE_API_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-})
+const getStripe = () =>
+  new Stripe(process.env.STRIPE_API_KEY!, {
+    apiVersion: '2022-08-01',
+  })
 
 export async function POST(
   request: NextRequest,
@@ -34,15 +35,18 @@ export async function POST(
     // Create or update payment intent
     let paymentIntent: Stripe.PaymentIntent
 
+    // Stripe expects amounts in cents
+    const amountInCents = Math.round((cart.total || 0) * 100)
+
     if (cart.stripePaymentIntentId) {
       // Update existing payment intent
       paymentIntent = await getStripe().paymentIntents.update(cart.stripePaymentIntentId, {
-        amount: cart.total || 0,
+        amount: amountInCents,
       })
     } else {
       // Create new payment intent
       paymentIntent = await getStripe().paymentIntents.create({
-        amount: cart.total || 0,
+        amount: amountInCents,
         currency: 'eur',
         metadata: { cartId: id },
         receipt_email: cart.email || undefined,

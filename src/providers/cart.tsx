@@ -1,5 +1,6 @@
 "use client"
 
+import { clearCheckoutFormStorage } from "@/components/Basket"
 import { store, Cart } from "@/lib/store"
 import React, { createContext, useEffect, useState } from "react"
 
@@ -12,6 +13,10 @@ type ContextType = {
   setCart: (cart: Cart) => void
   refetchCart: (cartId?: string) => Promise<void>
   resetCart: () => void
+  basketOpen: boolean
+  setBasketOpen: (open: boolean) => void
+  orderComplete: boolean
+  setOrderComplete: (complete: boolean) => void
 }
 
 export const CartContext = createContext<ContextType>({
@@ -19,10 +24,16 @@ export const CartContext = createContext<ContextType>({
   setCart: () => {},
   refetchCart: async () => {},
   resetCart: () => {},
+  basketOpen: false,
+  setBasketOpen: () => {},
+  orderComplete: false,
+  setOrderComplete: () => {},
 })
 
 export const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<Cart | undefined>(undefined)
+  const [basketOpen, setBasketOpen] = useState(false)
+  const [orderComplete, setOrderComplete] = useState(false)
 
   useEffect(() => {
     if (cart) return
@@ -30,6 +41,7 @@ export const CartProvider = ({ children }: Props) => {
     const cartId = localStorage.getItem("cart_id")
 
     if (!cartId) {
+      clearCheckoutFormStorage()
       store.cart
         .create()
         .then(({ cart }) => {
@@ -46,6 +58,7 @@ export const CartProvider = ({ children }: Props) => {
 
   const resetCart = () => {
     localStorage.removeItem("cart_id")
+    clearCheckoutFormStorage()
     setCart(undefined)
   }
 
@@ -69,6 +82,10 @@ export const CartProvider = ({ children }: Props) => {
         setCart,
         refetchCart,
         resetCart,
+        basketOpen,
+        setBasketOpen,
+        orderComplete,
+        setOrderComplete,
       }}
     >
       {children}

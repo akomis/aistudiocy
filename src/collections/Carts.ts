@@ -31,7 +31,7 @@ export const Carts: CollectionConfig = {
           type: 'number',
           required: true,
           admin: {
-            description: 'Price snapshot at time of adding to cart (cents)',
+            description: 'Price snapshot at time of adding to cart (EUR)',
           },
         },
       ],
@@ -76,7 +76,7 @@ export const Carts: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'Sum of item prices (cents)',
+        description: 'Sum of item prices (EUR)',
         readOnly: true,
       },
     },
@@ -85,7 +85,7 @@ export const Carts: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'Shipping cost (cents)',
+        description: 'Shipping cost (EUR)',
         readOnly: true,
       },
     },
@@ -94,7 +94,7 @@ export const Carts: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'Total including shipping (cents)',
+        description: 'Total including shipping (EUR)',
         readOnly: true,
       },
     },
@@ -119,6 +119,21 @@ export const Carts: CollectionConfig = {
         readOnly: true,
       },
     },
+    {
+      name: 'paymentStatus',
+      type: 'select',
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'Processing', value: 'processing' },
+        { label: 'Succeeded', value: 'succeeded' },
+        { label: 'Failed', value: 'failed' },
+      ],
+      defaultValue: 'pending',
+      admin: {
+        readOnly: true,
+        description: 'Payment status from Stripe webhook',
+      },
+    },
   ],
   hooks: {
     beforeChange: [
@@ -134,12 +149,16 @@ export const Carts: CollectionConfig = {
         }
 
         // Get shipping total from shipping option
-        let shippingTotal = data.shippingTotal || 0
-        if (data.shippingOption && typeof data.shippingOption === 'string') {
+        let shippingTotal = 0
+        if (data.shippingOption) {
+          // Handle string, number, or object shipping option IDs
+          const shippingOptionId = typeof data.shippingOption === 'object'
+            ? data.shippingOption.id
+            : String(data.shippingOption)
           try {
             const shippingOptionDoc = await req.payload.findByID({
               collection: 'shipping',
-              id: data.shippingOption,
+              id: shippingOptionId,
             })
             if (shippingOptionDoc) {
               shippingTotal = shippingOptionDoc.amount || 0

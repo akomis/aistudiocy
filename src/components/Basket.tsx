@@ -1,6 +1,7 @@
 "use client"
 
 import { toast, useToast } from "@/hooks/use-toast"
+import { Countries, CountryCode } from "@/lib/countries"
 import { store, CartItem, Product, ShippingOption } from "@/lib/store"
 import { stripePromise } from "@/lib/stripe"
 import { formatPrice } from "@/lib/utils"
@@ -112,6 +113,24 @@ const BasketList = ({ items }: { items: BasketItem[] }) => {
   )
 }
 
+const CHECKOUT_FORM_STORAGE_KEY = "checkout_form_values"
+
+export const clearCheckoutFormStorage = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(CHECKOUT_FORM_STORAGE_KEY)
+  }
+}
+
+const getStoredFormValues = () => {
+  if (typeof window === "undefined") return null
+  try {
+    const stored = localStorage.getItem(CHECKOUT_FORM_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : null
+  } catch {
+    return null
+  }
+}
+
 const CustomerForm = () => {
   const [isProceeding, setIsProceeding] = useState<boolean>(false)
   const { cart, setCart, refetchCart } = useContext(CartContext)
@@ -125,16 +144,12 @@ const CustomerForm = () => {
   // Get supported countries from shipping options
   const countries = useMemo(() => {
     if (!shippingData?.shipping_options) return []
-    const countrySet = new Map<string, string>()
+    const countrySet = new Set<CountryCode>()
     shippingData.shipping_options.forEach((option: ShippingOption) => {
-      option.countries?.forEach((c) => {
-        if (!countrySet.has(c.countryCode)) {
-          countrySet.set(c.countryCode, c.countryCode.toUpperCase())
-        }
-      })
+      option.countries?.forEach((code) => countrySet.add(code))
     })
-    return Array.from(countrySet.entries()).map(([code, name]) => ({
-      label: name,
+    return Array.from(countrySet).map((code) => ({
+      label: Countries[code],
       value: code,
     }))
   }, [shippingData])
@@ -152,32 +167,43 @@ const CustomerForm = () => {
         city: z.string().min(1, { message: "City is required" }),
         address_1: z.string().min(1, { message: "Address is required" }),
         country_code: z.string().min(2, { message: "Country code is required" }),
-        postal_code: z.string().regex(/^\d{4,}$/, {
-          message: "Postal code must be at least 4 digits",
-        }),
+        postal_code: z
+          .string()
+          .min(4, { message: "Postal code must be at least 4 digits" }),
         shipping_option: z.string().min(1, { message: "Shipping option is required" }),
       }),
     [],
   )
 
+  const storedValues = getStoredFormValues()
+
   const form = useForm<z.infer<typeof customerFormSchema>>({
     resolver: zodResolver(customerFormSchema),
-    mode: "all",
+    mode: "onTouched",
     defaultValues: {
-      first_name: cart?.shippingAddress?.firstName ?? "",
-      last_name: cart?.shippingAddress?.lastName ?? "",
-      phone: cart?.shippingAddress?.phone ?? "",
-      city: cart?.shippingAddress?.city ?? "",
-      address_1: cart?.shippingAddress?.address1 ?? "",
-      country_code: cart?.shippingAddress?.countryCode ?? "",
-      postal_code: cart?.shippingAddress?.postalCode ?? "",
-      email: cart?.email ?? "",
+      first_name: storedValues?.first_name ?? cart?.shippingAddress?.firstName ?? "",
+      last_name: storedValues?.last_name ?? cart?.shippingAddress?.lastName ?? "",
+      phone: storedValues?.phone ?? cart?.shippingAddress?.phone ?? "",
+      city: storedValues?.city ?? cart?.shippingAddress?.city ?? "",
+      address_1: storedValues?.address_1 ?? cart?.shippingAddress?.address1 ?? "",
+      country_code: storedValues?.country_code ?? cart?.shippingAddress?.countryCode ?? "",
+      postal_code: storedValues?.postal_code ?? cart?.shippingAddress?.postalCode ?? "",
+      email: storedValues?.email ?? cart?.email ?? "",
       shipping_option:
-        typeof cart?.shippingOption === "string"
-          ? cart.shippingOption
-          : cart?.shippingOption?.id ?? "",
+        storedValues?.shipping_option ??
+        (typeof cart?.shippingOption === "string" || typeof cart?.shippingOption === "number"
+          ? String(cart.shippingOption)
+          : String(cart?.shippingOption?.id ?? "")),
     },
   })
+
+  // Save form values to local storage when they change
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      localStorage.setItem(CHECKOUT_FORM_STORAGE_KEY, JSON.stringify(values))
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
 
   const { watch } = form
   const countryCode = watch("country_code")
@@ -203,20 +229,23 @@ const CustomerForm = () => {
         email: formValues.email,
         shippingAddress: address,
         billingAddress: address,
-        shippingOption: formValues.shipping_option,
+        shippingOption: parseInt(formValues.shipping_option, 10),
       })
 
-      // Create payment intent
-      const paymentData = await store.cart.createPaymentIntent(cart?.id as string)
+      // Fetch latest cart state (may have existing payment intent)
+      const { cart: updatedCart } = await store.cart.retrieve(cart?.id as string)
 
-      // Update cart with client secret
-      setCart({
-        ...cart!,
-        stripeClientSecret: paymentData.client_secret,
-        stripePaymentIntentId: paymentData.payment_intent_id,
-      })
-
-      await refetchCart()
+      // Only create payment intent if one doesn't exist
+      if (updatedCart?.stripeClientSecret && updatedCart?.stripePaymentIntentId) {
+        setCart(updatedCart)
+      } else {
+        const paymentData = await store.cart.createPaymentIntent(cart?.id as string)
+        setCart({
+          ...updatedCart,
+          stripeClientSecret: paymentData.client_secret,
+          stripePaymentIntentId: paymentData.payment_intent_id,
+        })
+      }
     } catch (e: unknown) {
       toast({
         title: "Error with customer registration",
@@ -232,11 +261,11 @@ const CustomerForm = () => {
   const shippingOptions = countryCode
     ? shippingData?.shipping_options
         ?.filter((option: ShippingOption) =>
-          option.countries?.some((c) => c.countryCode.toLowerCase() === countryCode.toLowerCase()),
+          option.countries?.some((c) => c.toLowerCase() === countryCode.toLowerCase()),
         )
         .map((option: ShippingOption) => ({
           label: `${option.name} - €${formatPrice(option.amount)}`,
-          value: option.id,
+          value: String(option.id),
         }))
     : []
 
@@ -249,7 +278,7 @@ const CustomerForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(initializePayment)} className="grid grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(initializePayment)} className="grid grid-cols-2 gap-4 animate-in fade-in">
         <FormField
           control={form.control}
           name="email"
@@ -320,12 +349,14 @@ const CustomerForm = () => {
           name="country_code"
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1 h-10">
-              <DropdownPicker
-                options={countries}
-                value={field.value}
-                setValue={field.onChange}
-                title="country"
-              />
+              <FormControl>
+                <DropdownPicker
+                  options={countries}
+                  value={field.value}
+                  setValue={field.onChange}
+                  title="country"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -337,7 +368,15 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input placeholder="POSTAL CODE *" {...field} />
+                <Input
+                  placeholder="POSTAL CODE *"
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "")
+                    field.onChange(value)
+                  }}
+                  inputMode="numeric"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -371,7 +410,15 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input placeholder="PHONE" {...field} />
+                <Input
+                  placeholder="PHONE"
+                  {...field}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^\d+]/g, "")
+                    field.onChange(value)
+                  }}
+                  inputMode="tel"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -404,8 +451,39 @@ const CustomerForm = () => {
   )
 }
 
+const ThankYouView = () => {
+  const { resetCart, setBasketOpen, setOrderComplete } = useContext(CartContext)
+  const router = useRouter()
+
+  const handleClose = () => {
+    setOrderComplete(false)
+    resetCart()
+    setBasketOpen(false)
+    router.push("/")
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-8 py-16 px-4 text-center animate-in fade-in">
+      <div className="flex flex-col gap-4">
+        <h2 className="text-3xl font-bold tracking-widest">THANK YOU</h2>
+        <p className="text-xl font-light">Your order has been placed successfully.</p>
+        <p className="text-lg font-light text-gray-400">
+          You will receive a confirmation email shortly.
+        </p>
+      </div>
+      <Button
+        onClick={handleClose}
+        className="text-xl tracking-widest px-8 py-6"
+        variant="outline"
+      >
+        CONTINUE
+      </Button>
+    </div>
+  )
+}
+
 const CheckoutForm = () => {
-  const { cart, resetCart, refetchCart, setCart } = useContext(CartContext)
+  const { cart, setCart, setOrderComplete, resetCart, refetchCart } = useContext(CartContext)
   const stripe = useStripe()
   const elements = useElements()
   const { toast } = useToast()
@@ -456,14 +534,19 @@ const CheckoutForm = () => {
       const result = await store.cart.complete(cart?.id as string)
 
       if (result.type === "cart") {
-        throw new Error("There was a problem with the order")
+        throw new Error(result.error || "There was a problem with the order")
       } else if (result.type === "order") {
-        toast({
-          title: "Order placed successfully",
-          description:
-            "Thank you for choosing us. You should receive a confirmation email soon.",
-        })
         resetCart()
+        setOrderComplete(true)
+      } else if (result.type === "processing") {
+        // Payment successful but order creation is still processing
+        // Show success message anyway - user will get email confirmation
+        resetCart()
+        setOrderComplete(true)
+        toast({
+          title: "Payment successful",
+          description: result.message,
+        })
       }
     } catch (error: unknown) {
       toast({
@@ -492,7 +575,7 @@ const CheckoutForm = () => {
   }
 
   return (
-    <div className="h-fit flex flex-col gap-4">
+    <div className="h-fit flex flex-col gap-4 animate-in fade-in">
       <Button variant={"link"} className="p-0" onClick={goBackToCustomerForm}>
         BACK
       </Button>
@@ -505,11 +588,16 @@ const CheckoutForm = () => {
         <div className="flex w-full flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="w-full flex justify-between">
+              <span className="text-lg font-light text-gray-400">SUBTOTAL</span>
+              <span className="text-lg font-light">{`€${formatPrice(cart?.subtotal ?? 0)}`}</span>
+            </div>
+            <div className="w-full flex justify-between">
+              <span className="text-lg font-light text-gray-400">SHIPPING</span>
+              <span className="text-lg font-light">{`€${formatPrice(cart?.shippingTotal ?? 0)}`}</span>
+            </div>
+            <div className="w-full flex justify-between border-t border-gray-600 pt-2">
               <span className="text-2xl font-bold text-gray-400">TOTAL</span>
               <span className="text-2xl font-bold">{`€${formatPrice(cart?.total ?? 0)}`}</span>
-            </div>
-            <div className="flex justify-end">
-              <span className="text-lg font-light">{`SHIPPING €${formatPrice(cart?.shippingTotal ?? 0)}`}</span>
             </div>
           </div>
 
@@ -529,9 +617,8 @@ const CheckoutForm = () => {
 }
 
 export default function Basket() {
-  const { cart } = useContext(CartContext)
-
-  const [open, setOpen] = useState(false)
+  const { cart, setCart, basketOpen, setBasketOpen, orderComplete, setOrderComplete } =
+    useContext(CartContext)
 
   const items: BasketItem[] =
     (cart?.items?.filter(
@@ -543,14 +630,26 @@ export default function Basket() {
 
   const hasItemsInBasket = Boolean(items.length)
 
+  // Always show customer form when basket opens (clear any existing payment session)
   useEffect(() => {
-    if (!open && clientSecret) {
-      // Keep drawer open if we have a payment session
+    if (basketOpen && clientSecret && cart) {
+      setCart({
+        ...cart,
+        stripeClientSecret: undefined,
+        stripePaymentIntentId: undefined,
+      })
     }
-  }, [clientSecret, open])
+  }, [basketOpen])
+
+  const handleOpenChange = (open: boolean) => {
+    setBasketOpen(open)
+    if (!open && orderComplete) {
+      setOrderComplete(false)
+    }
+  }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={basketOpen} onOpenChange={handleOpenChange}>
       <DrawerTrigger
         className="font-black text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait tracking-widest"
         disabled={!cart}
@@ -560,16 +659,19 @@ export default function Basket() {
       <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
           <DrawerTitle className="-mb-4 mx-auto">
-            <CutoffText>BASKET</CutoffText>
+            <CutoffText>{orderComplete ? "ORDER" : "BASKET"}</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
-          <div className="flex">
-            {hasItemsInBasket ? (
-              <BasketList items={items} />
-            ) : (
-              <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
+        {orderComplete ? (
+          <ThankYouView />
+        ) : (
+          <div className="flex flex-col flex-1 gap-10 justify-between overflow-y-auto">
+            <div className="flex">
+              {hasItemsInBasket ? (
+                <BasketList items={items} />
+              ) : (
+                <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
                 <Label className="text-lg sm:text-2xl font-thin text-center">
                   Your basket is empty.
                 </Label>{" "}
@@ -597,7 +699,8 @@ export default function Basket() {
               )}
             </div>
           )}
-        </div>
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   )

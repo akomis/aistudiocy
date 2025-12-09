@@ -174,32 +174,6 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    full?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -238,11 +212,11 @@ export interface Product {
    */
   handle: string;
   /**
-   * Price in cents (EUR). E.g., 2500 = 25.00 EUR
+   * Price in EUR
    */
   price: number;
   /**
-   * Original price in cents for sale display (optional)
+   * Original price in EUR for sale display (optional)
    */
   compareAtPrice?: number | null;
   /**
@@ -258,18 +232,6 @@ export interface Product {
       }[]
     | null;
   status: 'draft' | 'published' | 'archived';
-  /**
-   * Additional product data (JSON)
-   */
-  metadata?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -281,24 +243,10 @@ export interface Shipping {
   id: number;
   name: string;
   /**
-   * Shipping cost in cents (EUR). E.g., 500 = 5.00 EUR
+   * Shipping cost in EUR
    */
   amount: number;
-  /**
-   * Country codes this shipping option applies to
-   */
-  countries: {
-    /**
-     * ISO country code (e.g., "gr", "de", "us")
-     */
-    countryCode: string;
-    id?: string | null;
-  }[];
-  description?: string | null;
-  /**
-   * Estimated delivery time (e.g., "3-5 business days")
-   */
-  estimatedDays?: string | null;
+  countries: ('CY' | 'GR')[];
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -314,7 +262,7 @@ export interface Cart {
         product: number | Product;
         quantity: number;
         /**
-         * Price snapshot at time of adding to cart (cents)
+         * Price snapshot at time of adding to cart (EUR)
          */
         unitPrice: number;
         id?: string | null;
@@ -341,20 +289,24 @@ export interface Cart {
   };
   shippingOption?: (number | null) | Shipping;
   /**
-   * Sum of item prices (cents)
+   * Sum of item prices (EUR)
    */
   subtotal?: number | null;
   /**
-   * Shipping cost (cents)
+   * Shipping cost (EUR)
    */
   shippingTotal?: number | null;
   /**
-   * Total including shipping (cents)
+   * Total including shipping (EUR)
    */
   total?: number | null;
   stripePaymentIntentId?: string | null;
   stripeClientSecret?: string | null;
   completedAt?: string | null;
+  /**
+   * Payment status from Stripe webhook
+   */
+  paymentStatus?: ('pending' | 'processing' | 'succeeded' | 'failed') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -535,40 +487,6 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        full?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -604,7 +522,6 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   status?: T;
-  metadata?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -615,14 +532,7 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface ShippingSelect<T extends boolean = true> {
   name?: T;
   amount?: T;
-  countries?:
-    | T
-    | {
-        countryCode?: T;
-        id?: T;
-      };
-  description?: T;
-  estimatedDays?: T;
+  countries?: T;
   isActive?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -670,6 +580,7 @@ export interface CartsSelect<T extends boolean = true> {
   stripePaymentIntentId?: T;
   stripeClientSecret?: T;
   completedAt?: T;
+  paymentStatus?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -33,7 +33,7 @@ export default async function StaticPage({ params }: Props) {
   }
 
   return (
-    <Section className="min-h-screen">
+    <Section className="min-h-screen animate-in fade-in">
       <div className="max-w-3xl mx-auto px-6 py-12 sm:px-10 sm:py-20">
         <HomeButton isIcon />
 

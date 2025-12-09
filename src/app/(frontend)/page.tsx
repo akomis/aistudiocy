@@ -105,9 +105,11 @@ export default async function Landing() {
 
   return (
     <Suspense>
-      <Header />
-      <About abouts={landingPage.abouts} />
-      <Footer socials={landingPage.socials} footerImage={landingPage.footerImage} />
+      <div className="animate-in fade-in">
+        <Header />
+        <About abouts={landingPage.abouts} />
+        <Footer socials={landingPage.socials} footerImage={landingPage.footerImage} />
+      </div>
     </Suspense>
   );
 }

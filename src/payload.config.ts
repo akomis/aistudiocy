@@ -1,10 +1,16 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { resendAdapter } from "@payloadcms/email-resend";
+import { stripePlugin } from "@payloadcms/plugin-stripe";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import path from "path";
 import { buildConfig } from "payload";
+import sharp from "sharp";
 import { fileURLToPath } from "url";
+
+// Webhooks
+import { paymentIntentFailed } from "./webhooks/paymentIntentFailed";
+import { paymentIntentSucceeded } from "./webhooks/paymentIntentSucceeded";
 
 // Collections
 import { Carts } from "./collections/Carts";
@@ -62,11 +68,21 @@ export default buildConfig({
         region: "auto",
       },
     }),
+    stripePlugin({
+      stripeSecretKey: process.env.STRIPE_API_KEY || "",
+      stripeWebhooksEndpointSecret: process.env.STRIPE_WEBHOOKS_ENDPOINT_SECRET,
+      rest: false,
+      logs: process.env.NODE_ENV === "development",
+      webhooks: {
+        "payment_intent.succeeded": paymentIntentSucceeded,
+        "payment_intent.payment_failed": paymentIntentFailed,
+      },
+    }),
   ],
   email: resendAdapter({
     apiKey: process.env.RESEND_API_KEY || "",
     defaultFromAddress: process.env.ADMIN_EMAIL || "noreply@example.com",
-    defaultFromName: "fos",
+    defaultFromName: "φως",
   }),
   cors: process.env.FRONTEND_URL
     ? [process.env.FRONTEND_URL]
@@ -74,4 +90,5 @@ export default buildConfig({
   csrf: process.env.FRONTEND_URL
     ? [process.env.FRONTEND_URL]
     : ["http://localhost:3000"],
+  sharp,
 });

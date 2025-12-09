@@ -1,4 +1,12 @@
-const API_BASE = '/api/store'
+const getApiBase = () => {
+  if (typeof window !== 'undefined') {
+    return '/api/store'
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  return `${baseUrl}/api/store`
+}
+
+const API_BASE = getApiBase()
 
 // Types
 export interface CartItem {
@@ -13,13 +21,14 @@ export interface Cart {
   email?: string
   shippingAddress?: Address
   billingAddress?: Address
-  shippingOption?: ShippingOption | string
+  shippingOption?: ShippingOption | string | number
   subtotal: number
   shippingTotal: number
   total: number
   stripePaymentIntentId?: string
   stripeClientSecret?: string
   completedAt?: string
+  paymentStatus?: 'pending' | 'processing' | 'succeeded' | 'failed'
 }
 
 export interface Address {
@@ -59,9 +68,7 @@ export interface ShippingOption {
   id: string
   name: string
   amount: number
-  countries: { countryCode: string }[]
-  description?: string
-  estimatedDays?: string
+  countries: ('CY' | 'GR')[]
   isActive: boolean
 }
 
@@ -183,7 +190,11 @@ export const store = {
 
     async complete(
       cartId: string,
-    ): Promise<{ type: 'order'; order: Order } | { type: 'cart'; error: string }> {
+    ): Promise<
+      | { type: 'order'; order: Order }
+      | { type: 'cart'; error: string }
+      | { type: 'processing'; message: string }
+    > {
       const res = await fetch(`${API_BASE}/carts/${cartId}/complete`, {
         method: 'POST',
       })

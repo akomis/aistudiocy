@@ -1,45 +1,34 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Basket from "@/components/Basket"
-import HomeButton from "@/components/HomeButton"
-import Screen from "@/components/Screen"
-import Spinner from "@/components/Spinner"
-import useIsMobile from "@/hooks/use-is-mobile"
-import { store, Product, Media } from "@/lib/store"
-import { cn, formatPrice } from "@/lib/utils"
-import { CartContext } from "@/providers/cart"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { ArrowLeft, Minus, Plus } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
-import { useContext, useState } from "react"
+import AddToCartButton from "@/components/AddToCartButton";
+import Basket from "@/components/Basket";
+import HomeButton from "@/components/HomeButton";
+import RingSizeGuide from "@/components/RingSizeGuide";
+import Screen from "@/components/Screen";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Category, Media, Product, store } from "@/lib/store";
+import { cn, formatPrice } from "@/lib/utils";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 export default function ProductPage() {
-  const params = useParams()
-  const handle = params.handle as string
-  const router = useRouter()
+  const params = useParams();
+  const handle = params.handle as string;
+  const router = useRouter();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, error } = useSuspenseQuery({
     queryKey: ["product", handle],
     queryFn: () => store.product.get(handle),
-  })
-
-  if (isLoading) {
-    return (
-      <Screen className="px-5">
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <Spinner />
-        </div>
-      </Screen>
-    )
-  }
+  });
 
   if (error || !data?.product) {
     return (
-      <Screen className="px-5">
+      <Screen className="px-5 animate-in fade-in">
         <div className="w-full max-w-[1200px] mx-auto">
           <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
             <HomeButton isIcon />
@@ -53,90 +42,48 @@ export default function ProductPage() {
           </div>
         </div>
       </Screen>
-    )
+    );
   }
 
-  return <ProductDetails product={data.product} />
+  return <ProductDetails product={data.product} />;
 }
 
 function ProductDetails({ product }: { product: Product }) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const { cart, setCart } = useContext(CartContext)
-  const isMobile = useIsMobile()
-  const router = useRouter()
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  const lineItemIndex = cart?.items?.findIndex((item) => {
-    const productId = typeof item.product === "string" ? item.product : item.product?.id
-    return productId === product.id
-  })
-  const isInBasket = lineItemIndex !== undefined && lineItemIndex >= 0
+  const thumbnailUrl =
+    typeof product.thumbnail === "string"
+      ? product.thumbnail
+      : product.thumbnail?.url;
 
-  const add = useMutation({
-    mutationKey: ["add", product.id],
-    mutationFn: async () => {
-      setIsLoading(true)
-      return store.cart.addLineItem(cart?.id as string, product.id, 1)
-    },
-    onSuccess: (response) => {
-      setCart(response.cart)
-      setIsLoading(false)
-    },
-    onError: () => {
-      setIsLoading(false)
-    },
-  })
-
-  const deleteItem = useMutation({
-    mutationKey: ["delete", product.id],
-    mutationFn: async () => {
-      setIsLoading(true)
-      return store.cart.deleteLineItem(cart?.id as string, lineItemIndex as number)
-    },
-    onSuccess: (response) => {
-      setCart(response.cart)
-      setIsLoading(false)
-    },
-    onError: () => {
-      setIsLoading(false)
-    },
-  })
-
-  const thumbnailUrl = typeof product.thumbnail === "string"
-    ? product.thumbnail
-    : product.thumbnail?.url
-
-  const allImages: { url: string; alt: string }[] = []
+  const allImages: { url: string; alt: string }[] = [];
 
   if (thumbnailUrl) {
-    allImages.push({ url: thumbnailUrl, alt: product.title })
+    allImages.push({ url: thumbnailUrl, alt: product.title });
   }
 
   product.images?.forEach((img) => {
-    const imgUrl = typeof img.image === "string" ? img.image : (img.image as Media)?.url
+    const imgUrl =
+      typeof img.image === "string" ? img.image : (img.image as Media)?.url;
     if (imgUrl && imgUrl !== thumbnailUrl) {
-      allImages.push({ url: imgUrl, alt: product.title })
+      allImages.push({ url: imgUrl, alt: product.title });
     }
-  })
+  });
 
-  const isAvailable = product.available !== false && Boolean(product.price)
-  const iconStrokeWidth = isMobile ? 2 : 3
+  const isAvailable = product.available !== false && Boolean(product.price);
+
+  const category =
+    typeof product.category === "string"
+      ? null
+      : (product.category as Category);
+  const isFingerCategory = category?.handle === "finger";
 
   return (
-    <Screen className="px-5">
+    <Screen className="px-5 animate-in fade-in">
       <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push("/catalogue")}
-              className="hover:bg-white/10"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <HomeButton isIcon />
-          </div>
+          <HomeButton isIcon />
           <Basket />
         </div>
 
@@ -144,7 +91,10 @@ function ProductDetails({ product }: { product: Product }) {
           {/* Images Section */}
           <div className="flex-1 flex flex-col gap-4">
             {/* Main Image */}
-            <div className="relative aspect-square w-full">
+            <div
+              className="relative aspect-square w-full cursor-pointer"
+              onClick={() => setLightboxOpen(true)}
+            >
               {allImages[selectedImageIndex] && (
                 <Image
                   src={allImages[selectedImageIndex].url}
@@ -206,54 +156,49 @@ function ProductDetails({ product }: { product: Product }) {
               <span className="text-2xl lg:text-3xl font-bold">
                 €{formatPrice(product.price)}
               </span>
-              {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-lg text-gray-500 line-through">
-                  €{formatPrice(product.compareAtPrice)}
-                </span>
-              )}
+              {product.compareAtPrice &&
+                product.compareAtPrice > product.price && (
+                  <span className="text-lg text-gray-500 line-through">
+                    €{formatPrice(product.compareAtPrice)}
+                  </span>
+                )}
             </div>
 
             {isAvailable ? (
-              <Button
-                variant={isInBasket ? "outline" : "default"}
-                size="lg"
-                className={cn(
-                  "w-full lg:w-auto lg:px-12 text-base font-medium",
-                  isInBasket && "border-white/30"
-                )}
-                onClick={() => (isInBasket ? deleteItem.mutate() : add.mutate())}
-                disabled={!cart || isLoading}
-              >
-                {isLoading ? (
-                  <Spinner />
-                ) : isInBasket ? (
-                  <>
-                    <Minus strokeWidth={iconStrokeWidth} className="mr-2" />
-                    Remove from basket
-                  </>
-                ) : (
-                  <>
-                    <Plus strokeWidth={iconStrokeWidth} className="mr-2" />
-                    Add to basket
-                  </>
-                )}
-              </Button>
+              <AddToCartButton
+                productId={product.id}
+                openBasketOnAdd
+                className="w-full lg:w-auto lg:px-12"
+              />
             ) : (
-              <Button variant="outline" size="lg" disabled className="w-full lg:w-auto">
-                Sold out
+              <Button
+                variant="outline"
+                size="lg"
+                disabled
+                className="w-full lg:w-auto"
+              >
+                SOLD
               </Button>
             )}
-
-            <Link
-              href="/sizing"
-              target="_blank"
-              className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-4"
-            >
-              Ring size guide
-            </Link>
           </div>
         </div>
+
+        {isFingerCategory && (
+          <div className="pb-20">
+            <RingSizeGuide />
+          </div>
+        )}
       </div>
+
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        index={selectedImageIndex}
+        slides={allImages.map((img) => ({ src: img.url, alt: img.alt }))}
+        on={{
+          view: ({ index }) => setSelectedImageIndex(index),
+        }}
+      />
     </Screen>
-  )
+  );
 }

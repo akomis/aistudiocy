@@ -60,6 +60,14 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+    // Description
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Product description (optional)',
+      },
+    },
     // Category and status row
     {
       type: 'row',

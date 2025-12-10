@@ -217,6 +217,10 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Product description (optional)
+   */
+  description?: string | null;
   category: number | Category;
   status: 'draft' | 'published' | 'archived';
   handle: string;
@@ -505,6 +509,7 @@ export interface ProductsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  description?: T;
   category?: T;
   status?: T;
   handle?: T;

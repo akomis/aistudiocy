@@ -158,6 +158,12 @@ function ProductDetails({ product }: { product: Product }) {
                 )}
             </div>
 
+            {product.description && (
+              <p className="text-gray-300 whitespace-pre-line">
+                {product.description}
+              </p>
+            )}
+
             {isAvailable ? (
               <AddToCartButton
                 productId={product.id}

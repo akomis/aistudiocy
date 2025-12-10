@@ -2,6 +2,9 @@ import type { GlobalConfig } from 'payload'
 
 export const Catalogue: GlobalConfig = {
   slug: 'catalogue',
+  admin: {
+    group: 'Appearance',
+  },
   access: {
     read: () => true,
     update: ({ req }) => !!req.user,

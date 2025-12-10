@@ -67,13 +67,14 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
-    categories: Category;
     products: Product;
-    shipping: Shipping;
-    carts: Cart;
+    categories: Category;
+    media: Media;
     orders: Order;
+    coupons: Coupon;
+    shipping: Shipping;
+    users: User;
+    carts: Cart;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -81,13 +82,14 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
-    shipping: ShippingSelect<false> | ShippingSelect<true>;
-    carts: CartsSelect<false> | CartsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
+    coupons: CouponsSelect<false> | CouponsSelect<true>;
+    shipping: ShippingSelect<false> | ShippingSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    carts: CartsSelect<false> | CartsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -134,73 +136,6 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  _order?: string | null;
-  name: string;
-  /**
-   * URL-friendly slug (e.g., "bracelets")
-   */
-  handle: string;
-  description?: string | null;
-  /**
-   * Desktop header image for landing page
-   */
-  headerDesktop?: (number | null) | Media;
-  /**
-   * Mobile header image for landing page
-   */
-  headerMobile?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
 export interface Product {
@@ -228,6 +163,132 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  _order?: string | null;
+  name: string;
+  /**
+   * URL-friendly slug (e.g., "bracelets")
+   */
+  handle: string;
+  description?: string | null;
+  /**
+   * Desktop header image for landing page
+   */
+  headerDesktop?: (number | null) | Media;
+  /**
+   * Mobile header image for landing page
+   */
+  headerMobile?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  displayId: string;
+  email: string;
+  status?: ('pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
+  fulfillmentStatus?: ('not_fulfilled' | 'partially_fulfilled' | 'fulfilled') | null;
+  subtotal: number;
+  discount?: number | null;
+  shippingTotal: number;
+  total: number;
+  /**
+   * Applied coupon code (if any)
+   */
+  couponCode?: string | null;
+  items: {
+    productTitle: string;
+    unitPrice: number;
+    quantity: number;
+    productId: string;
+    thumbnail?: string | null;
+    id?: string | null;
+  }[];
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address1: string;
+    city: string;
+    postalCode: string;
+    countryCode: string;
+    phone?: string | null;
+  };
+  shippingMethod?: {
+    name?: string | null;
+    amount?: number | null;
+  };
+  currencyCode?: string | null;
+  stripePaymentIntentId?: string | null;
+  /**
+   * Internal notes about the order
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons".
+ */
+export interface Coupon {
+  id: number;
+  /**
+   * Unique coupon code (case-insensitive)
+   */
+  code: string;
+  type: 'flat' | 'percentage';
+  /**
+   * Amount in EUR or percentage
+   */
+  value: number;
+  status: 'active' | 'inactive';
+  /**
+   * Minimum subtotal required to use this coupon
+   */
+  minimumOrderAmount?: number | null;
+  /**
+   * Maximum number of times this coupon can be used (leave empty for unlimited)
+   */
+  usageLimit?: number | null;
+  /**
+   * Number of times this coupon has been used
+   */
+  usageCount?: number | null;
+  /**
+   * Coupon expiration date (optional)
+   */
+  expiresAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shipping".
  */
 export interface Shipping {
@@ -241,6 +302,30 @@ export interface Shipping {
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -280,6 +365,14 @@ export interface Cart {
   };
   shippingOption?: (number | null) | Shipping;
   /**
+   * Applied coupon
+   */
+  coupon?: (number | null) | Coupon;
+  /**
+   * Discount amount (EUR)
+   */
+  discount?: number | null;
+  /**
    * Sum of item prices (EUR)
    */
   subtotal?: number | null;
@@ -298,49 +391,6 @@ export interface Cart {
    * Payment status from Stripe webhook
    */
   paymentStatus?: ('pending' | 'processing' | 'succeeded' | 'failed') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number;
-  displayId: string;
-  email: string;
-  status?: ('pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
-  fulfillmentStatus?: ('not_fulfilled' | 'partially_fulfilled' | 'fulfilled') | null;
-  subtotal: number;
-  shippingTotal: number;
-  total: number;
-  items: {
-    productTitle: string;
-    unitPrice: number;
-    quantity: number;
-    productId: string;
-    thumbnail?: string | null;
-    id?: string | null;
-  }[];
-  shippingAddress: {
-    firstName: string;
-    lastName: string;
-    address1: string;
-    city: string;
-    postalCode: string;
-    countryCode: string;
-    phone?: string | null;
-  };
-  shippingMethod?: {
-    name?: string | null;
-    amount?: number | null;
-  };
-  currencyCode?: string | null;
-  stripePaymentIntentId?: string | null;
-  /**
-   * Internal notes about the order
-   */
-  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -369,32 +419,36 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'products';
+        value: number | Product;
       } | null)
     | ({
         relationTo: 'categories';
         value: number | Category;
       } | null)
     | ({
-        relationTo: 'products';
-        value: number | Product;
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'coupons';
+        value: number | Coupon;
       } | null)
     | ({
         relationTo: 'shipping';
         value: number | Shipping;
       } | null)
     | ({
-        relationTo: 'carts';
-        value: number | Cart;
+        relationTo: 'users';
+        value: number | User;
       } | null)
     | ({
-        relationTo: 'orders';
-        value: number | Order;
+        relationTo: 'carts';
+        value: number | Cart;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -440,60 +494,6 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
-  _order?: T;
-  name?: T;
-  handle?: T;
-  description?: T;
-  headerDesktop?: T;
-  headerMobile?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
@@ -517,6 +517,101 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  handle?: T;
+  description?: T;
+  headerDesktop?: T;
+  headerMobile?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  displayId?: T;
+  email?: T;
+  status?: T;
+  fulfillmentStatus?: T;
+  subtotal?: T;
+  discount?: T;
+  shippingTotal?: T;
+  total?: T;
+  couponCode?: T;
+  items?:
+    | T
+    | {
+        productTitle?: T;
+        unitPrice?: T;
+        quantity?: T;
+        productId?: T;
+        thumbnail?: T;
+        id?: T;
+      };
+  shippingAddress?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        address1?: T;
+        city?: T;
+        postalCode?: T;
+        countryCode?: T;
+        phone?: T;
+      };
+  shippingMethod?:
+    | T
+    | {
+        name?: T;
+        amount?: T;
+      };
+  currencyCode?: T;
+  stripePaymentIntentId?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons_select".
+ */
+export interface CouponsSelect<T extends boolean = true> {
+  code?: T;
+  type?: T;
+  value?: T;
+  status?: T;
+  minimumOrderAmount?: T;
+  usageLimit?: T;
+  usageCount?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shipping_select".
  */
 export interface ShippingSelect<T extends boolean = true> {
@@ -526,6 +621,28 @@ export interface ShippingSelect<T extends boolean = true> {
   isActive?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -564,6 +681,8 @@ export interface CartsSelect<T extends boolean = true> {
         phone?: T;
       };
   shippingOption?: T;
+  coupon?: T;
+  discount?: T;
   subtotal?: T;
   shippingTotal?: T;
   total?: T;
@@ -571,51 +690,6 @@ export interface CartsSelect<T extends boolean = true> {
   stripeClientSecret?: T;
   completedAt?: T;
   paymentStatus?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
-export interface OrdersSelect<T extends boolean = true> {
-  displayId?: T;
-  email?: T;
-  status?: T;
-  fulfillmentStatus?: T;
-  subtotal?: T;
-  shippingTotal?: T;
-  total?: T;
-  items?:
-    | T
-    | {
-        productTitle?: T;
-        unitPrice?: T;
-        quantity?: T;
-        productId?: T;
-        thumbnail?: T;
-        id?: T;
-      };
-  shippingAddress?:
-    | T
-    | {
-        firstName?: T;
-        lastName?: T;
-        address1?: T;
-        city?: T;
-        postalCode?: T;
-        countryCode?: T;
-        phone?: T;
-      };
-  shippingMethod?:
-    | T
-    | {
-        name?: T;
-        amount?: T;
-      };
-  currencyCode?: T;
-  stripePaymentIntentId?: T;
-  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

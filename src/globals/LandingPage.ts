@@ -2,6 +2,9 @@ import type { GlobalConfig } from 'payload'
 
 export const LandingPage: GlobalConfig = {
   slug: 'landing-page',
+  admin: {
+    group: 'Appearance',
+  },
   access: {
     read: () => true,
     update: ({ req }) => !!req.user,

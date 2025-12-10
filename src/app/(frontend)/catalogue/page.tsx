@@ -43,7 +43,7 @@ export default async function Catalogue() {
         <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-16 pt-10">
           <HomeButton isIcon />
 
-          <div className="ml-10">
+          <div className="absolute left-1/2 -translate-x-1/2">
             <Filter categories={categories} />
           </div>
 

@@ -15,6 +15,18 @@ export interface CartItem {
   unitPrice: number
 }
 
+export interface Coupon {
+  id: string
+  code: string
+  type: 'flat' | 'percentage'
+  value: number
+  minimumOrderAmount?: number
+  usageLimit?: number
+  usageCount?: number
+  expiresAt?: string
+  status: 'active' | 'inactive'
+}
+
 export interface Cart {
   id: string
   items: CartItem[]
@@ -22,6 +34,8 @@ export interface Cart {
   shippingAddress?: Address
   billingAddress?: Address
   shippingOption?: ShippingOption | string | number
+  coupon?: Coupon | string | number
+  discount: number
   subtotal: number
   shippingTotal: number
   total: number
@@ -198,6 +212,32 @@ export const store = {
       const res = await fetch(`${API_BASE}/carts/${cartId}/complete`, {
         method: 'POST',
       })
+      return res.json()
+    },
+
+    async applyCoupon(
+      cartId: string,
+      code: string,
+    ): Promise<{ cart: Cart; coupon: { code: string; type: string; value: number } }> {
+      const res = await fetch(`${API_BASE}/carts/${cartId}/coupon`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || 'Failed to apply coupon')
+      }
+      return res.json()
+    },
+
+    async removeCoupon(cartId: string): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts/${cartId}/coupon`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        throw new Error('Failed to remove coupon')
+      }
       return res.json()
     },
   },

@@ -2,6 +2,9 @@ import type { CollectionConfig } from 'payload'
 
 export const Carts: CollectionConfig = {
   slug: 'carts',
+  admin: {
+    group: 'System',
+  },
   access: {
     read: () => true,
     create: () => true,
@@ -87,6 +90,24 @@ export const Carts: CollectionConfig = {
       },
     },
     {
+      name: 'coupon',
+      type: 'relationship',
+      relationTo: 'coupons',
+      admin: {
+        readOnly: true,
+        description: 'Applied coupon',
+      },
+    },
+    {
+      name: 'discount',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        description: 'Discount amount (EUR)',
+        readOnly: true,
+      },
+    },
+    {
       name: 'subtotal',
       type: 'number',
       defaultValue: 0,
@@ -166,7 +187,6 @@ export const Carts: CollectionConfig = {
         // Get shipping total from shipping option
         let shippingTotal = 0
         if (data.shippingOption) {
-          // Handle string, number, or object shipping option IDs
           const shippingOptionId =
             typeof data.shippingOption === 'object' && data.shippingOption !== null
               ? data.shippingOption.id
@@ -186,9 +206,38 @@ export const Carts: CollectionConfig = {
           }
         }
 
+        // Calculate discount from coupon
+        let discount = 0
+        if (data.coupon) {
+          const couponId =
+            typeof data.coupon === 'object' && data.coupon !== null
+              ? data.coupon.id
+              : data.coupon
+          if (couponId) {
+            try {
+              const couponDoc = await req.payload.findByID({
+                collection: 'coupons',
+                id: String(couponId),
+              })
+              if (couponDoc && couponDoc.status === 'active') {
+                if (couponDoc.type === 'percentage') {
+                  discount = Math.round(subtotal * (couponDoc.value / 100) * 100) / 100
+                } else {
+                  discount = couponDoc.value
+                }
+                // Discount cannot exceed subtotal
+                discount = Math.min(discount, subtotal)
+              }
+            } catch {
+              // Ignore errors
+            }
+          }
+        }
+
         data.subtotal = subtotal
         data.shippingTotal = shippingTotal
-        data.total = subtotal + shippingTotal
+        data.discount = discount
+        data.total = Math.max(0, subtotal + shippingTotal - discount)
 
         return data
       },

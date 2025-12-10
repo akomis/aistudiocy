@@ -4,6 +4,7 @@ import { sendOrderConfirmationEmail, sendOrderShippedEmail } from '../email/send
 export const Orders: CollectionConfig = {
   slug: 'orders',
   admin: {
+    group: 'Store',
     useAsTitle: 'displayId',
     defaultColumns: ['displayId', 'email', 'total', 'status', 'createdAt'],
   },
@@ -81,7 +82,17 @@ export const Orders: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '25%',
+          },
+        },
+        {
+          name: 'discount',
+          label: 'Discount (€)',
+          type: 'number',
+          defaultValue: 0,
+          admin: {
+            readOnly: true,
+            width: '25%',
           },
         },
         {
@@ -91,7 +102,7 @@ export const Orders: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '25%',
           },
         },
         {
@@ -101,10 +112,19 @@ export const Orders: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '34%',
+            width: '25%',
           },
         },
       ],
+    },
+    // Coupon info
+    {
+      name: 'couponCode',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Applied coupon code (if any)',
+      },
     },
     // Items
     {

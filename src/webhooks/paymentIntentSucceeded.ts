@@ -66,6 +66,27 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
       }
     }
 
+    // Get coupon details
+    let couponCode: string | undefined
+    let couponId: string | undefined
+    if (cart.coupon) {
+      couponId =
+        typeof cart.coupon === 'object' && cart.coupon !== null
+          ? String(cart.coupon.id)
+          : String(cart.coupon)
+      try {
+        const coupon = await payload.findByID({
+          collection: 'coupons',
+          id: couponId,
+        })
+        if (coupon) {
+          couponCode = coupon.code
+        }
+      } catch {
+        payload.logger.warn(`Could not retrieve coupon ${couponId}`)
+      }
+    }
+
     // Build order items
     const orderItems = (cart.items || [])
       .filter((item: any) => item && item.product)
@@ -98,14 +119,33 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
         shippingAddress: cart.shippingAddress as any,
         shippingMethod,
         subtotal: cart.subtotal || 0,
+        discount: cart.discount || 0,
         shippingTotal: cart.shippingTotal || 0,
         total: cart.total || 0,
+        couponCode: couponCode || '',
         stripePaymentIntentId: paymentIntent.id,
         status: 'confirmed',
       },
     })
 
     payload.logger.info(`Created order ${order.displayId} from webhook`)
+
+    // Increment coupon usage count
+    if (couponId) {
+      try {
+        const coupon = await payload.findByID({
+          collection: 'coupons',
+          id: couponId,
+        })
+        await payload.update({
+          collection: 'coupons',
+          id: couponId,
+          data: { usageCount: (coupon.usageCount || 0) + 1 },
+        })
+      } catch {
+        payload.logger.warn(`Could not update usage count for coupon ${couponId}`)
+      }
+    }
 
     // Decrement inventory for each purchased item
     for (const item of cart.items || []) {

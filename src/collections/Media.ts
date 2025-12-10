@@ -6,6 +6,7 @@ export const Media: CollectionConfig = {
     mimeTypes: ['image/*'],
   },
   admin: {
+    group: 'Store',
     components: {
       views: {
         list: {

@@ -7,12 +7,18 @@ import RingSizeGuide from "@/components/RingSizeGuide";
 import Screen from "@/components/Screen";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import { Category, Media, Product, store } from "@/lib/store";
 import { cn, formatPrice } from "@/lib/utils";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
@@ -51,6 +57,7 @@ export default function ProductPage() {
 function ProductDetails({ product }: { product: Product }) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
   const thumbnailUrl =
     typeof product.thumbnail === "string"
@@ -74,6 +81,21 @@ function ProductDetails({ product }: { product: Product }) {
   const inventory = product.inventory ?? 1;
   const isAvailable = inventory > 0 && Boolean(product.price);
 
+  // Sync carousel with selected index
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    carouselApi.on("select", () => {
+      setSelectedImageIndex(carouselApi.selectedScrollSnap());
+    });
+  }, [carouselApi]);
+
+  // When thumbnail is clicked, scroll carousel to that index
+  const handleThumbnailClick = (index: number) => {
+    setSelectedImageIndex(index);
+    carouselApi?.scrollTo(index);
+  };
+
   const category =
     typeof product.category === "string"
       ? null
@@ -91,23 +113,36 @@ function ProductDetails({ product }: { product: Product }) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 pb-20">
           {/* Images Section */}
           <div className="flex-1 flex flex-col gap-4">
-            {/* Main Image */}
-            <div
-              className="relative aspect-square w-full cursor-pointer"
-              onClick={() => setLightboxOpen(true)}
-            >
-              {allImages[selectedImageIndex] && (
-                <Image
-                  src={allImages[selectedImageIndex].url}
-                  alt={allImages[selectedImageIndex].alt}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  priority
-                />
-              )}
+            {/* Main Image Carousel */}
+            <div className="relative">
+              <Carousel
+                setApi={setCarouselApi}
+                className="w-full"
+                opts={{ loop: false }}
+              >
+                <CarouselContent>
+                  {allImages.map((img, index) => (
+                    <CarouselItem key={index}>
+                      <div
+                        className="relative aspect-square w-full cursor-pointer"
+                        onClick={() => setLightboxOpen(true)}
+                      >
+                        <Image
+                          src={img.url}
+                          alt={img.alt}
+                          fill
+                          style={{ objectFit: "cover" }}
+                          priority={index === 0}
+                          draggable={false}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
               {!isAvailable && (
                 <Badge
-                  className="absolute bottom-4 left-4 text-gray-300"
+                  className="absolute bottom-4 left-4 text-gray-300 z-10"
                   variant="outline"
                 >
                   SOLD
@@ -121,7 +156,7 @@ function ProductDetails({ product }: { product: Product }) {
                 {allImages.map((img, index) => (
                   <button
                     key={index}
-                    onClick={() => setSelectedImageIndex(index)}
+                    onClick={() => handleThumbnailClick(index)}
                     className={cn(
                       "relative w-20 h-20 flex-shrink-0 border transition-all",
                       selectedImageIndex === index
@@ -169,16 +204,10 @@ function ProductDetails({ product }: { product: Product }) {
               <AddToCartButton
                 productId={product.id}
                 openBasketOnAdd
-                className="w-full lg:w-auto lg:px-12"
                 maxQuantity={inventory}
               />
             ) : (
-              <Button
-                variant="outline"
-                size="lg"
-                disabled
-                className="w-full lg:w-auto"
-              >
+              <Button variant="outline" size="lg" disabled>
                 SOLD
               </Button>
             )}

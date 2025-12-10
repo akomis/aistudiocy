@@ -4,6 +4,7 @@ import { countryOptions } from '@/lib/countries'
 export const Shipping: CollectionConfig = {
   slug: 'shipping',
   admin: {
+    group: 'Store',
     useAsTitle: 'name',
   },
   access: {

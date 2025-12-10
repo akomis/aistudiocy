@@ -74,7 +74,7 @@ export default function AddToCartButton({
   const showQuantityInput = maxQuantity > 1 && !isInBasket;
 
   return (
-    <div className={cn("flex gap-2", className)}>
+    <div className={cn("flex gap-2 w-full", className)}>
       {showQuantityInput && (
         <Input
           type="number"
@@ -82,7 +82,10 @@ export default function AddToCartButton({
           max={maxQuantity}
           value={quantity}
           onChange={(e) => {
-            const val = Math.max(1, Math.min(maxQuantity, parseInt(e.target.value) || 1));
+            const val = Math.max(
+              1,
+              Math.min(maxQuantity, parseInt(e.target.value) || 1)
+            );
             setQuantity(val);
           }}
           className="w-20 text-center"
@@ -103,7 +106,9 @@ export default function AddToCartButton({
         disabled={!cart || isLoading}
       >
         {isLoading ? (
-          <Spinner className={!isInBasket ? "text-black dark:text-black" : ""} />
+          <Spinner
+            className={!isInBasket ? "text-black dark:text-black" : ""}
+          />
         ) : isInBasket ? (
           "REMOVE"
         ) : (

@@ -15,6 +15,7 @@ import { paymentIntentSucceeded } from "./webhooks/paymentIntentSucceeded";
 // Collections
 import { Carts } from "./collections/Carts";
 import { Categories } from "./collections/Categories";
+import { Coupons } from "./collections/Coupons";
 import { Media } from "./collections/Media";
 import { Orders } from "./collections/Orders";
 import { Products } from "./collections/Products";
@@ -36,6 +37,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
+      providers: ['@/components/admin/AdminStyleProvider'],
       views: {
         dashboard: {
           Component: '@/components/admin/Dashboard',
@@ -43,7 +45,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Media, Categories, Products, Shipping, Carts, Orders],
+  collections: [Products, Categories, Media, Orders, Coupons, Shipping, Users, Carts],
   globals: [Catalogue, LandingPage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "your-secret-key",

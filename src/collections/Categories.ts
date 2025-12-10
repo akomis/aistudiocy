@@ -4,6 +4,7 @@ export const Categories: CollectionConfig = {
   slug: 'categories',
   orderable: true,
   admin: {
+    group: 'Store',
     useAsTitle: 'name',
     components: {
       views: {

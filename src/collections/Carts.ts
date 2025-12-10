@@ -167,19 +167,22 @@ export const Carts: CollectionConfig = {
         let shippingTotal = 0
         if (data.shippingOption) {
           // Handle string, number, or object shipping option IDs
-          const shippingOptionId = typeof data.shippingOption === 'object'
-            ? data.shippingOption.id
-            : String(data.shippingOption)
-          try {
-            const shippingOptionDoc = await req.payload.findByID({
-              collection: 'shipping',
-              id: shippingOptionId,
-            })
-            if (shippingOptionDoc) {
-              shippingTotal = shippingOptionDoc.amount || 0
+          const shippingOptionId =
+            typeof data.shippingOption === 'object' && data.shippingOption !== null
+              ? data.shippingOption.id
+              : data.shippingOption
+          if (shippingOptionId) {
+            try {
+              const shippingOptionDoc = await req.payload.findByID({
+                collection: 'shipping',
+                id: String(shippingOptionId),
+              })
+              if (shippingOptionDoc) {
+                shippingTotal = shippingOptionDoc.amount || 0
+              }
+            } catch {
+              // Ignore errors
             }
-          } catch {
-            // Ignore errors
           }
         }
 

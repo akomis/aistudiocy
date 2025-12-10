@@ -206,24 +206,10 @@ export interface Category {
 export interface Product {
   id: number;
   title: string;
-  description?: string | null;
   /**
-   * URL-friendly slug (auto-generated from title if empty)
-   */
-  handle: string;
-  /**
-   * Price in EUR
-   */
-  price: number;
-  /**
-   * Original price in EUR for sale display (optional)
-   */
-  compareAtPrice?: number | null;
-  /**
-   * Whether this piece is available for purchase
+   * Available for purchase
    */
   available?: boolean | null;
-  category: number | Category;
   thumbnail: number | Media;
   images?:
     | {
@@ -231,7 +217,11 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  category: number | Category;
   status: 'draft' | 'published' | 'archived';
+  handle: string;
+  price: number;
+  compareAtPrice?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -318,13 +308,17 @@ export interface Order {
   id: number;
   displayId: string;
   email: string;
+  status?: ('pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
+  fulfillmentStatus?: ('not_fulfilled' | 'partially_fulfilled' | 'fulfilled') | null;
+  subtotal: number;
+  shippingTotal: number;
+  total: number;
   items: {
-    productId: string;
     productTitle: string;
-    productDescription?: string | null;
-    thumbnail?: string | null;
-    quantity: number;
     unitPrice: number;
+    quantity: number;
+    productId: string;
+    thumbnail?: string | null;
     id?: string | null;
   }[];
   shippingAddress: {
@@ -340,13 +334,8 @@ export interface Order {
     name?: string | null;
     amount?: number | null;
   };
-  subtotal: number;
-  shippingTotal: number;
-  total: number;
   currencyCode?: string | null;
   stripePaymentIntentId?: string | null;
-  status?: ('pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled') | null;
-  fulfillmentStatus?: ('not_fulfilled' | 'partially_fulfilled' | 'fulfilled') | null;
   /**
    * Internal notes about the order
    */
@@ -508,12 +497,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
-  description?: T;
-  handle?: T;
-  price?: T;
-  compareAtPrice?: T;
   available?: T;
-  category?: T;
   thumbnail?: T;
   images?:
     | T
@@ -521,7 +505,11 @@ export interface ProductsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  category?: T;
   status?: T;
+  handle?: T;
+  price?: T;
+  compareAtPrice?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -591,15 +579,19 @@ export interface CartsSelect<T extends boolean = true> {
 export interface OrdersSelect<T extends boolean = true> {
   displayId?: T;
   email?: T;
+  status?: T;
+  fulfillmentStatus?: T;
+  subtotal?: T;
+  shippingTotal?: T;
+  total?: T;
   items?:
     | T
     | {
-        productId?: T;
         productTitle?: T;
-        productDescription?: T;
-        thumbnail?: T;
-        quantity?: T;
         unitPrice?: T;
+        quantity?: T;
+        productId?: T;
+        thumbnail?: T;
         id?: T;
       };
   shippingAddress?:
@@ -619,13 +611,8 @@ export interface OrdersSelect<T extends boolean = true> {
         name?: T;
         amount?: T;
       };
-  subtotal?: T;
-  shippingTotal?: T;
-  total?: T;
   currencyCode?: T;
   stripePaymentIntentId?: T;
-  status?: T;
-  fulfillmentStatus?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;

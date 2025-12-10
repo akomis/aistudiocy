@@ -146,12 +146,6 @@ function ProductDetails({ product }: { product: Product }) {
               {product.title}
             </h1>
 
-            {product.description && (
-              <p className="text-gray-400 text-base lg:text-lg">
-                {product.description}
-              </p>
-            )}
-
             <div className="flex items-center gap-4">
               <span className="text-2xl lg:text-3xl font-bold">
                 €{formatPrice(product.price)}

@@ -145,23 +145,6 @@ const ProductItem = ({ product }: ProductItemProps) => {
               </div>
             </div>
           )}
-          {(isHovered || isMobile || isLoading) && (
-            <div
-              className={cn(
-                "bg-black/80 w-full text-center text-xs sm:text-lg absolute animate-in fade-in duration-500 transition-none ",
-                {
-                  "bg-white/30 text-black": isInBasket,
-                  "-bottom-14 text-start bg-transparent text-gray-400":
-                    isMobile,
-                  "top-2": !isMobile,
-                }
-              )}
-            >
-              <div className="animate-in slide-in-from-left duration-500 ease-out font-bold text-xs sm:text-sm">
-                {product.description}
-              </div>
-            </div>
-          )}
         </div>
       ) : (
         <div>

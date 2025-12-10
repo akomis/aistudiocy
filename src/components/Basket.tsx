@@ -58,7 +58,6 @@ const BasketListItem = ({ item, index }: { item: BasketItem; index: number }) =>
     },
   })
 
-  const description = item.product.description
   const thumbnailUrl =
     typeof item.product.thumbnail === "string"
       ? item.product.thumbnail
@@ -93,9 +92,6 @@ const BasketListItem = ({ item, index }: { item: BasketItem; index: number }) =>
         )}
 
         <div className="flex flex-col items-end justify-between">
-          {Boolean(description) && (
-            <div className="text-xl font-light text-end">{`${description}`}</div>
-          )}
           <div className="text-2xl font-bold text-end">{`€${formatPrice(item.unitPrice)}`}</div>
         </div>
       </div>

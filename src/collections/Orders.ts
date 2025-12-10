@@ -14,23 +14,99 @@ export const Orders: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
+    // Hidden displayId (still used as title)
     {
       name: 'displayId',
       type: 'text',
       required: true,
       unique: true,
       admin: {
-        readOnly: true,
+        hidden: true,
       },
     },
+    // Top row: Email, Payment Status, Fulfillment Status
     {
-      name: 'email',
-      type: 'email',
-      required: true,
-      admin: {
-        readOnly: true,
-      },
+      type: 'row',
+      fields: [
+        {
+          name: 'email',
+          type: 'email',
+          required: true,
+          admin: {
+            readOnly: true,
+            width: '40%',
+          },
+        },
+        {
+          name: 'status',
+          label: 'Payment Status',
+          type: 'select',
+          defaultValue: 'pending',
+          options: [
+            { label: 'Pending', value: 'pending' },
+            { label: 'Confirmed', value: 'confirmed' },
+            { label: 'Processing', value: 'processing' },
+            { label: 'Shipped', value: 'shipped' },
+            { label: 'Delivered', value: 'delivered' },
+            { label: 'Cancelled', value: 'cancelled' },
+          ],
+          admin: {
+            readOnly: true,
+            width: '30%',
+          },
+        },
+        {
+          name: 'fulfillmentStatus',
+          type: 'select',
+          defaultValue: 'not_fulfilled',
+          options: [
+            { label: 'Not Fulfilled', value: 'not_fulfilled' },
+            { label: 'Partially Fulfilled', value: 'partially_fulfilled' },
+            { label: 'Fulfilled', value: 'fulfilled' },
+          ],
+          admin: {
+            width: '30%',
+          },
+        },
+      ],
     },
+    // Totals row
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'subtotal',
+          label: 'Subtotal (€)',
+          type: 'number',
+          required: true,
+          admin: {
+            readOnly: true,
+            width: '33%',
+          },
+        },
+        {
+          name: 'shippingTotal',
+          label: 'Shipping (€)',
+          type: 'number',
+          required: true,
+          admin: {
+            readOnly: true,
+            width: '33%',
+          },
+        },
+        {
+          name: 'total',
+          label: 'Total (€)',
+          type: 'number',
+          required: true,
+          admin: {
+            readOnly: true,
+            width: '34%',
+          },
+        },
+      ],
+    },
+    // Items
     {
       name: 'items',
       type: 'array',
@@ -39,103 +115,123 @@ export const Orders: CollectionConfig = {
         readOnly: true,
       },
       fields: [
-        { name: 'productId', type: 'text', required: true },
-        { name: 'productTitle', type: 'text', required: true },
-        { name: 'productDescription', type: 'text' },
-        { name: 'thumbnail', type: 'text' },
-        { name: 'quantity', type: 'number', required: true },
-        { name: 'unitPrice', type: 'number', required: true },
+        {
+          type: 'row',
+          fields: [
+            { name: 'productTitle', type: 'text', required: true, admin: { width: '50%' } },
+            {
+              name: 'unitPrice',
+              label: 'Unit Price (€)',
+              type: 'number',
+              required: true,
+              admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'quantity', type: 'number', required: true, admin: { width: '20%' } },
+            { name: 'productId', type: 'text', required: true, admin: { width: '40%' } },
+            { name: 'thumbnail', type: 'text', admin: { width: '40%' } },
+          ],
+        },
       ],
     },
+    // Shipping Address (collapsible)
     {
-      name: 'shippingAddress',
-      type: 'group',
+      type: 'collapsible',
+      label: 'Shipping Address',
       admin: {
-        readOnly: true,
+        initCollapsed: true,
       },
       fields: [
-        { name: 'firstName', type: 'text', required: true },
-        { name: 'lastName', type: 'text', required: true },
-        { name: 'address1', type: 'text', required: true },
-        { name: 'city', type: 'text', required: true },
-        { name: 'postalCode', type: 'text', required: true },
-        { name: 'countryCode', type: 'text', required: true },
-        { name: 'phone', type: 'text' },
+        {
+          name: 'shippingAddress',
+          type: 'group',
+          label: ' ',
+          admin: {
+            readOnly: true,
+            hideGutter: true,
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                { name: 'firstName', type: 'text', required: true, admin: { width: '50%' } },
+                { name: 'lastName', type: 'text', required: true, admin: { width: '50%' } },
+              ],
+            },
+            { name: 'address1', type: 'text', required: true },
+            {
+              type: 'row',
+              fields: [
+                { name: 'city', type: 'text', required: true, admin: { width: '50%' } },
+                { name: 'postalCode', type: 'text', required: true, admin: { width: '50%' } },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                { name: 'countryCode', type: 'text', required: true, admin: { width: '50%' } },
+                { name: 'phone', type: 'text', admin: { width: '50%' } },
+              ],
+            },
+          ],
+        },
       ],
     },
+    // Shipping Method (collapsible)
     {
-      name: 'shippingMethod',
-      type: 'group',
+      type: 'collapsible',
+      label: 'Shipping Method',
       admin: {
-        readOnly: true,
+        initCollapsed: true,
       },
       fields: [
-        { name: 'name', type: 'text' },
-        { name: 'amount', type: 'number' },
+        {
+          name: 'shippingMethod',
+          type: 'group',
+          label: ' ',
+          admin: {
+            readOnly: true,
+            hideGutter: true,
+          },
+          fields: [
+            { name: 'name', type: 'text' },
+            { name: 'amount', label: 'Amount (€)', type: 'number' },
+          ],
+        },
       ],
     },
-    {
-      name: 'subtotal',
-      type: 'number',
-      required: true,
-      admin: {
-        readOnly: true,
-      },
-    },
-    {
-      name: 'shippingTotal',
-      type: 'number',
-      required: true,
-      admin: {
-        readOnly: true,
-      },
-    },
-    {
-      name: 'total',
-      type: 'number',
-      required: true,
-      admin: {
-        readOnly: true,
-      },
-    },
+    // Currency (hidden)
     {
       name: 'currencyCode',
       type: 'text',
       defaultValue: 'EUR',
       admin: {
         readOnly: true,
+        hidden: true,
       },
     },
+    // Payment info (collapsible)
     {
-      name: 'stripePaymentIntentId',
-      type: 'text',
+      type: 'collapsible',
+      label: 'Payment Details',
       admin: {
-        readOnly: true,
+        initCollapsed: true,
       },
-    },
-    {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'pending',
-      options: [
-        { label: 'Pending', value: 'pending' },
-        { label: 'Confirmed', value: 'confirmed' },
-        { label: 'Processing', value: 'processing' },
-        { label: 'Shipped', value: 'shipped' },
-        { label: 'Delivered', value: 'delivered' },
-        { label: 'Cancelled', value: 'cancelled' },
+      fields: [
+        {
+          name: 'stripePaymentIntentId',
+          type: 'text',
+          admin: {
+            readOnly: true,
+          },
+        },
       ],
     },
-    {
-      name: 'fulfillmentStatus',
-      type: 'select',
-      defaultValue: 'not_fulfilled',
-      options: [
-        { label: 'Not Fulfilled', value: 'not_fulfilled' },
-        { label: 'Partially Fulfilled', value: 'partially_fulfilled' },
-        { label: 'Fulfilled', value: 'fulfilled' },
-      ],
-    },
+    // Notes (at bottom)
     {
       name: 'notes',
       type: 'textarea',

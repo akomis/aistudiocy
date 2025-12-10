@@ -12,6 +12,9 @@ export async function POST(
 ) {
   try {
     const { id } = await params
+    if (!id) {
+      return NextResponse.json({ error: 'Cart ID is required', type: 'cart' }, { status: 400 })
+    }
     const payload = await getPayloadClient()
 
     const startTime = Date.now()

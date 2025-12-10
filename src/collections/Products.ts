@@ -13,65 +13,44 @@ export const Products: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
+    // Title and available row
     {
-      name: 'title',
-      type: 'text',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          admin: {
+            width: '70%',
+          },
+        },
+        {
+          name: 'available',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            width: '30%',
+            description: 'Available for purchase',
+            style: {
+              alignSelf: 'flex-end',
+            },
+          },
+        },
+      ],
     },
-    {
-      name: 'description',
-      type: 'textarea',
-    },
-    {
-      name: 'handle',
-      type: 'text',
-      required: true,
-      unique: true,
-      index: true,
-      admin: {
-        description: 'URL-friendly slug (auto-generated from title if empty)',
-      },
-    },
-    {
-      name: 'price',
-      type: 'number',
-      required: true,
-      min: 0,
-      admin: {
-        description: 'Price in EUR',
-      },
-    },
-    {
-      name: 'compareAtPrice',
-      type: 'number',
-      min: 0,
-      admin: {
-        description: 'Original price in EUR for sale display (optional)',
-      },
-    },
-    {
-      name: 'available',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        description: 'Whether this piece is available for purchase',
-      },
-    },
-    {
-      name: 'category',
-      type: 'relationship',
-      relationTo: 'categories',
-      required: true,
-    },
+    // Thumbnail
     {
       name: 'thumbnail',
       type: 'upload',
       relationTo: 'media',
       required: true,
     },
+    // Gallery
     {
       name: 'images',
       type: 'array',
+      label: 'Gallery',
       fields: [
         {
           name: 'image',
@@ -81,22 +60,75 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+    // Category and status row
     {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'published',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-        { label: 'Archived', value: 'archived' },
+      type: 'row',
+      fields: [
+        {
+          name: 'category',
+          type: 'relationship',
+          relationTo: 'categories',
+          required: true,
+          admin: {
+            width: '50%',
+          },
+        },
+        {
+          name: 'status',
+          type: 'select',
+          defaultValue: 'published',
+          options: [
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+            { label: 'Archived', value: 'archived' },
+          ],
+          required: true,
+          admin: {
+            width: '50%',
+          },
+        },
       ],
+    },
+    {
+      name: 'handle',
+      type: 'text',
       required: true,
+      unique: true,
+      index: true,
+      admin: {
+        hidden: true,
+      },
+    },
+    // Pricing row
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'price',
+          label: 'Price (€)',
+          type: 'number',
+          required: true,
+          min: 0,
+          admin: {
+            width: '50%',
+          },
+        },
+        {
+          name: 'compareAtPrice',
+          label: 'Compare At Price (€)',
+          type: 'number',
+          min: 0,
+          admin: {
+            width: '50%',
+          },
+        },
+      ],
     },
   ],
   hooks: {
     beforeChange: [
-      ({ data, operation }) => {
-        if (operation === 'create' && !data?.handle && data?.title) {
+      ({ data }) => {
+        if (data?.title) {
           data.handle = data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
         }
         return data

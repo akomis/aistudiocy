@@ -75,7 +75,6 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
         return {
           productId,
           productTitle: isPopulated ? item.product.title || 'Product' : 'Product',
-          productDescription: isPopulated ? item.product.description || '' : '',
           thumbnail: isPopulated ? item.product.thumbnail?.url || '' : '',
           quantity: item.quantity || 1,
           unitPrice: item.unitPrice || 0,

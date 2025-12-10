@@ -113,7 +113,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             src={thumbnailUrl}
             alt={product.title}
             fill
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "cover" }}
           />
           {(isInBasket || isHovered || isMobile || isLoading) && (
             <div
@@ -152,7 +152,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
             src={thumbnailUrl}
             alt={product.title}
             fill
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "cover" }}
             className="opacity-70"
           />
           <Badge

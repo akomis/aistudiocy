@@ -100,7 +100,7 @@ function ProductDetails({ product }: { product: Product }) {
                   src={allImages[selectedImageIndex].url}
                   alt={allImages[selectedImageIndex].alt}
                   fill
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "cover" }}
                   priority
                 />
               )}

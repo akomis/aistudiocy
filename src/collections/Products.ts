@@ -85,6 +85,14 @@ export const Products: CollectionConfig = {
         },
       ],
     },
+    // Description
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Product description (optional)',
+      },
+    },
     // Thumbnail
     {
       name: 'thumbnail',
@@ -105,14 +113,6 @@ export const Products: CollectionConfig = {
           required: true,
         },
       ],
-    },
-    // Description
-    {
-      name: 'description',
-      type: 'textarea',
-      admin: {
-        description: 'Product description (optional)',
-      },
     },
     {
       name: 'handle',

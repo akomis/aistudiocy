@@ -5,6 +5,13 @@ export const Categories: CollectionConfig = {
   orderable: true,
   admin: {
     useAsTitle: 'name',
+    components: {
+      views: {
+        list: {
+          Component: '@/components/admin/CategoriesGrid',
+        },
+      },
+    },
   },
   access: {
     read: () => true,

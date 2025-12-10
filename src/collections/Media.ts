@@ -5,6 +5,15 @@ export const Media: CollectionConfig = {
   upload: {
     mimeTypes: ['image/*'],
   },
+  admin: {
+    components: {
+      views: {
+        list: {
+          Component: '@/components/admin/MediaGrid',
+        },
+      },
+    },
+  },
   access: {
     read: () => true,
     create: ({ req }) => !!req.user,

@@ -211,6 +211,10 @@ export interface Product {
   price: number;
   compareAtPrice?: number | null;
   status: 'draft' | 'published' | 'archived';
+  /**
+   * Product description (optional)
+   */
+  description?: string | null;
   thumbnail: number | Media;
   images?:
     | {
@@ -218,10 +222,6 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Product description (optional)
-   */
-  description?: string | null;
   handle: string;
   updatedAt: string;
   createdAt: string;
@@ -503,6 +503,7 @@ export interface ProductsSelect<T extends boolean = true> {
   price?: T;
   compareAtPrice?: T;
   status?: T;
+  description?: T;
   thumbnail?: T;
   images?:
     | T
@@ -510,7 +511,6 @@ export interface ProductsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
-  description?: T;
   handle?: T;
   updatedAt?: T;
   createdAt?: T;

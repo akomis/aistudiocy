@@ -107,20 +107,27 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
 
     payload.logger.info(`Created order ${order.displayId} from webhook`)
 
-    // Mark products as unavailable
+    // Decrement inventory for each purchased item
     for (const item of cart.items || []) {
       const productId =
         typeof item.product === 'object' && item.product !== null
           ? String(item.product.id)
           : String(item.product)
+      const quantity = item.quantity || 1
       try {
+        const product = await payload.findByID({
+          collection: 'products',
+          id: productId,
+        })
+        const currentInventory = product.inventory ?? 1
+        const newInventory = Math.max(0, currentInventory - quantity)
         await payload.update({
           collection: 'products',
           id: productId,
-          data: { available: false },
+          data: { inventory: newInventory },
         })
       } catch {
-        payload.logger.warn(`Could not mark product ${productId} as unavailable`)
+        payload.logger.warn(`Could not update inventory for product ${productId}`)
       }
     }
 

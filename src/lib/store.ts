@@ -48,7 +48,7 @@ export interface Product {
   handle: string
   price: number
   compareAtPrice?: number
-  available?: boolean
+  inventory?: number
   category: Category | string
   thumbnail: Media
   images?: { image: Media }[]

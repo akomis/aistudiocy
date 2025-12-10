@@ -87,8 +87,9 @@ const ProductItem = ({ product }: ProductItemProps) => {
 
   const iconStrokeWidth = isMobile ? 2 : 5;
   const price = product.price;
-  const isAvailable = product.available !== false && Boolean(price);
-  const isInBasket = product.available !== false && Boolean(lineItem);
+  const inventory = product.inventory ?? 1;
+  const isAvailable = inventory > 0 && Boolean(price);
+  const isInBasket = inventory > 0 && Boolean(lineItem);
 
   const handleClick = () => {
     router.push(`/catalogue/${product.handle}`);
@@ -224,7 +225,7 @@ export default function ProductGrid({ images, socials }: Props) {
       const data = await store.product.list(id ?? undefined);
 
       const unavailableProducts = data.products.filter(
-        (product) => product.available === false
+        (product) => (product.inventory ?? 1) === 0
       );
 
       if (cart && cart.items) {

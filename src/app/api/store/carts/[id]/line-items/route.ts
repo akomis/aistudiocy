@@ -27,7 +27,8 @@ export async function POST(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    if (product.available === false) {
+    const inventory = product.inventory ?? 1
+    if (inventory === 0) {
       return NextResponse.json({ error: 'Product is no longer available' }, { status: 400 })
     }
 

@@ -1,16 +1,16 @@
-import Basket from "@/components/Basket"
-import Filter from "@/components/Filter"
-import HomeButton from "@/components/HomeButton"
-import ProductGrid from "@/components/ProductGrid"
-import Screen from "@/components/Screen"
-import { getPayloadClient } from "@/lib/payload"
-import { Category, Catalogue as CatalogueType, LandingPage } from "@/lib/store"
+import Basket from "@/components/Basket";
+import Filter from "@/components/Filter";
+import HomeButton from "@/components/HomeButton";
+import ProductGrid from "@/components/ProductGrid";
+import Screen from "@/components/Screen";
+import { getPayloadClient } from "@/lib/payload";
+import { Catalogue as CatalogueType, Category, LandingPage } from "@/lib/store";
 
 // Use dynamic rendering for pages that need database access
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default async function Catalogue() {
-  const payload = await getPayloadClient()
+  const payload = await getPayloadClient();
 
   const [categoriesResult, catalogue, landingPage] = await Promise.all([
     payload.find({
@@ -25,17 +25,17 @@ export default async function Catalogue() {
     payload.findGlobal({
       slug: "landing-page" as "catalogue",
     }) as unknown as Promise<LandingPage>,
-  ])
+  ]);
 
-  const categories = categoriesResult.docs as unknown as Category[]
-  const socials = landingPage.socials || []
+  const categories = categoriesResult.docs as unknown as Category[];
+  const socials = landingPage.socials || [];
 
-  if (!categories) throw new Error("Couldn't load categories")
+  if (!categories) throw new Error("Couldn't load categories");
 
   const catalogueStaticImages =
     catalogue.showcaseImages?.map((item) => ({
       url: item.image?.url || "",
-    })) || []
+    })) || [];
 
   return (
     <Screen className="px-5 animate-in fade-in">
@@ -53,5 +53,5 @@ export default async function Catalogue() {
         <ProductGrid images={catalogueStaticImages} socials={socials} />
       </div>
     </Screen>
-  )
+  );
 }

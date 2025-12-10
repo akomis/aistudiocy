@@ -71,7 +71,8 @@ function ProductDetails({ product }: { product: Product }) {
     }
   });
 
-  const isAvailable = product.available !== false && Boolean(product.price);
+  const inventory = product.inventory ?? 1;
+  const isAvailable = inventory > 0 && Boolean(product.price);
 
   const category =
     typeof product.category === "string"
@@ -169,6 +170,7 @@ function ProductDetails({ product }: { product: Product }) {
                 productId={product.id}
                 openBasketOnAdd
                 className="w-full lg:w-auto lg:px-12"
+                maxQuantity={inventory}
               />
             ) : (
               <Button

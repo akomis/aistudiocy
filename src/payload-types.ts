@@ -206,10 +206,11 @@ export interface Category {
 export interface Product {
   id: number;
   title: string;
-  /**
-   * Available for purchase
-   */
-  available?: boolean | null;
+  category: number | Category;
+  inventory?: number | null;
+  price: number;
+  compareAtPrice?: number | null;
+  status: 'draft' | 'published' | 'archived';
   thumbnail: number | Media;
   images?:
     | {
@@ -221,11 +222,7 @@ export interface Product {
    * Product description (optional)
    */
   description?: string | null;
-  category: number | Category;
-  status: 'draft' | 'published' | 'archived';
   handle: string;
-  price: number;
-  compareAtPrice?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -501,7 +498,11 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
-  available?: T;
+  category?: T;
+  inventory?: T;
+  price?: T;
+  compareAtPrice?: T;
+  status?: T;
   thumbnail?: T;
   images?:
     | T
@@ -510,11 +511,7 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   description?: T;
-  category?: T;
-  status?: T;
   handle?: T;
-  price?: T;
-  compareAtPrice?: T;
   updatedAt?: T;
   createdAt?: T;
 }

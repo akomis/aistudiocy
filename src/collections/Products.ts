@@ -4,7 +4,14 @@ export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'price', 'available', 'status'],
+    defaultColumns: ['title', 'category', 'price', 'inventory', 'status'],
+    components: {
+      views: {
+        list: {
+          Component: '@/components/admin/ProductsGrid',
+        },
+      },
+    },
   },
   access: {
     read: () => true,
@@ -13,7 +20,7 @@ export const Products: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
-    // Title and available row
+    // Main info row
     {
       type: 'row',
       fields: [
@@ -22,19 +29,58 @@ export const Products: CollectionConfig = {
           type: 'text',
           required: true,
           admin: {
-            width: '70%',
+            width: '30%',
           },
         },
         {
-          name: 'available',
-          type: 'checkbox',
-          defaultValue: true,
+          name: 'category',
+          type: 'relationship',
+          relationTo: 'categories',
+          required: true,
           admin: {
-            width: '30%',
-            description: 'Available for purchase',
-            style: {
-              alignSelf: 'flex-end',
-            },
+            width: '20%',
+          },
+        },
+        {
+          name: 'inventory',
+          type: 'number',
+          defaultValue: 1,
+          min: 0,
+          admin: {
+            width: '10%',
+          },
+        },
+        {
+          name: 'price',
+          label: 'Price (€)',
+          type: 'number',
+          required: true,
+          min: 0,
+          admin: {
+            width: '10%',
+          },
+        },
+        {
+          name: 'compareAtPrice',
+          label: 'Compare At (€)',
+          type: 'number',
+          min: 0,
+          admin: {
+            width: '10%',
+          },
+        },
+        {
+          name: 'status',
+          type: 'select',
+          defaultValue: 'published',
+          options: [
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+            { label: 'Archived', value: 'archived' },
+          ],
+          required: true,
+          admin: {
+            width: '20%',
           },
         },
       ],
@@ -68,35 +114,6 @@ export const Products: CollectionConfig = {
         description: 'Product description (optional)',
       },
     },
-    // Category and status row
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'category',
-          type: 'relationship',
-          relationTo: 'categories',
-          required: true,
-          admin: {
-            width: '50%',
-          },
-        },
-        {
-          name: 'status',
-          type: 'select',
-          defaultValue: 'published',
-          options: [
-            { label: 'Draft', value: 'draft' },
-            { label: 'Published', value: 'published' },
-            { label: 'Archived', value: 'archived' },
-          ],
-          required: true,
-          admin: {
-            width: '50%',
-          },
-        },
-      ],
-    },
     {
       name: 'handle',
       type: 'text',
@@ -106,31 +123,6 @@ export const Products: CollectionConfig = {
       admin: {
         hidden: true,
       },
-    },
-    // Pricing row
-    {
-      type: 'row',
-      fields: [
-        {
-          name: 'price',
-          label: 'Price (€)',
-          type: 'number',
-          required: true,
-          min: 0,
-          admin: {
-            width: '50%',
-          },
-        },
-        {
-          name: 'compareAtPrice',
-          label: 'Compare At Price (€)',
-          type: 'number',
-          min: 0,
-          admin: {
-            width: '50%',
-          },
-        },
-      ],
     },
   ],
   hooks: {

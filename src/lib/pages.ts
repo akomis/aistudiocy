@@ -55,7 +55,7 @@ Method 2
   {
     slug: "terms",
     title: "Terms & Conditions",
-    subtitle: "Last Updated: 20/01/2025",
+    subtitle: "Last Updated: 11/12/2025",
     content: `1. Introduction
 Welcome to φως ("we," "our," or "us"). By accessing and using our website, you agree to be bound by these Terms and Conditions and our Privacy Policy.
 
@@ -77,24 +77,25 @@ You agree not to:
 
 3.2 Pricing and Payment
 • All prices are in euros (€) and include applicable taxes
+• Payments are processed securely via Stripe
 • We reserve the right to refuse or cancel any order for any reason
 • Payment must be made in full before order processing begins
 
 4. Shipping and Returns
 
 4.1 Shipping Policy
-• Orders are typically processed within 5-7 business days
+• Orders are typically processed within 5-15 business days
 • Shipping times and costs vary by location
 • We are not responsible for customs duties or import taxes
 
 4.2 Return Policy
-Returns or exchanges are not accepted.
+Please refer to our Return & Refund Policy for full details.
 
 5. Privacy Policy
 
 5.1 Information We Collect
 We collect:
-• Personal information (name, address, email)
+• Personal information (name, address, email, tel number)
 • Payment information
 • Order history
 • Device information only when errors occur to help us resolve technical issues

@@ -36,13 +36,13 @@ const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
   const aboutsList = abouts || [];
 
   return (
-    <Section className="pt-12">
+    <Section className="pt-12 ">
       <div className="flex flex-col 2xl:flex-row justify-between items-start lg:items-end leading-10">
-        <div className="mb-2 px-10 2xl:p-0">
+        <div className="mb-10 lg:mb-2 px-10 2xl:p-0">
           <CutoffText>ABOUT</CutoffText>
         </div>
 
-        <div className="flex flex-col gap-10 py-0 m-0 px-10 w-full">
+        <div className="flex flex-col gap-5 lg:gap-10 py-0 m-0 px-10 w-full">
           {aboutsList.map((about) => (
             <div key={about.title} className="flex flex-col gap-2">
               <p className="text-4xl sm:text-7xl font-bold">{about.title}</p>
@@ -108,7 +108,10 @@ export default async function Landing() {
       <div className="animate-in fade-in">
         <Header />
         <About abouts={landingPage.abouts} />
-        <Footer socials={landingPage.socials} footerImage={landingPage.footerImage} />
+        <Footer
+          socials={landingPage.socials}
+          footerImage={landingPage.footerImage}
+        />
       </div>
     </Suspense>
   );

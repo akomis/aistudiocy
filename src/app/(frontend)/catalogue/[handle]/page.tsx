@@ -170,12 +170,12 @@ function ProductDetails({ product }: { product: Product }) {
 
           {/* Product Info Section */}
           <div className="flex-1 flex flex-col gap-6 lg:sticky lg:top-32 lg:self-start">
-            <h1 className="text-2xl lg:text-4xl font-bold tracking-wide">
+            <h1 className="text-4xl lg:text-5xl font-bold tracking-wide">
               {product.title}
             </h1>
 
             <div className="flex items-center gap-4">
-              <span className="text-2xl lg:text-3xl font-bold">
+              <span className="text-2xl lg:text-3xl">
                 €{formatPrice(product.price)}
               </span>
               {product.compareAtPrice &&

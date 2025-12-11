@@ -333,7 +333,7 @@ export default function ProductGrid({ images, socials }: Props) {
                 alt={firstImage.alternativeText ?? "catalogue image"}
                 height={IMAGE_SIZE}
                 width={IMAGE_SIZE}
-                style={{ objectFit: "contain" }}
+                style={{ objectFit: "cover" }}
               />
             )}
           </SubGrid>

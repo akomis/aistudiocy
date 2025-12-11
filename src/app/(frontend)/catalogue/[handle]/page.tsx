@@ -140,14 +140,6 @@ function ProductDetails({ product }: { product: Product }) {
                   ))}
                 </CarouselContent>
               </Carousel>
-              {!isAvailable && (
-                <Badge
-                  className="absolute bottom-4 left-4 text-gray-300 z-10"
-                  variant="outline"
-                >
-                  SOLD
-                </Badge>
-              )}
             </div>
 
             {/* Thumbnail Gallery */}

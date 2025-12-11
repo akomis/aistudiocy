@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { Gutter } from '@payloadcms/ui'
+import { Gutter, useListDrawerContext } from '@payloadcms/ui'
 import Link from 'next/link'
 import { Plus, Search, Upload } from 'lucide-react'
 import type { Media } from '@/payload-types'
@@ -14,6 +14,7 @@ interface PaginatedDocs {
 }
 
 export default function MediaGrid() {
+  const { isInDrawer, onSelect } = useListDrawerContext()
   const [media, setMedia] = useState<Media[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -92,34 +93,38 @@ export default function MediaGrid() {
   return (
     <Gutter>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">Media</h1>
-        <div className="flex items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleBulkUpload}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] font-medium hover:bg-[var(--theme-elevation-150)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Upload size={18} />
-            {uploading && uploadProgress
-              ? `Uploading ${uploadProgress.current}/${uploadProgress.total}...`
-              : 'Bulk Upload'}
-          </button>
-          <Link
-            href="/admin/collections/media/create"
-            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
-          >
-            <Plus size={18} />
-            Upload New
-          </Link>
-        </div>
+        <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">
+          {isInDrawer ? 'Select Media' : 'Media'}
+        </h1>
+        {!isInDrawer && (
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleBulkUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] font-medium hover:bg-[var(--theme-elevation-150)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Upload size={18} />
+              {uploading && uploadProgress
+                ? `Uploading ${uploadProgress.current}/${uploadProgress.total}...`
+                : 'Bulk Upload'}
+            </button>
+            <Link
+              href="/admin/collections/media/create"
+              className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
+            >
+              <Plus size={18} />
+              Upload New
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="mb-6">
@@ -156,43 +161,65 @@ export default function MediaGrid() {
       ) : (
         <>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
-            {media.map((item) => (
-              <Link
-                key={item.id}
-                href={`/admin/collections/media/${item.id}`}
-                className="group relative aspect-square rounded-lg overflow-hidden no-underline border border-[var(--theme-elevation-100)] hover:border-[var(--theme-elevation-300)] transition-all"
-              >
-                {item.url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={item.thumbnailURL || item.url}
-                    alt={item.alt}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[var(--theme-elevation-100)] flex items-center justify-center text-[var(--theme-elevation-400)]">
-                    No preview
+            {media.map((item) => {
+              const content = (
+                <>
+                  {item.url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.thumbnailURL || item.url}
+                      alt={item.alt}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[var(--theme-elevation-100)] flex items-center justify-center text-[var(--theme-elevation-400)]">
+                      No preview
+                    </div>
+                  )}
+                  <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-1">
+                    <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white text-xs truncate max-w-full">
+                      {item.filename}
+                    </span>
+                    <div className="flex gap-1">
+                      {item.width && item.height && (
+                        <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white/80 text-xs">
+                          {item.width}x{item.height}
+                        </span>
+                      )}
+                      {item.filesize && (
+                        <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white/80 text-xs">
+                          {formatFileSize(item.filesize)}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                )}
-                <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-1">
-                  <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white text-xs truncate max-w-full">
-                    {item.filename}
-                  </span>
-                  <div className="flex gap-1">
-                    {item.width && item.height && (
-                      <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white/80 text-xs">
-                        {item.width}x{item.height}
-                      </span>
-                    )}
-                    {item.filesize && (
-                      <span className="w-fit px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white/80 text-xs">
-                        {formatFileSize(item.filesize)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </>
+              )
+
+              const className =
+                'group relative aspect-square rounded-lg overflow-hidden no-underline border border-[var(--theme-elevation-100)] hover:border-[var(--theme-elevation-300)] transition-all cursor-pointer'
+
+              if (isInDrawer && onSelect) {
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() =>
+                      onSelect({ collectionSlug: 'media', doc: item, docID: String(item.id) })
+                    }
+                    className={className}
+                  >
+                    {content}
+                  </button>
+                )
+              }
+
+              return (
+                <Link key={item.id} href={`/admin/collections/media/${item.id}`} className={className}>
+                  {content}
+                </Link>
+              )
+            })}
           </div>
 
           {totalPages > 1 && (

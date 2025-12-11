@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
+    "@next/third-parties": "^16.0.8",
     "@payloadcms/db-postgres": "^3.67.0",
     "@payloadcms/email-resend": "^3.67.0",
     "@payloadcms/next": "^3.67.0",
@@ -64,7 +65,7 @@
     "recharts": "^3.5.1",
     "resend": "^4.0.0",
     "sharp": "^0.33.5",
-    "stripe": "^17.4.0",
+    "stripe": "^20.0.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.1",

@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 
 const getStripe = () =>
   new Stripe(process.env.STRIPE_API_KEY!, {
-    apiVersion: '2022-08-01',
+    apiVersion: '2025-11-17.clover' as Stripe.LatestApiVersion,
   })
 
 export async function POST(

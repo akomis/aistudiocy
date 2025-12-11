@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function FrontendLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${ceraPro.variable} antialiased bg-black`}>
+        <GoogleAnalytics gaId="G-345214197" />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

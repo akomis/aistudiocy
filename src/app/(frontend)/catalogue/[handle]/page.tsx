@@ -5,7 +5,6 @@ import Basket from "@/components/Basket";
 import HomeButton from "@/components/HomeButton";
 import RingSizeGuide from "@/components/RingSizeGuide";
 import Screen from "@/components/Screen";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -37,7 +36,7 @@ export default function ProductPage() {
       <Screen className="px-5 animate-in fade-in">
         <div className="w-full max-w-[1200px] mx-auto">
           <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
-            <HomeButton isIcon />
+            <HomeButton isIcon href="/catalogue" />
             <Basket />
           </div>
           <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -106,7 +105,7 @@ function ProductDetails({ product }: { product: Product }) {
     <Screen className="px-5 animate-in fade-in">
       <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
-          <HomeButton isIcon />
+          <HomeButton isIcon href="/catalogue" />
           <Basket />
         </div>
 
@@ -124,7 +123,7 @@ function ProductDetails({ product }: { product: Product }) {
                   {allImages.map((img, index) => (
                     <CarouselItem key={index}>
                       <div
-                        className="relative aspect-square w-full cursor-pointer"
+                        className="relative aspect-[3/4] w-full cursor-pointer"
                         onClick={() => setLightboxOpen(true)}
                       >
                         <Image
@@ -170,12 +169,12 @@ function ProductDetails({ product }: { product: Product }) {
 
           {/* Product Info Section */}
           <div className="flex-1 flex flex-col gap-6 lg:sticky lg:top-32 lg:self-start">
-            <h1 className="text-4xl lg:text-5xl font-bold tracking-wide">
+            <h1 className="text-lg lg:text-xl text-muted-foreground tracking-wide">
               {product.title}
             </h1>
 
             <div className="flex items-center gap-4">
-              <span className="text-2xl lg:text-3xl">
+              <span className="text-2xl lg:text-3xl font-semibold">
                 €{formatPrice(product.price)}
               </span>
               {product.compareAtPrice &&
@@ -186,11 +185,25 @@ function ProductDetails({ product }: { product: Product }) {
                 )}
             </div>
 
+            {product.size && <p className="text-gray-300">{product.size}</p>}
+
             {product.description && (
               <p className="text-gray-300 whitespace-pre-line">
                 {product.description}
               </p>
             )}
+
+            <div className="text-gray-300 text-sm space-y-1">
+              {isFingerCategory && (
+                <p>
+                  For your convenience, please let us know your size to adjust
+                  it for you.
+                </p>
+              )}
+              <p>Hand carved, made of silver 925.</p>
+              <p>Please, allow 5 to 15 days for delivery.</p>
+              <p>Made in Cyprus.</p>
+            </div>
 
             {isAvailable ? (
               <AddToCartButton

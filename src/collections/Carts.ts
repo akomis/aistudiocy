@@ -170,6 +170,13 @@ export const Carts: CollectionConfig = {
         description: 'Payment status from Stripe webhook',
       },
     },
+    {
+      name: 'notes',
+      type: 'textarea',
+      admin: {
+        description: 'Customer notes for the order',
+      },
+    },
   ],
   hooks: {
     beforeChange: [

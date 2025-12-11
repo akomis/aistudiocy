@@ -141,11 +141,12 @@ export interface UserAuthOperations {
 export interface Product {
   id: number;
   title: string;
+  status: 'draft' | 'published' | 'archived';
+  size?: string | null;
   category: number | Category;
   inventory?: number | null;
   price: number;
   compareAtPrice?: number | null;
-  status: 'draft' | 'published' | 'archived';
   /**
    * Product description (optional)
    */
@@ -391,6 +392,10 @@ export interface Cart {
    * Payment status from Stripe webhook
    */
   paymentStatus?: ('pending' | 'processing' | 'succeeded' | 'failed') | null;
+  /**
+   * Customer notes for the order
+   */
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -498,11 +503,12 @@ export interface PayloadMigration {
  */
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
+  status?: T;
+  size?: T;
   category?: T;
   inventory?: T;
   price?: T;
   compareAtPrice?: T;
-  status?: T;
   description?: T;
   thumbnail?: T;
   images?:
@@ -690,6 +696,7 @@ export interface CartsSelect<T extends boolean = true> {
   stripeClientSecret?: T;
   completedAt?: T;
   paymentStatus?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

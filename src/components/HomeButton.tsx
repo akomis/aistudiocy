@@ -5,11 +5,12 @@ import { Label } from "./ui/label";
 
 type Props = {
   isIcon?: boolean;
+  href?: string;
 };
 
-export default function HomeButton({ isIcon }: Props) {
+export default function HomeButton({ isIcon, href = "/" }: Props) {
   return (
-    <Link href="/">
+    <Link href={href}>
       {isIcon ? (
         <Logo className="hover:opacity-75 transition-all h-20" />
       ) : (

@@ -125,6 +125,7 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
         couponCode: couponCode || '',
         stripePaymentIntentId: paymentIntent.id,
         status: 'confirmed',
+        notes: cart.notes || '',
       },
     })
 

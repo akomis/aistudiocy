@@ -21,8 +21,8 @@
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged && npx tsc --noEmit",
-    "pre-push": "yarn build"
+    "pre-commit": "npx tsc --noEmit",
+    "pre-push": "npx lint-staged && yarn build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

@@ -51,6 +51,10 @@ Method 2
 1. Wrap a piece of thread or a measuring tape loosely around your finger.
 2. Mark the end of the thread (or tape) with a pen.
 3. Lay the thread flat and measure its length with a ruler.`,
+    image: {
+      src: "/size-guide.jpeg",
+      alt: "Ring size chart showing diameter, length and US size conversions",
+    },
   },
   {
     slug: "terms",

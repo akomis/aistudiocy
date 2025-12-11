@@ -71,14 +71,13 @@ const BasketListItem = ({
 
   return (
     <div className="flex justify-between w-full border border-gray-400 px-4 py-2">
-      <div className="aspect-square bg-black min-h-36 min-w-36 max-h-52 max-w-52">
+      <div className="aspect-square bg-black w-24 sm:w-36 md:w-52 flex-shrink-0 relative">
         {thumbnailUrl && (
           <Image
             src={thumbnailUrl}
             alt={item.product.title}
-            width={200}
-            height={200}
-            style={{ objectFit: "contain" }}
+            fill
+            className="object-cover"
           />
         )}
       </div>
@@ -98,6 +97,9 @@ const BasketListItem = ({
         )}
 
         <div className="flex flex-col items-end justify-between">
+          {item.product.size && (
+            <div className="text-sm text-gray-400">{item.product.size}</div>
+          )}
           <div className="text-2xl font-bold text-end">{`€${formatPrice(item.unitPrice)}`}</div>
         </div>
       </div>
@@ -162,7 +164,7 @@ const CustomerForm = () => {
         first_name: z.string().min(1, { message: "First name is required" }),
         last_name: z.string().min(1, { message: "Last name is required" }),
         email: z.string().email({ message: "Invalid email address" }),
-        phone: z.string().regex(/^\+?\d{1,4}?\d{7}$/, {
+        phone: z.string().regex(/^\+?\d{8,}$/, {
           message:
             "Phone number must be at least 8 digits and may include country code with '+' prefix",
         }),
@@ -488,6 +490,7 @@ const CheckoutForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
+  const [notes, setNotes] = useState(cart?.notes ?? "");
 
   const appliedCoupon =
     cart?.coupon && typeof cart.coupon === "object"
@@ -534,9 +537,21 @@ const CheckoutForm = () => {
     }
   };
 
+  const saveNotes = async () => {
+    if (!cart?.id) return;
+    try {
+      await store.cart.update(cart.id, { notes });
+    } catch {
+      // Silently fail - notes are not critical
+    }
+  };
+
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Save notes before processing payment
+    await saveNotes();
 
     const clientSecret = cart?.stripeClientSecret;
 
@@ -662,6 +677,19 @@ const CheckoutForm = () => {
               </Button>
             </div>
           )}
+        </div>
+
+        {/* Notes input */}
+        <div className="flex flex-col gap-1">
+          <textarea
+            placeholder="ORDER NOTES (OPTIONAL)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            onBlur={saveNotes}
+            className="w-full min-h-[80px] border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+            maxLength={500}
+          />
+          <span className="text-xs text-gray-500 self-end">{notes.length}/500</span>
         </div>
 
         <div className="flex w-full flex-col gap-4">

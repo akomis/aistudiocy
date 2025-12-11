@@ -21,7 +21,7 @@ export const Products: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
   fields: [
-    // Main info row
+    // Title + Status row
     {
       type: 'row',
       fields: [
@@ -30,7 +30,34 @@ export const Products: CollectionConfig = {
           type: 'text',
           required: true,
           admin: {
+            width: '70%',
+          },
+        },
+        {
+          name: 'status',
+          type: 'select',
+          defaultValue: 'published',
+          options: [
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+            { label: 'Archived', value: 'archived' },
+          ],
+          required: true,
+          admin: {
             width: '30%',
+          },
+        },
+      ],
+    },
+    // Details row
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'size',
+          type: 'text',
+          admin: {
+            width: '20%',
           },
         },
         {
@@ -48,7 +75,7 @@ export const Products: CollectionConfig = {
           defaultValue: 1,
           min: 0,
           admin: {
-            width: '10%',
+            width: '20%',
           },
         },
         {
@@ -58,7 +85,7 @@ export const Products: CollectionConfig = {
           required: true,
           min: 0,
           admin: {
-            width: '10%',
+            width: '20%',
           },
         },
         {
@@ -66,20 +93,6 @@ export const Products: CollectionConfig = {
           label: 'Compare At (€)',
           type: 'number',
           min: 0,
-          admin: {
-            width: '10%',
-          },
-        },
-        {
-          name: 'status',
-          type: 'select',
-          defaultValue: 'published',
-          options: [
-            { label: 'Draft', value: 'draft' },
-            { label: 'Published', value: 'published' },
-            { label: 'Archived', value: 'archived' },
-          ],
-          required: true,
           admin: {
             width: '20%',
           },

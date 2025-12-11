@@ -37,15 +37,24 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
-      providers: ['@/components/admin/AdminStyleProvider'],
+      providers: ["@/components/admin/AdminStyleProvider"],
       views: {
         dashboard: {
-          Component: '@/components/admin/Dashboard',
+          Component: "@/components/admin/Dashboard",
         },
       },
     },
   },
-  collections: [Products, Categories, Media, Orders, Coupons, Shipping, Users, Carts],
+  collections: [
+    Products,
+    Categories,
+    Media,
+    Orders,
+    Coupons,
+    Shipping,
+    Users,
+    Carts,
+  ],
   globals: [Catalogue, LandingPage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "your-secret-key",
@@ -90,14 +99,10 @@ export default buildConfig({
   ],
   email: resendAdapter({
     apiKey: process.env.RESEND_API_KEY || "",
-    defaultFromAddress: process.env.ADMIN_EMAIL || "noreply@example.com",
+    defaultFromAddress: "noreply@mail.fosjewels.com",
     defaultFromName: "φως",
   }),
-  cors: process.env.FRONTEND_URL
-    ? [process.env.FRONTEND_URL]
-    : ["http://localhost:3000"],
-  csrf: process.env.FRONTEND_URL
-    ? [process.env.FRONTEND_URL]
-    : ["http://localhost:3000"],
+  cors: [process.env.FRONTEND_URL ?? "", "http://localhost:3000"],
+  csrf: [process.env.FRONTEND_URL ?? "", "http://localhost:3000"],
   sharp,
 });

@@ -135,3 +135,4 @@ dist
 # misc
 .DS_Store
 *.pem
+scripts/migrate-dev-to-prod.ts

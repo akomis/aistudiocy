@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Gutter } from '@payloadcms/ui'
 import Link from 'next/link'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, Upload } from 'lucide-react'
 import type { Media } from '@/payload-types'
 
 interface PaginatedDocs {
@@ -19,6 +19,10 @@ export default function MediaGrid() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null)
+  const [refetchKey, setRefetchKey] = useState(0)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const fetchMedia = async () => {
@@ -43,7 +47,7 @@ export default function MediaGrid() {
       }
     }
     fetchMedia()
-  }, [page, search])
+  }, [page, search, refetchKey])
 
   const formatFileSize = (bytes?: number | null) => {
     if (!bytes) return ''
@@ -52,17 +56,70 @@ export default function MediaGrid() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
+  const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    setUploadProgress({ current: 0, total: files.length })
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('alt', 'silver jewellery image')
+
+      try {
+        await fetch('/api/media', {
+          method: 'POST',
+          body: formData,
+        })
+        setUploadProgress({ current: i + 1, total: files.length })
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}:`, error)
+      }
+    }
+
+    setUploading(false)
+    setUploadProgress(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+    setPage(1)
+    setRefetchKey((k) => k + 1)
+  }
+
   return (
     <Gutter>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">Media</h1>
-        <Link
-          href="/admin/collections/media/create"
-          className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
-        >
-          <Plus size={18} />
-          Upload New
-        </Link>
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleBulkUpload}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] font-medium hover:bg-[var(--theme-elevation-150)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Upload size={18} />
+            {uploading && uploadProgress
+              ? `Uploading ${uploadProgress.current}/${uploadProgress.total}...`
+              : 'Bulk Upload'}
+          </button>
+          <Link
+            href="/admin/collections/media/create"
+            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
+          >
+            <Plus size={18} />
+            Upload New
+          </Link>
+        </div>
       </div>
 
       <div className="mb-6">

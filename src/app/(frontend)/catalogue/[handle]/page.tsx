@@ -1,8 +1,8 @@
 "use client";
 
 import AddToCartButton from "@/components/AddToCartButton";
+import BackButton from "@/components/BackButton";
 import Basket from "@/components/Basket";
-import HomeButton from "@/components/HomeButton";
 import RingSizeGuide from "@/components/RingSizeGuide";
 import Screen from "@/components/Screen";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export default function ProductPage() {
       <Screen className="px-5 animate-in fade-in">
         <div className="w-full max-w-[1200px] mx-auto">
           <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
-            <HomeButton isIcon href="/catalogue" />
+            <BackButton fallbackHref="/catalogue" />
             <Basket />
           </div>
           <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -105,7 +105,7 @@ function ProductDetails({ product }: { product: Product }) {
     <Screen className="px-5 animate-in fade-in">
       <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center w-full sticky top-0 z-10 bg-black pb-8 pt-10">
-          <HomeButton isIcon href="/catalogue" />
+          <BackButton fallbackHref="/catalogue" />
           <Basket />
         </div>
 

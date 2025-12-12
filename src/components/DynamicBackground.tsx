@@ -4,6 +4,7 @@ import useImagePreloader from "@/hooks/use-image-preloader";
 import useIsMobile from "@/hooks/use-is-mobile";
 import { Category } from "@/lib/store";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CategoryPicker from "./CategoryPicker";
@@ -89,7 +90,9 @@ const DynamicBackground = ({ data }: Props) => {
           router.push("/catalogue");
         }}
       >
-        <Logo />
+        <Link href="/" onClick={(e) => e.stopPropagation()}>
+          <Logo />
+        </Link>
 
         <CategoryPicker
           categories={categories}

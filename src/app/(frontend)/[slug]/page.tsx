@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { getPageBySlug, getAllPageSlugs } from "@/lib/pages"
-import HomeButton from "@/components/HomeButton"
+import BackButton from "@/components/BackButton"
 import Section from "@/components/Section"
 import PageImage from "@/components/PageImage"
 
@@ -35,7 +35,7 @@ export default async function StaticPage({ params }: Props) {
   return (
     <Section className="min-h-screen animate-in fade-in">
       <div className="max-w-3xl mx-auto px-6 py-12 sm:px-10 sm:py-20">
-        <HomeButton isIcon />
+        <BackButton />
 
         <header className="mt-12 mb-10">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">{page.title}</h1>

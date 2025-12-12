@@ -22,40 +22,50 @@ export const Categories: CollectionConfig = {
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
-      required: true,
-      unique: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+          unique: true,
+        },
+        {
+          name: 'handle',
+          type: 'text',
+          required: true,
+          unique: true,
+          index: true,
+          admin: {
+            readOnly: true,
+            width: '30%',
+            description: 'URL-friendly slug (e.g., "bracelets")',
+          },
+        },
+      ],
     },
     {
-      name: 'handle',
-      type: 'text',
-      required: true,
-      unique: true,
-      index: true,
-      admin: {
-        description: 'URL-friendly slug (e.g., "bracelets")',
-      },
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-    },
-    {
-      name: 'headerDesktop',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'Desktop header image for landing page',
-      },
-    },
-    {
-      name: 'headerMobile',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'Mobile header image for landing page',
-      },
+      type: 'row',
+      fields: [
+        {
+          name: 'headerDesktop',
+          label: 'Desktop',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            description: 'Desktop header image for landing page',
+          },
+        },
+        {
+          name: 'headerMobile',
+          label: 'Mobile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            description: 'Mobile header image for landing page',
+          },
+        },
+      ],
     },
   ],
   hooks: {

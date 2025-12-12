@@ -174,7 +174,6 @@ export interface Category {
    * URL-friendly slug (e.g., "bracelets")
    */
   handle: string;
-  description?: string | null;
   /**
    * Desktop header image for landing page
    */
@@ -529,7 +528,6 @@ export interface CategoriesSelect<T extends boolean = true> {
   _order?: T;
   name?: T;
   handle?: T;
-  description?: T;
   headerDesktop?: T;
   headerMobile?: T;
   updatedAt?: T;

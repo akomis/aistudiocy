@@ -200,7 +200,7 @@ function ProductDetails({ product }: { product: Product }) {
                   it for you.
                 </p>
               )}
-              <p>Hand carved, made of silver 925.</p>
+              <p>Handmade, silver 925.</p>
               <p>Please, allow 5 to 15 days for delivery.</p>
               <p>Made in Cyprus.</p>
             </div>

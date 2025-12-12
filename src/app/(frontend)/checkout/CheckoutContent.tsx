@@ -15,13 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Countries, CountryCode } from "@/lib/countries";
-import {
-  CartItem,
-  Coupon,
-  Product,
-  ShippingOption,
-  store,
-} from "@/lib/store";
+import { CartItem, Coupon, Product, ShippingOption, store } from "@/lib/store";
 import { stripePromise } from "@/lib/stripe";
 import { formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
@@ -102,13 +96,9 @@ const OrderSummaryItem = ({ item }: { item: BasketItem }) => {
 };
 
 const OrderSummary = ({ items }: { items: BasketItem[] }) => {
-  const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-xl font-bold tracking-wider mb-2">
-        ORDER SUMMARY
-      </h2>
+      <h2 className="text-xl font-bold tracking-wider mb-2">ORDER SUMMARY</h2>
       <div className="flex flex-col max-h-[300px] overflow-y-auto">
         {items.map((item, index) => (
           <OrderSummaryItem key={`${item.product.id}-${index}`} item={item} />

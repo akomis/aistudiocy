@@ -8,7 +8,7 @@ type Props = {
 export default function CutoffText({ children, align = "left" }: Props) {
   return (
     <div
-      className={cn("h-[62px] sm:h-[125px] font-black overflow-hidden w-screen", {
+      className={cn("h-[62px] sm:h-[125px] font-black overflow-hidden w-full", {
         "text-right": align === "right",
       })}
     >

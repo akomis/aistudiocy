@@ -14,9 +14,6 @@ const nextConfig = {
   sassOptions: {
     silenceDeprecations: ["legacy-js-api", "import"],
   },
-  serverActions: {
-    bodySizeLimit: "10mb",
-  },
 };
 
 export default withPayload(nextConfig);

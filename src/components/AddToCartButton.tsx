@@ -75,6 +75,7 @@ export default function AddToCartButton({
       {showQuantityInput && (
         <Input
           type="number"
+          inputMode="numeric"
           min={1}
           max={maxQuantity}
           value={quantity}

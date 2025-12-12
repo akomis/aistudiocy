@@ -151,7 +151,7 @@ export default function Basket() {
       >
         BASKET
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
+      <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden rounded-none">
         <DrawerHeader>
           <DrawerTitle className="-mb-4 mx-auto">
             <CutoffText>BASKET</CutoffText>

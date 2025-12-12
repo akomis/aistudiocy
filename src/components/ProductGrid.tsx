@@ -11,10 +11,24 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import RingSizeGuide from "./RingSizeGuide";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
+
+const SCROLL_POSITION_KEY = "catalogue-scroll-position";
+
+const saveScrollPosition = () => {
+  sessionStorage.setItem(SCROLL_POSITION_KEY, window.scrollY.toString());
+};
+
+const restoreScrollPosition = () => {
+  const saved = sessionStorage.getItem(SCROLL_POSITION_KEY);
+  if (saved) {
+    window.scrollTo(0, parseInt(saved, 10));
+    sessionStorage.removeItem(SCROLL_POSITION_KEY);
+  }
+};
 
 type Social = {
   key: string;
@@ -89,6 +103,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const isInBasket = inventory > 0 && Boolean(lineItem);
 
   const handleClick = () => {
+    saveScrollPosition();
     router.push(`/catalogue/${product.handle}`);
   };
 
@@ -96,7 +111,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     <div
       onClick={handleClick}
       className={cn(
-        "hover:opacity-85 duration-700 transition-all relative aspect-square hover:cursor-pointer animate-in fade-in ease-in-out ",
+        "hover:opacity-85 duration-700 transition-all hover:cursor-pointer animate-in fade-in ease-in-out",
         {
           "border border-white/30": isInBasket,
         }
@@ -107,67 +122,109 @@ const ProductItem = ({ product }: ProductItemProps) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <Image
-            src={thumbnailUrl}
-            alt={product.title}
-            fill
-            style={{ objectFit: "cover" }}
-          />
-          {(isInBasket || isHovered || isMobile || isLoading) && (
-            <div
-              className={cn(
-                "absolute h-full w-full flex flex-col items-center justify-end ",
-                { "-bottom-10": isMobile, "bottom-0 pl-4 p-2": !isMobile }
-              )}
-            >
-              <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
-                <span className="text-sm font-bold sm:text-xl tracking-wide">{`€${formatPrice(price)}`}</span>
-                <Button
-                  variant="outline"
-                  className="font-bold bg-black/80 border-0"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    isInBasket ? deleteItem.mutate() : add.mutate();
-                  }}
-                  size={"sm"}
-                  disabled={!cart}
-                >
-                  {isLoading ? (
-                    <Spinner />
-                  ) : !isInBasket ? (
-                    <Plus strokeWidth={iconStrokeWidth} />
-                  ) : (
-                    <Minus strokeWidth={iconStrokeWidth} />
-                  )}
-                </Button>
+          <div className="relative aspect-square">
+            <Image
+              src={thumbnailUrl}
+              alt={product.title}
+              fill
+              style={{ objectFit: "cover" }}
+            />
+            {/* Desktop overlay */}
+            {!isMobile && (isInBasket || isHovered || isLoading) && (
+              <div className="absolute bottom-0 left-0 right-0 p-2 pl-4">
+                <div className="flex w-full justify-between items-center animate-in slide-in-from-bottom duration-500 ease-out">
+                  <span className="text-xl font-bold tracking-wide">{`€${formatPrice(price)}`}</span>
+                  <Button
+                    variant="outline"
+                    className="font-bold bg-black/80 border-0"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      isInBasket ? deleteItem.mutate() : add.mutate();
+                    }}
+                    size={"sm"}
+                    disabled={!cart}
+                  >
+                    {isLoading ? (
+                      <Spinner />
+                    ) : !isInBasket ? (
+                      <Plus strokeWidth={iconStrokeWidth} />
+                    ) : (
+                      <Minus strokeWidth={iconStrokeWidth} />
+                    )}
+                  </Button>
+                </div>
               </div>
+            )}
+          </div>
+          {/* Mobile controls - in flow below image */}
+          {isMobile && (
+            <div className="flex w-full justify-between items-center pl-1">
+              <span className="text-sm font-bold tracking-wide">{`€${formatPrice(price)}`}</span>
+              <Button
+                variant="outline"
+                className="font-bold bg-black/80 border-0"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  isInBasket ? deleteItem.mutate() : add.mutate();
+                }}
+                size={"sm"}
+                disabled={!cart}
+              >
+                {isLoading ? (
+                  <Spinner />
+                ) : !isInBasket ? (
+                  <Plus strokeWidth={iconStrokeWidth} />
+                ) : (
+                  <Minus strokeWidth={iconStrokeWidth} />
+                )}
+              </Button>
             </div>
           )}
         </div>
       ) : (
         <div>
-          <Image
-            src={thumbnailUrl}
-            alt={product.title}
-            fill
-            style={{ objectFit: "cover" }}
-            className="opacity-70"
-          />
-          <Badge
-            className={cn(
-              "text-thin text-xs sm:text-sm text-gray-300 absolute left-5",
-              {
-                "-bottom-10": isMobile,
-                "bottom-3 ": !isMobile,
-              }
+          <div className="relative aspect-square">
+            <Image
+              src={thumbnailUrl}
+              alt={product.title}
+              fill
+              style={{ objectFit: "cover" }}
+              className="opacity-70"
+            />
+            {/* Desktop SOLD badge */}
+            {!isMobile && (
+              <Badge
+                className="text-thin text-sm text-gray-300 absolute left-5 bottom-3"
+                variant={"outline"}
+              >
+                SOLD
+              </Badge>
             )}
-            variant={"outline"}
-          >
-            SOLD
-          </Badge>
+          </div>
+          {/* Mobile SOLD badge - in flow */}
+          {isMobile && (
+            <Badge
+              className="text-thin text-xs text-gray-300 mt-2"
+              variant={"outline"}
+            >
+              SOLD
+            </Badge>
+          )}
         </div>
       )}
     </div>
+  );
+};
+
+const Container = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("pb-5 md:pb-8 lg:pb-10", className)}>{children}</div>
   );
 };
 
@@ -181,7 +238,7 @@ const SubGrid = ({
   return (
     <div
       className={cn(
-        "grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-24 sm:gap-8",
+        "grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 lg:gap-10",
         className
       )}
     >
@@ -206,6 +263,10 @@ export default function ProductGrid({ images, socials }: Props) {
 
   useEffect(() => {
     setId(searchParams.get("category"));
+  }, []);
+
+  useLayoutEffect(() => {
+    restoreScrollPosition();
   }, []);
 
   useEffect(() => {
@@ -261,9 +322,9 @@ export default function ProductGrid({ images, socials }: Props) {
 
   const firstSet = products.slice(0, 4);
   const intermediateSet = products.slice(4, 12);
-  const secondSet = products.slice(12, 14);
-  const thirdSet = products.slice(14, 26);
-  const fourthSet = products.slice(26);
+  const secondSet = products.slice(12, 16);
+  const thirdSet = products.slice(16, 28);
+  const fourthSet = products.slice(28);
 
   const firstImage = images[0];
   const secondImage = images[1];
@@ -312,87 +373,101 @@ export default function ProductGrid({ images, socials }: Props) {
 
   return (
     <>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col">
         {firstSet.length ? (
-          <SubGrid>
-            <SubGrid className="col-span-2 lg:grid-cols-2">
-              {firstSet.map((product) => (
+          <Container>
+            <SubGrid>
+              <SubGrid className="col-span-2 lg:grid-cols-2">
+                {firstSet.map((product) => (
+                  <div key={product.id} className="col-span-1">
+                    <ProductItem product={product} />
+                  </div>
+                ))}
+              </SubGrid>
+
+              {firstImage && (
+                <Image
+                  className="aspect-square col-span-2 self-end"
+                  src={firstImage.url}
+                  alt={firstImage.alternativeText ?? "catalogue image"}
+                  height={IMAGE_SIZE}
+                  width={IMAGE_SIZE}
+                  style={{ objectFit: "cover" }}
+                />
+              )}
+            </SubGrid>
+          </Container>
+        ) : null}
+
+        {intermediateSet.length ? (
+          <Container className="mb-2">
+            <SubGrid>
+              {intermediateSet.map((product) => (
                 <div key={product.id} className="col-span-1">
                   <ProductItem product={product} />
                 </div>
               ))}
             </SubGrid>
-
-            {firstImage && (
-              <Image
-                className="aspect-square col-span-2"
-                src={firstImage.url}
-                alt={firstImage.alternativeText ?? "catalogue image"}
-                height={IMAGE_SIZE}
-                width={IMAGE_SIZE}
-                style={{ objectFit: "cover" }}
-              />
-            )}
-          </SubGrid>
-        ) : null}
-
-        {intermediateSet.length ? (
-          <SubGrid>
-            {intermediateSet.map((product) => (
-              <div key={product.id} className="col-span-1">
-                <ProductItem product={product} />
-              </div>
-            ))}
-          </SubGrid>
+          </Container>
         ) : null}
 
         {secondSet.length ? (
-          <SubGrid>
-            {secondImage && (
-              <div className="col-span-2 relative overflow-hidden">
+          <Container>
+            <SubGrid>
+              {secondImage && (
                 <Image
+                  className="aspect-square col-span-2"
                   src={secondImage.url}
                   alt={secondImage.alternativeText ?? "catalogue image"}
-                  fill
+                  height={IMAGE_SIZE}
+                  width={IMAGE_SIZE}
                   style={{ objectFit: "cover" }}
                 />
-              </div>
-            )}
-            {secondSet.map((product) => (
-              <div key={product.id} className="col-span-1">
-                <ProductItem product={product} />
-              </div>
-            ))}
-          </SubGrid>
+              )}
+              <SubGrid className="col-span-2 lg:grid-cols-2">
+                {secondSet.map((product) => (
+                  <div key={product.id} className="col-span-1">
+                    <ProductItem product={product} />
+                  </div>
+                ))}
+              </SubGrid>
+            </SubGrid>
+          </Container>
         ) : null}
 
         {thirdSet.length ? (
-          <SubGrid>
-            {thirdSet.map((product) => (
-              <div key={product.id} className="col-span-1">
-                <ProductItem product={product} />
-              </div>
-            ))}
-
-            {thirdImage && (
-              <Image
-                className="col-span-2 lg:col-span-4 aspect-video max-h-[300px] m-0"
-                src={thirdImage.url}
-                alt={thirdImage.alternativeText ?? "catalogue image"}
-                height={IMAGE_SIZE}
-                width={IMAGE_SIZE}
-                style={{ objectFit: "cover" }}
-              />
-            )}
-
-            {Boolean(fourthSet.length)
-              ? fourthSet.map((product) => (
-                  <div key={product.id}>
+          <Container>
+            <SubGrid>
+              <SubGrid className="col-span-2 lg:col-span-4">
+                {thirdSet.map((product) => (
+                  <div key={product.id} className="col-span-1">
                     <ProductItem product={product} />
                   </div>
-                ))
-              : null}
-          </SubGrid>
+                ))}
+              </SubGrid>
+
+              {thirdImage && (
+                <Image
+                  className="aspect-video col-span-2 lg:col-span-4 self-end"
+                  src={thirdImage.url}
+                  alt={thirdImage.alternativeText ?? "catalogue image"}
+                  height={IMAGE_SIZE}
+                  width={IMAGE_SIZE}
+                  style={{ objectFit: "cover" }}
+                />
+              )}
+
+              {Boolean(fourthSet.length) && (
+                <SubGrid className="col-span-2 lg:col-span-4">
+                  {fourthSet.map((product) => (
+                    <div key={product.id} className="col-span-1">
+                      <ProductItem product={product} />
+                    </div>
+                  ))}
+                </SubGrid>
+              )}
+            </SubGrid>
+          </Container>
         ) : null}
       </div>
       <div className="mt-40 flex flex-col gap-10 sm:gap-16">

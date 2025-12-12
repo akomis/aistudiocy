@@ -109,9 +109,10 @@ const OrderSummary = ({ items }: { items: BasketItem[] }) => {
 };
 
 const CustomerForm = () => {
-  const [isProceeding, setIsProceeding] = useState<boolean>(false);
   const { cart, setCart } = useContext(CartContext);
   const router = useRouter();
+  const [isProceeding, setIsProceeding] = useState<boolean>(false);
+  const [notes, setNotes] = useState(cart?.notes ?? "");
 
   const { data: shippingData, isLoading: shippingLoading } = useQuery({
     queryKey: ["shipping_options"],
@@ -214,6 +215,7 @@ const CustomerForm = () => {
         shippingAddress: address,
         billingAddress: address,
         shippingOption: parseInt(formValues.shipping_option, 10),
+        notes,
       });
 
       const { cart: updatedCart } = await store.cart.retrieve(
@@ -428,6 +430,20 @@ const CustomerForm = () => {
           address.
         </Label>
 
+        {/* Order notes */}
+        <div className="col-span-2 flex flex-col gap-1">
+          <textarea
+            placeholder="ORDER NOTES (OPTIONAL)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full min-h-[80px] border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+            maxLength={500}
+          />
+          <span className="text-xs text-gray-500 self-end">
+            {notes.length}/500
+          </span>
+        </div>
+
         {!clientSecret && (
           <div className="h-12 col-span-2">
             {isLoading ? (
@@ -460,7 +476,6 @@ const CheckoutForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
-  const [notes, setNotes] = useState(cart?.notes ?? "");
 
   const appliedCoupon =
     cart?.coupon && typeof cart.coupon === "object"
@@ -507,20 +522,9 @@ const CheckoutForm = () => {
     }
   };
 
-  const saveNotes = async () => {
-    if (!cart?.id) return;
-    try {
-      await store.cart.update(cart.id, { notes });
-    } catch {
-      // Silently fail - notes are not critical
-    }
-  };
-
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    await saveNotes();
 
     const clientSecret = cart?.stripeClientSecret;
 
@@ -646,21 +650,6 @@ const CheckoutForm = () => {
               </Button>
             </div>
           )}
-        </div>
-
-        {/* Notes input */}
-        <div className="flex flex-col gap-1">
-          <textarea
-            placeholder="ORDER NOTES (OPTIONAL)"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            onBlur={saveNotes}
-            className="w-full min-h-[80px] border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
-            maxLength={500}
-          />
-          <span className="text-xs text-gray-500 self-end">
-            {notes.length}/500
-          </span>
         </div>
 
         <div className="flex w-full flex-col gap-4">

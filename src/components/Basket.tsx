@@ -38,14 +38,14 @@ const BasketListItem = ({
   item: BasketItem;
   index: number;
 }) => {
-  const { cart, setCart } = useContext(CartContext);
+  const { setCart } = useContext(CartContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const deleteItem = useMutation({
     mutationKey: ["delete", item.product.id],
     mutationFn: async () => {
       setIsLoading(true);
-      return store.cart.deleteLineItem(cart?.id as string, index);
+      return store.cart.deleteLineItem(index);
     },
     onSuccess: (response) => {
       setCart(response.cart);
@@ -75,7 +75,7 @@ const BasketListItem = ({
           />
         )}
         {item.quantity > 1 && (
-          <div className="absolute -top-2 -right-2 bg-white text-black rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+          <div className="absolute -top-1 -right-2 bg-white text-black rounded-2xl w-6 h-6 flex items-center justify-center text-sm font-bold">
             {item.quantity}
           </div>
         )}
@@ -149,14 +149,12 @@ export default function Basket() {
         className="font-black text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait tracking-widest"
         disabled={!cart}
       >
-        BASKET{totalItemCount > 0 && ` (${totalItemCount})`}
+        BASKET
       </DrawerTrigger>
       <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden">
         <DrawerHeader>
           <DrawerTitle className="-mb-4 mx-auto">
-            <CutoffText>
-              BASKET{totalItemCount > 0 && ` (${totalItemCount})`}
-            </CutoffText>
+            <CutoffText>BASKET</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 

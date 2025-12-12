@@ -142,7 +142,7 @@ export interface Catalogue {
 
 // Store API client
 export const store = {
-  // Cart operations
+  // Cart operations (session-based - cart ID stored in HTTP-only cookie)
   cart: {
     async create(): Promise<{ cart: Cart }> {
       const res = await fetch(`${API_BASE}/carts`, { method: "POST" });
@@ -150,14 +150,14 @@ export const store = {
       return res.json();
     },
 
-    async retrieve(cartId: string): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}`);
+    async retrieve(): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts`);
       if (!res.ok) throw new Error("Failed to retrieve cart");
       return res.json();
     },
 
-    async update(cartId: string, data: Partial<Cart>): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}`, {
+    async update(data: Partial<Cart>): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -166,12 +166,8 @@ export const store = {
       return res.json();
     },
 
-    async addLineItem(
-      cartId: string,
-      productId: string,
-      quantity = 1
-    ): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}/line-items`, {
+    async addLineItem(productId: string, quantity = 1): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts/line-items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity }),
@@ -183,24 +179,19 @@ export const store = {
       return res.json();
     },
 
-    async deleteLineItem(
-      cartId: string,
-      itemIndex: number
-    ): Promise<{ cart: Cart }> {
-      const res = await fetch(
-        `${API_BASE}/carts/${cartId}/line-items/${itemIndex}`,
-        {
-          method: "DELETE",
-        }
-      );
+    async deleteLineItem(itemIndex: number): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts/line-items/${itemIndex}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed to delete item");
       return res.json();
     },
 
-    async createPaymentIntent(
-      cartId: string
-    ): Promise<{ client_secret: string; payment_intent_id: string }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}/payment`, {
+    async createPaymentIntent(): Promise<{
+      client_secret: string;
+      payment_intent_id: string;
+    }> {
+      const res = await fetch(`${API_BASE}/carts/payment`, {
         method: "POST",
       });
       if (!res.ok) {
@@ -210,27 +201,22 @@ export const store = {
       return res.json();
     },
 
-    async complete(
-      cartId: string
-    ): Promise<
+    async complete(): Promise<
       | { type: "order"; order: Order }
       | { type: "cart"; error: string }
       | { type: "processing"; message: string }
     > {
-      const res = await fetch(`${API_BASE}/carts/${cartId}/complete`, {
+      const res = await fetch(`${API_BASE}/carts/complete`, {
         method: "POST",
       });
       return res.json();
     },
 
-    async applyCoupon(
-      cartId: string,
-      code: string
-    ): Promise<{
+    async applyCoupon(code: string): Promise<{
       cart: Cart;
       coupon: { code: string; type: string; value: number };
     }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}/coupon`, {
+      const res = await fetch(`${API_BASE}/carts/coupon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -242,14 +228,18 @@ export const store = {
       return res.json();
     },
 
-    async removeCoupon(cartId: string): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/${cartId}/coupon`, {
+    async removeCoupon(): Promise<{ cart: Cart }> {
+      const res = await fetch(`${API_BASE}/carts/coupon`, {
         method: "DELETE",
       });
       if (!res.ok) {
         throw new Error("Failed to remove coupon");
       }
       return res.json();
+    },
+
+    async reset(): Promise<void> {
+      await fetch(`${API_BASE}/carts`, { method: "DELETE" });
     },
   },
 

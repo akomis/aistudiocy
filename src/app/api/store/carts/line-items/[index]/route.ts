@@ -1,18 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { getCartSession } from '@/lib/session'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; index: string }> },
+  { params }: { params: Promise<{ index: string }> },
 ) {
   try {
-    const { id, index } = await params
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session' }, { status: 401 })
+    }
+
+    const { index } = await params
     const itemIndex = parseInt(index, 10)
     const payload = await getPayloadClient()
 
     const cart = await payload.findByID({
       collection: 'carts',
-      id,
+      id: cartId,
       depth: 0,
     })
 
@@ -25,7 +32,7 @@ export async function DELETE(
 
     const updatedCart = await payload.update({
       collection: 'carts',
-      id,
+      id: cartId,
       data: { items: updatedItems },
       depth: 2,
     })

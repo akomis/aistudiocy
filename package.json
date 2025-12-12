@@ -25,7 +25,7 @@
     "@payloadcms/db-postgres": "3.67.0",
     "@payloadcms/email-resend": "3.67.0",
     "@payloadcms/next": "3.67.0",
-    "@payloadcms/plugin-stripe": "3.68.1",
+    "@payloadcms/plugin-stripe": "3.67.0",
     "@payloadcms/richtext-lexical": "3.67.0",
     "@payloadcms/storage-s3": "3.67.0",
     "@radix-ui/react-dialog": "^1.1.15",

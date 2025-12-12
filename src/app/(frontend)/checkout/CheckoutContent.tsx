@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Countries, CountryCode } from "@/lib/countries";
 import { CartItem, Coupon, Product, ShippingOption, store } from "@/lib/store";
@@ -210,7 +209,7 @@ const CustomerForm = () => {
         phone: formValues.phone,
       };
 
-      await store.cart.update(cart?.id as string, {
+      await store.cart.update({
         email: formValues.email,
         shippingAddress: address,
         billingAddress: address,
@@ -218,9 +217,7 @@ const CustomerForm = () => {
         notes,
       });
 
-      const { cart: updatedCart } = await store.cart.retrieve(
-        cart?.id as string
-      );
+      const { cart: updatedCart } = await store.cart.retrieve();
 
       if (
         updatedCart?.stripeClientSecret &&
@@ -228,9 +225,7 @@ const CustomerForm = () => {
       ) {
         setCart(updatedCart);
       } else {
-        const paymentData = await store.cart.createPaymentIntent(
-          cart?.id as string
-        );
+        const paymentData = await store.cart.createPaymentIntent();
         setCart({
           ...updatedCart,
           stripeClientSecret: paymentData.client_secret,
@@ -425,11 +420,6 @@ const CustomerForm = () => {
           )}
         />
 
-        <Label className="col-span-2 text-md font-light -my-2">
-          * We will ship your order to the closest pickup point based on your
-          address.
-        </Label>
-
         {/* Order notes */}
         <div className="col-span-2 flex flex-col gap-1">
           <textarea
@@ -483,13 +473,10 @@ const CheckoutForm = () => {
       : null;
 
   const handleApplyCoupon = async () => {
-    if (!couponCode.trim() || !cart?.id) return;
+    if (!couponCode.trim() || !cart) return;
     setCouponLoading(true);
     try {
-      const { cart: updatedCart } = await store.cart.applyCoupon(
-        cart.id,
-        couponCode
-      );
+      const { cart: updatedCart } = await store.cart.applyCoupon(couponCode);
       setCart(updatedCart);
       setCouponCode("");
       toast({ title: "Coupon applied successfully" });
@@ -505,10 +492,10 @@ const CheckoutForm = () => {
   };
 
   const handleRemoveCoupon = async () => {
-    if (!cart?.id) return;
+    if (!cart) return;
     setCouponLoading(true);
     try {
-      const { cart: updatedCart } = await store.cart.removeCoupon(cart.id);
+      const { cart: updatedCart } = await store.cart.removeCoupon();
       setCart(updatedCart);
       toast({ title: "Coupon removed" });
     } catch (error) {
@@ -562,7 +549,7 @@ const CheckoutForm = () => {
     }
 
     try {
-      const result = await store.cart.complete(cart?.id as string);
+      const result = await store.cart.complete();
 
       if (result.type === "cart") {
         throw new Error(result.error || "There was a problem with the order");

@@ -12,9 +12,9 @@ import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import RingSizeGuide from "./RingSizeGuide";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
-import RingSizeGuide from "./RingSizeGuide";
 
 type Social = {
   key: string;
@@ -48,7 +48,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     mutationKey: ["add", product.id],
     mutationFn: async () => {
       setIsLoading(true);
-      return store.cart.addLineItem(cart?.id as string, product.id, 1);
+      return store.cart.addLineItem(product.id, 1);
     },
     onSuccess: (response) => {
       setCart(response.cart);
@@ -64,10 +64,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
     mutationKey: ["delete", product.id],
     mutationFn: async () => {
       setIsLoading(true);
-      return store.cart.deleteLineItem(
-        cart?.id as string,
-        lineItemIndex as number
-      );
+      return store.cart.deleteLineItem(lineItemIndex as number);
     },
     onSuccess: (response) => {
       setCart(response.cart);
@@ -239,7 +236,7 @@ export default function ProductGrid({ images, socials }: Props) {
 
           if (unavailableProduct) {
             try {
-              await store.cart.deleteLineItem(cart.id, i);
+              await store.cart.deleteLineItem(i);
               toast({
                 title: `Product is no longer available and was removed from your cart.`,
               });
@@ -352,17 +349,17 @@ export default function ProductGrid({ images, socials }: Props) {
         {secondSet.length ? (
           <SubGrid>
             {secondImage && (
-              <Image
-                className="col-span-2 aspect-video max-h-[300px] mt-14 sm:m-0"
-                src={secondImage.url}
-                alt={secondImage.alternativeText ?? "catalogue image"}
-                height={IMAGE_SIZE}
-                width={IMAGE_SIZE}
-                style={{ objectFit: "cover" }}
-              />
+              <div className="col-span-2 relative overflow-hidden">
+                <Image
+                  src={secondImage.url}
+                  alt={secondImage.alternativeText ?? "catalogue image"}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
             )}
             {secondSet.map((product) => (
-              <div key={product.id} className="col-span-1 mb-24">
+              <div key={product.id} className="col-span-1">
                 <ProductItem product={product} />
               </div>
             ))}

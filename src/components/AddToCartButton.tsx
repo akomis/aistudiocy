@@ -39,7 +39,7 @@ export default function AddToCartButton({
     mutationKey: ["add", productId],
     mutationFn: async () => {
       setIsLoading(true);
-      return store.cart.addLineItem(cart?.id as string, productId, quantity);
+      return store.cart.addLineItem(productId, quantity);
     },
     onSuccess: (response) => {
       setCart(response.cart);
@@ -57,10 +57,7 @@ export default function AddToCartButton({
     mutationKey: ["delete", productId],
     mutationFn: async () => {
       setIsLoading(true);
-      return store.cart.deleteLineItem(
-        cart?.id as string,
-        lineItemIndex as number
-      );
+      return store.cart.deleteLineItem(lineItemIndex as number);
     },
     onSuccess: (response) => {
       setCart(response.cart);

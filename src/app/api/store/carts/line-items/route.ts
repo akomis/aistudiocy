@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { getCartSession } from '@/lib/session'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { id } = await params
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session' }, { status: 401 })
+    }
+
     const payload = await getPayloadClient()
     const { productId, quantity = 1 } = await request.json()
 
     // Get current cart
     const cart = await payload.findByID({
       collection: 'carts',
-      id,
+      id: cartId,
       depth: 0,
     })
 
@@ -62,7 +65,7 @@ export async function POST(
 
     const updatedCart = await payload.update({
       collection: 'carts',
-      id,
+      id: cartId,
       data: { items: updatedItems },
       depth: 2,
     })

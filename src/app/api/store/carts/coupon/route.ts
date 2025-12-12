@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { getCartSession } from '@/lib/session'
 
 // Apply coupon to cart
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { id } = await params
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session' }, { status: 401 })
+    }
+
     const payload = await getPayloadClient()
     const { code } = await request.json()
 
@@ -48,7 +51,7 @@ export async function POST(
     // Get current cart to check minimum order amount
     const currentCart = await payload.findByID({
       collection: 'carts',
-      id,
+      id: cartId,
       depth: 0,
     })
 
@@ -62,7 +65,7 @@ export async function POST(
     // Apply coupon to cart
     const cart = await payload.update({
       collection: 'carts',
-      id,
+      id: cartId,
       data: { coupon: coupon.id },
       depth: 2,
     })
@@ -82,17 +85,19 @@ export async function POST(
 }
 
 // Remove coupon from cart
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function DELETE() {
   try {
-    const { id } = await params
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session' }, { status: 401 })
+    }
+
     const payload = await getPayloadClient()
 
     const cart = await payload.update({
       collection: 'carts',
-      id,
+      id: cartId,
       data: { coupon: null },
       depth: 2,
     })

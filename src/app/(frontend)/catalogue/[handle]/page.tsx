@@ -187,13 +187,13 @@ function ProductDetails({ product }: { product: Product }) {
 
             {product.size && <p className="text-gray-300">{product.size}</p>}
 
-            {product.description && (
-              <p className="text-gray-300 whitespace-pre-line">
-                {product.description}
-              </p>
-            )}
-
             <div className="text-gray-300 text-sm space-y-1">
+              {product.description && (
+                <p className="text-gray-300 whitespace-pre-line">
+                  {product.description}
+                </p>
+              )}
+
               {isFingerCategory && (
                 <p>
                   For your convenience, please let us know your size to adjust

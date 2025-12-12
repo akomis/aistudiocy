@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { getCartSession } from '@/lib/session'
 import Stripe from 'stripe'
 
 const getStripe = () =>
@@ -7,17 +8,19 @@ const getStripe = () =>
     apiVersion: '2025-11-17.clover' as Stripe.LatestApiVersion,
   })
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST() {
   try {
-    const { id } = await params
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session' }, { status: 401 })
+    }
+
     const payload = await getPayloadClient()
 
     const cart = await payload.findByID({
       collection: 'carts',
-      id,
+      id: cartId,
       depth: 2,
     })
 
@@ -48,14 +51,14 @@ export async function POST(
       paymentIntent = await getStripe().paymentIntents.create({
         amount: amountInCents,
         currency: 'eur',
-        metadata: { cartId: id },
+        metadata: { cartId },
         receipt_email: cart.email || undefined,
       })
 
       // Save payment intent ID to cart
       await payload.update({
         collection: 'carts',
-        id,
+        id: cartId,
         data: {
           stripePaymentIntentId: paymentIntent.id,
           stripeClientSecret: paymentIntent.client_secret,

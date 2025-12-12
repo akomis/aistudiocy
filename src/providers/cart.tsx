@@ -11,7 +11,7 @@ type Props = {
 type ContextType = {
   cart?: Cart
   setCart: (cart: Cart) => void
-  refetchCart: (cartId?: string) => Promise<void>
+  refetchCart: () => Promise<void>
   resetCart: () => void
   basketOpen: boolean
   setBasketOpen: (open: boolean) => void
@@ -29,40 +29,44 @@ export const CartContext = createContext<ContextType>({
 export const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<Cart | undefined>(undefined)
   const [basketOpen, setBasketOpen] = useState(false)
+  const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    if (cart) return
+    if (initialized) return
 
-    const cartId = localStorage.getItem("cart_id")
+    // Try to retrieve existing cart from session cookie
+    store.cart
+      .retrieve()
+      .then(({ cart }) => {
+        setCart(cart)
+        setInitialized(true)
+      })
+      .catch(() => {
+        // No existing cart session, create a new one
+        clearCheckoutFormStorage()
+        store.cart
+          .create()
+          .then(({ cart }) => {
+            setCart(cart)
+            setInitialized(true)
+          })
+          .catch((error) => {
+            console.error("Error creating cart:", error)
+            setInitialized(true)
+          })
+      })
+  }, [initialized])
 
-    if (!cartId) {
-      clearCheckoutFormStorage()
-      store.cart
-        .create()
-        .then(({ cart }) => {
-          setCart(cart)
-          localStorage.setItem("cart_id", cart.id)
-        })
-        .catch((error) => {
-          console.error("Error creating cart:", error)
-        })
-    } else {
-      refetchCart(cartId)
-    }
-  }, [cart])
-
-  const resetCart = () => {
-    localStorage.removeItem("cart_id")
+  const resetCart = async () => {
     clearCheckoutFormStorage()
+    await store.cart.reset()
     setCart(undefined)
+    setInitialized(false)
   }
 
-  const refetchCart = async (cartId?: string) => {
-    const id = cartId ?? cart?.id
-    if (!id) return
-
+  const refetchCart = async () => {
     try {
-      const { cart: fetchedCart } = await store.cart.retrieve(id)
+      const { cart: fetchedCart } = await store.cart.retrieve()
       setCart(fetchedCart)
     } catch (error) {
       console.error("Error retrieving cart:", error)

@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { getCartSession } from '@/lib/session'
 
 const MAX_POLL_TIME = 15000 // 15 seconds
 const POLL_INTERVAL = 1000 // 1 second
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST() {
   try {
-    const { id } = await params
-    if (!id) {
-      return NextResponse.json({ error: 'Cart ID is required', type: 'cart' }, { status: 400 })
+    const cartId = await getCartSession()
+
+    if (!cartId) {
+      return NextResponse.json({ error: 'No cart session', type: 'cart' }, { status: 401 })
     }
+
     const payload = await getPayloadClient()
 
     const startTime = Date.now()
@@ -23,7 +23,7 @@ export async function POST(
     while (Date.now() - startTime < MAX_POLL_TIME) {
       const cart = await payload.findByID({
         collection: 'carts',
-        id,
+        id: cartId,
         depth: 0,
       })
 

@@ -80,11 +80,12 @@ export default function AddToCartButton({
           max={maxQuantity}
           value={quantity}
           onChange={(e) => {
-            const val = Math.max(
-              1,
-              Math.min(maxQuantity, parseInt(e.target.value) || 1)
-            );
-            setQuantity(val);
+            const parsed = parseInt(e.target.value, 10);
+            if (isNaN(parsed) || parsed < 1) {
+              setQuantity(1);
+              return;
+            }
+            setQuantity(parsed > maxQuantity ? maxQuantity : parsed);
           }}
           className="w-20 text-center"
           onClick={(e) => e.stopPropagation()}

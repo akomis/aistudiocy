@@ -38,7 +38,7 @@ const BasketListItem = ({
   item: BasketItem;
   index: number;
 }) => {
-  const { setCart } = useContext(CartContext);
+  const { setCart, setBasketOpen } = useContext(CartContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const deleteItem = useMutation({
@@ -67,6 +67,7 @@ const BasketListItem = ({
     <div className="flex justify-between w-full border border-gray-400 px-4 py-2">
       <Link
         href={`/catalogue/${item.product.handle}`}
+        onClick={() => setBasketOpen(false)}
         className="aspect-square bg-black w-24 sm:w-36 md:w-52 flex-shrink-0 relative block hover:opacity-80 transition-opacity"
       >
         {thumbnailUrl && (
@@ -186,11 +187,7 @@ export default function Basket() {
                 <span className="text-xl font-bold">{`€${formatPrice(subtotal)}`}</span>
               </div>
 
-              <Link
-                href="/checkout"
-                onClick={() => setBasketOpen(false)}
-                className="w-full"
-              >
+              <Link href="/checkout" className="w-full">
                 <Button
                   variant="outline"
                   className="w-full font-bold tracking-widest text-2xl h-14"

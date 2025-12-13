@@ -8,11 +8,11 @@ type Props = {
 
 const sizeClasses = {
   default: {
-    container: "h-[85px] sm:h-[125px]",
-    text: "text-6xl sm:text-[9rem]",
+    container: "h-[62px] sm:h-[125px]",
+    text: "text-7xl sm:text-[9rem]",
   },
   sm: {
-    container: "h-[50px] sm:h-[125px]",
+    container: "h-[41px] sm:h-[125px]",
     text: "text-5xl sm:text-[9rem]",
   },
 };

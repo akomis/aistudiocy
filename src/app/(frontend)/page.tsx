@@ -38,7 +38,7 @@ const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
   return (
     <Section className="pt-12 ">
       <div className="flex flex-col 2xl:flex-row justify-between items-start lg:items-end leading-10">
-        <div className="mb-10 lg:mb-2 px-10 2xl:p-0">
+        <div className="mb-6 lg:mb-2 px-10 2xl:p-0">
           <CutoffText>ABOUT</CutoffText>
         </div>
 

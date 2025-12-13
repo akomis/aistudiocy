@@ -470,15 +470,8 @@ export default function ProductGrid({ images, socials }: Props) {
           </Container>
         ) : null}
       </div>
-      <div className="mt-40 flex flex-col gap-10 sm:gap-16">
+      <div className="mt-40 flex flex-col">
         <RingSizeGuide />
-        <a
-          href={socials.find((s) => s.key.toLowerCase() === "email")?.url}
-          target="_blank"
-          className="text-2xl md:text-4xl font-bold hover:cursor-pointer hover:opacity-75 transition-all"
-        >
-          FEEL FREE TO ASK
-        </a>
       </div>
     </>
   );

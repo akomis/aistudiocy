@@ -65,7 +65,10 @@ const BasketListItem = ({
 
   return (
     <div className="flex justify-between w-full border border-gray-400 px-4 py-2">
-      <div className="aspect-square bg-black w-24 sm:w-36 md:w-52 flex-shrink-0 relative">
+      <Link
+        href={`/catalogue/${item.product.handle}`}
+        className="aspect-square bg-black w-24 sm:w-36 md:w-52 flex-shrink-0 relative block hover:opacity-80 transition-opacity"
+      >
         {thumbnailUrl && (
           <Image
             src={thumbnailUrl}
@@ -79,7 +82,7 @@ const BasketListItem = ({
             {item.quantity}
           </div>
         )}
-      </div>
+      </Link>
       <div className="flex flex-col justify-between items-end">
         {isLoading ? (
           <div className="p-2">

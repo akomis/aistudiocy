@@ -2,15 +2,15 @@
 // Add page objects here with slug, title, subtitle, and content
 
 export type PageData = {
-  slug: string
-  title: string
-  subtitle?: string
-  content: string // Plain text or HTML content
+  slug: string;
+  title: string;
+  subtitle?: string;
+  content: string; // Plain text or HTML content
   image?: {
-    src: string
-    alt?: string
-  }
-}
+    src: string;
+    alt?: string;
+  };
+};
 
 export const pages: PageData[] = [
   {
@@ -38,7 +38,6 @@ Please check your Spam or Junk folder if you don't see it in your main inbox.`,
     content: `To keep your silver jewelry in excellent condition, store it in a dry, cool place away from moisture and harsh chemicals. Clean it with a soft cloth and avoid exposing it to perfumes or lotions.
 
 SILVER CLEANING
-
 If you notice your silver piece losing its shine, you can use at home, friendly and non-toxic methods to clean it. A simple mix of lemon juice and baking soda diluted with some warm water applied gently with a soft-bristled toothbrush will help your piece brighten and regain its original shine. Rinse with water and dry thoroughly with a gentle cloth and to take it a step further you can use a polishing cloth and gently rub until shiny.`,
   },
   {
@@ -157,12 +156,12 @@ Email: contact@aistudiocy.com
 10. Governing Law
 These terms are governed by the laws of Cyprus, without regard to its conflict of law principles.`,
   },
-]
+];
 
 export function getPageBySlug(slug: string): PageData | undefined {
-  return pages.find((page) => page.slug === slug)
+  return pages.find((page) => page.slug === slug);
 }
 
 export function getAllPageSlugs(): string[] {
-  return pages.map((page) => page.slug)
+  return pages.map((page) => page.slug);
 }

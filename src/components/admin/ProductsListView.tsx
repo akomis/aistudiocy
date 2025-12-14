@@ -1,67 +1,85 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { Gutter } from '@payloadcms/ui'
-import Link from 'next/link'
-import { Plus, Search } from 'lucide-react'
-import type { Product, Category, Media } from '@/payload-types'
+import type { Category, Media, Product } from "@/payload-types";
+import { DefaultListView, Gutter } from "@payloadcms/ui";
+import { Plus, Search, Table } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import type { ListViewClientProps } from "payload";
+import { useEffect, useState } from "react";
 
-type ProductWithRelations = Omit<Product, 'thumbnail' | 'category'> & {
-  thumbnail: Media
-  category: Category
-}
+type ProductWithRelations = Omit<Product, "thumbnail" | "category"> & {
+  thumbnail: Media;
+  category: Category;
+};
 
 interface PaginatedDocs {
-  docs: ProductWithRelations[]
-  totalDocs: number
-  totalPages: number
-  page: number
+  docs: ProductWithRelations[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
 }
 
-export default function ProductsGrid() {
-  const [products, setProducts] = useState<ProductWithRelations[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+export default function ProductsListView(props: ListViewClientProps) {
+  const searchParams = useSearchParams();
+  const isTableView = searchParams.get("view") === "table";
+
+  const [products, setProducts] = useState<ProductWithRelations[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
+    if (isTableView) return;
+
     const fetchProducts = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const params = new URLSearchParams({
-          depth: '2',
-          limit: '12',
-          page: String(page),
-          sort: '-createdAt',
-        })
+          depth: "2",
+          limit: "0",
+          sort: "_order",
+        });
         if (search) {
-          params.append('where[title][contains]', search)
+          params.append("where[title][contains]", search);
         }
-        const res = await fetch(`/api/products?${params}`)
-        const data: PaginatedDocs = await res.json()
-        setProducts(data.docs)
-        setTotalPages(data.totalPages)
+        const res = await fetch(`/api/products?${params}`);
+        const data: PaginatedDocs = await res.json();
+        setProducts(data.docs);
       } catch (error) {
-        console.error('Failed to fetch products:', error)
+        console.error("Failed to fetch products:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchProducts()
-  }, [page, search])
+    };
+    fetchProducts();
+  }, [search, isTableView]);
+
+  if (isTableView) {
+    return <DefaultListView {...props} />;
+  }
 
   return (
     <Gutter>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">Products</h1>
-        <Link
-          href="/admin/collections/products/create"
-          className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
-        >
-          <Plus size={18} />
-          Create New
-        </Link>
+        <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">
+          Products
+        </h1>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/collections/products?view=table"
+            className="p-2 rounded-md bg-[var(--theme-elevation-50)] text-[var(--theme-elevation-500)] hover:text-[var(--theme-elevation-700)] hover:bg-[var(--theme-elevation-100)] transition-colors"
+            title="Table View"
+          >
+            <Table size={18} />
+          </Link>
+          <Link
+            href="/admin/collections/products/create"
+            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
+          >
+            <Plus size={18} />
+            Create New
+          </Link>
+        </div>
       </div>
 
       <div className="mb-6">
@@ -73,10 +91,7 @@ export default function ProductsGrid() {
             type="text"
             placeholder="Search products..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              setPage(1)
-            }}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full max-w-md pl-10 pr-4 py-2 rounded-md border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-0)] text-[var(--theme-elevation-800)] placeholder:text-[var(--theme-elevation-400)] focus:outline-none focus:border-[var(--theme-elevation-300)]"
           />
         </div>
@@ -93,13 +108,15 @@ export default function ProductsGrid() {
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-12 text-[var(--theme-elevation-500)]">
-          {search ? 'No products found matching your search.' : 'No products yet.'}
+          {search
+            ? "No products found matching your search."
+            : "No products yet."}
         </div>
       ) : (
         <>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
             {products.map((product) => {
-              const thumbnailUrl = product.thumbnail?.url
+              const thumbnailUrl = product.thumbnail?.url;
               return (
                 <Link
                   key={product.id}
@@ -120,9 +137,9 @@ export default function ProductsGrid() {
                   )}
                   <span
                     className={`absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium ${
-                      product.status === 'published'
-                        ? 'bg-white text-black'
-                        : 'bg-white/20 text-white/70 backdrop-blur-sm'
+                      product.status === "published"
+                        ? "bg-white text-black"
+                        : "bg-white/20 text-white/70 backdrop-blur-sm"
                     }`}
                   >
                     {product.status}
@@ -135,7 +152,7 @@ export default function ProductsGrid() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="w-fit p-2 rounded bg-black/30 backdrop-blur-sm text-white/80 text-sm truncate max-w-[40%]">
-                        {product.category?.name || 'Uncategorized'}
+                        {product.category?.name || "Uncategorized"}
                       </span>
                       <div className="flex gap-2">
                         <span className="w-fit p-2 rounded bg-black/30 backdrop-blur-sm text-white/80 text-sm">
@@ -148,33 +165,11 @@ export default function ProductsGrid() {
                     </div>
                   </div>
                 </Link>
-              )
+              );
             })}
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2 text-[var(--theme-elevation-600)]">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          )}
         </>
       )}
     </Gutter>
-  )
+  );
 }

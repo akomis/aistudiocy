@@ -9,7 +9,7 @@ export const Categories: CollectionConfig = {
     components: {
       views: {
         list: {
-          Component: '@/components/admin/CategoriesGrid',
+          Component: '@/components/admin/CategoriesListView',
         },
       },
     },

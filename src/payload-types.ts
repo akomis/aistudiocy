@@ -140,6 +140,7 @@ export interface UserAuthOperations {
  */
 export interface Product {
   id: number;
+  _order?: string | null;
   title: string;
   status: 'draft' | 'published' | 'archived';
   size?: string | null;
@@ -501,6 +502,7 @@ export interface PayloadMigration {
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
+  _order?: T;
   title?: T;
   status?: T;
   size?: T;

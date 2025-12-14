@@ -1,5 +1,5 @@
-import { default as default_b81e0c9273ceb1b2e84a43bbda2a4e38 } from '@/components/admin/ProductsGrid'
-import { default as default_e8a5bafe05dcfc89b3fb77de12743cd8 } from '@/components/admin/CategoriesGrid'
+import { default as default_40b4c7c2441a1febebe55091e7956552 } from '@/components/admin/ProductsListView'
+import { default as default_8e93b359ddb28f097387e3a0fdb6fb3a } from '@/components/admin/CategoriesListView'
 import { default as default_aed3c9bd93a62000b90797205ae9e0b7 } from '@/components/admin/MediaGrid'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -29,8 +29,8 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 import { default as default_0e7b23c75ea046975e1784ba01f82886 } from '@/components/admin/Dashboard'
 
 export const importMap = {
-  "@/components/admin/ProductsGrid#default": default_b81e0c9273ceb1b2e84a43bbda2a4e38,
-  "@/components/admin/CategoriesGrid#default": default_e8a5bafe05dcfc89b3fb77de12743cd8,
+  "@/components/admin/ProductsListView#default": default_40b4c7c2441a1febebe55091e7956552,
+  "@/components/admin/CategoriesListView#default": default_8e93b359ddb28f097387e3a0fdb6fb3a,
   "@/components/admin/MediaGrid#default": default_aed3c9bd93a62000b90797205ae9e0b7,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

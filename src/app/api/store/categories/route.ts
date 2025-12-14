@@ -8,6 +8,7 @@ export async function GET() {
     const categories = await payload.find({
       collection: 'categories',
       depth: 2,
+      sort: '_order',
       limit: 100,
     })
 

@@ -18,8 +18,6 @@ export default function MediaGrid() {
   const [media, setMedia] = useState<Media[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null)
   const [refetchKey, setRefetchKey] = useState(0)
@@ -33,8 +31,7 @@ export default function MediaGrid() {
       setLoading(true)
       try {
         const params = new URLSearchParams({
-          limit: '24',
-          page: String(page),
+          limit: '0',
           sort: '-createdAt',
         })
         if (search) {
@@ -43,7 +40,6 @@ export default function MediaGrid() {
         const res = await fetch(`/api/media?${params}`)
         const data: PaginatedDocs = await res.json()
         setMedia(data.docs)
-        setTotalPages(data.totalPages)
       } catch (error) {
         console.error('Failed to fetch media:', error)
       } finally {
@@ -51,7 +47,7 @@ export default function MediaGrid() {
       }
     }
     fetchMedia()
-  }, [page, search, refetchKey])
+  }, [search, refetchKey])
 
   const formatFileSize = (bytes?: number | null) => {
     if (!bytes) return ''

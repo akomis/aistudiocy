@@ -1,9 +1,11 @@
 "use client";
 
 import type { Category, Media } from "@/payload-types";
-import { Gutter } from "@payloadcms/ui";
-import { Plus, Search } from "lucide-react";
+import { DefaultListView, Gutter } from "@payloadcms/ui";
+import { Plus, Search, Table } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import type { ListViewClientProps } from "payload";
 import { useEffect, useState } from "react";
 
 type CategoryWithRelations = Omit<
@@ -21,21 +23,23 @@ interface PaginatedDocs {
   page: number;
 }
 
-export default function CategoriesGrid() {
+export default function CategoriesListView(props: ListViewClientProps) {
+  const searchParams = useSearchParams();
+  const isTableView = searchParams.get("view") === "table";
+
   const [categories, setCategories] = useState<CategoryWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    if (isTableView) return;
+
     const fetchCategories = async () => {
       setLoading(true);
       try {
         const params = new URLSearchParams({
           depth: "2",
-          limit: "12",
-          page: String(page),
+          limit: "0",
           sort: "_order",
         });
         if (search) {
@@ -44,7 +48,6 @@ export default function CategoriesGrid() {
         const res = await fetch(`/api/categories?${params}`);
         const data: PaginatedDocs = await res.json();
         setCategories(data.docs);
-        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       } finally {
@@ -52,7 +55,11 @@ export default function CategoriesGrid() {
       }
     };
     fetchCategories();
-  }, [page, search]);
+  }, [search, isTableView]);
+
+  if (isTableView) {
+    return <DefaultListView {...props} />;
+  }
 
   return (
     <Gutter>
@@ -60,13 +67,22 @@ export default function CategoriesGrid() {
         <h1 className="text-2xl font-semibold text-[var(--theme-elevation-800)]">
           Categories
         </h1>
-        <Link
-          href="/admin/collections/categories/create"
-          className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
-        >
-          <Plus size={18} />
-          Create New
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/collections/categories?view=table"
+            className="p-2 rounded-md bg-[var(--theme-elevation-50)] text-[var(--theme-elevation-500)] hover:text-[var(--theme-elevation-700)] hover:bg-[var(--theme-elevation-100)] transition-colors"
+            title="Table View"
+          >
+            <Table size={18} />
+          </Link>
+          <Link
+            href="/admin/collections/categories/create"
+            className="flex items-center gap-2 py-2 px-4 rounded-md bg-[var(--theme-elevation-100)] no-underline font-medium hover:bg-[var(--theme-elevation-150)] transition-colors"
+          >
+            <Plus size={18} />
+            Create New
+          </Link>
+        </div>
       </div>
 
       <div className="mb-6">
@@ -78,10 +94,7 @@ export default function CategoriesGrid() {
             type="text"
             placeholder="Search categories..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full max-w-md pl-10 pr-4 py-2 rounded-md border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-0)] text-[var(--theme-elevation-800)] placeholder:text-[var(--theme-elevation-400)] focus:outline-none focus:border-[var(--theme-elevation-300)]"
           />
         </div>
@@ -134,28 +147,6 @@ export default function CategoriesGrid() {
               );
             })}
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2 text-[var(--theme-elevation-600)]">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          )}
         </>
       )}
     </Gutter>

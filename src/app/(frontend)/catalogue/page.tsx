@@ -16,6 +16,7 @@ export default async function Catalogue() {
     payload.find({
       collection: "categories",
       depth: 2,
+      sort: "_order",
       limit: 100,
     }),
     payload.findGlobal({

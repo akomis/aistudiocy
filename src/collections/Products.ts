@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const Products: CollectionConfig = {
   slug: 'products',
+  orderable: true,
   admin: {
     group: 'Store',
     useAsTitle: 'title',
@@ -9,7 +10,7 @@ export const Products: CollectionConfig = {
     components: {
       views: {
         list: {
-          Component: '@/components/admin/ProductsGrid',
+          Component: '@/components/admin/ProductsListView',
         },
       },
     },

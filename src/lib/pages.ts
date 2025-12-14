@@ -16,46 +16,47 @@ export const pages: PageData[] = [
   {
     slug: "shipping",
     title: "Shipping & Return Policy",
-    content: `Shipping & Return Policy
-Shipping Information
-The shipping time for your order is 5–15 business days to the nearest pickup point. Shipping costs will be automatically added during the checkout process.
-Shipping Costs by Country:
+    content: `Shipping & Return Policy 
 
-Cyprus: €2.00 – €4.00
-Greece: €7.00 – €24.00
+Shipping Information 
+The shipping time for your order is 5–15 business days to the nearest pickup point. 
+Shipping costs will be automatically added during the checkout process. 
 
-Once the package has been shipped, you will receive an email with the tracking number so you can track it.
-Handcrafted Quality
-At φως, we handcraft each piece with care, valuing every unique detail. As a result, our jewelry may have small imperfections that make each item one-of-a-kind. These variations are part of the design, and we do not offer refunds for them.
-If your product arrives damaged or opened, we will take responsibility and cover return shipping costs, provided the issue is our mistake. In this case, please contact us via email or Instagram. Please ensure that the product is the correct size before purchasing.
-Note: Once the order is confirmed, you will receive a confirmation email. Please check your Spam or Junk folder if you don't see it in your main inbox.
+Shipping Costs by Country:  Cyprus: €2.00 – €4.00 
+Greece: €7.00 – €24.00  
 
-Return Policy
-1. Return Eligibility
-You may return items within 14 days of receiving your order, provided they are:
+Once the package has been shipped, you will receive an email with the tracking number so you can track it. 
 
-Unused and in original packaging
-In the same condition as received
-Accompanied by proof of purchase
+Handcrafted Quality 
+At φως, we handcraft each piece with care, valuing every unique detail. As a result, our jewelry may have small imperfections that make each item one-of-a-kind. These variations are part of the design, and we do not offer refunds for them. 
+If your product arrives damaged or opened, we will take responsibility and cover return shipping costs, provided the issue is our mistake. In this case, please contact us via email or Instagram. 
+Please ensure that the product is the correct size before purchasing. 
+Note: Once the order is confirmed, you will receive a confirmation email. Please check your Spam or Junk folder if you don't see it in your main inbox.  
 
-2. Items Not Eligible for Return
+Return Policy 
+1. Return Eligibility 
+You may return items within 14 days of receiving your order, provided they are:  
+Unused and in original packaging 
+In the same condition as received 
+Accompanied by proof of purchase  
 
-Earrings (due to hygiene reasons)
-Final sale items
+2. Items Not Eligible for Return  
+Earrings (due to hygiene reasons) 
+Final sale items  
 
 3. How to Request a Return
+Email contact@mail.fosjewels.com with your order number and reason for return. Once approved, we will provide return instructions and the return address. Ship the item within 7 days of approval.  
 
-Email contact@mail.fosjewels.com with your order number and reason for return.
-Once approved, we will provide return instructions and the return address.
-Ship the item within 7 days of approval.
+4. Shipping Costs 
+Return shipping costs are the buyer's responsibility unless the item is defective or sent in error. 
 
-4. Shipping Costs
-Return shipping costs are the buyer's responsibility unless the item is defective or sent in error.
-5. Refunds
-Once we receive and inspect the returned item, your refund will be processed to the original payment method within 5–10 business days. Original shipping costs are non-refundable.
+5. Refunds 
+Once we receive and inspect the returned item, your refund will be processed to the original payment method within 5–10 business days. Original shipping costs are non-refundable. 
+
 6. Damaged or Incorrect Items
-If your order arrives damaged or incorrect, contact us within 48 hours of delivery with photos. We'll offer a full refund or replacement at no extra cost.
-7. Exchanges
+If your order arrives damaged or incorrect, contact us within 48 hours of delivery with photos. We'll offer a full refund or replacement at no extra cost. 
+
+7. Exchanges 
 We currently do not offer direct exchanges. Please return the item and place a new order.`,
   },
   {

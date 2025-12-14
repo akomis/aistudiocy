@@ -87,6 +87,7 @@ export default function AddToCartButton({
             }
             setQuantity(parsed > maxQuantity ? maxQuantity : parsed);
           }}
+          onFocus={(e) => e.target.select()}
           className="w-20 text-center"
           onClick={(e) => e.stopPropagation()}
         />

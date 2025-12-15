@@ -69,6 +69,7 @@ export default function AddToCartButton({
   });
 
   const showQuantityInput = maxQuantity > 1 && !isInBasket;
+  const [inputValue, setInputValue] = useState("1");
 
   return (
     <div className={cn("flex gap-2 w-full", className)}>
@@ -78,16 +79,26 @@ export default function AddToCartButton({
           inputMode="numeric"
           min={1}
           max={maxQuantity}
-          value={quantity}
+          value={inputValue}
           onChange={(e) => {
+            setInputValue(e.target.value);
+          }}
+          onFocus={() => {
+            setInputValue("");
+          }}
+          onBlur={(e) => {
             const parsed = parseInt(e.target.value, 10);
             if (isNaN(parsed) || parsed < 1) {
               setQuantity(1);
-              return;
+              setInputValue("1");
+            } else if (parsed > maxQuantity) {
+              setQuantity(maxQuantity);
+              setInputValue(String(maxQuantity));
+            } else {
+              setQuantity(parsed);
+              setInputValue(String(parsed));
             }
-            setQuantity(parsed > maxQuantity ? maxQuantity : parsed);
           }}
-          onFocus={(e) => e.target.select()}
           className="w-20 text-center"
           onClick={(e) => e.stopPropagation()}
         />

@@ -85,7 +85,6 @@ export default function MediaGrid() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-    setPage(1)
     setRefetchKey((k) => k + 1)
   }
 
@@ -216,7 +215,6 @@ export default function MediaGrid() {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
-              setPage(1)
             }}
             className="w-full max-w-md pl-10 pr-4 py-2 rounded-md border border-[var(--theme-elevation-150)] bg-[var(--theme-elevation-0)] text-[var(--theme-elevation-800)] placeholder:text-[var(--theme-elevation-400)] focus:outline-none focus:border-[var(--theme-elevation-300)]"
           />
@@ -321,28 +319,6 @@ export default function MediaGrid() {
               )
             })}
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2 text-[var(--theme-elevation-600)]">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-md bg-[var(--theme-elevation-100)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--theme-elevation-150)] transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          )}
         </>
       )}
     </Gutter>

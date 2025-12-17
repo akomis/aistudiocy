@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
 import { getCartSession } from '@/lib/session'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
+  const log = logger.scope({ operation: 'cart.addLineItem', endpoint: '/api/store/carts/line-items' })
+
   try {
     const cartId = await getCartSession()
 
     if (!cartId) {
+      log.warn('No cart session for adding line item')
       return NextResponse.json({ error: 'No cart session' }, { status: 401 })
     }
 
     const payload = await getPayloadClient()
     const { productId, quantity = 1 } = await request.json()
+
+    log.debug('Adding line item', { cartId, productId, quantity })
 
     // Get current cart
     const cart = await payload.findByID({
@@ -27,11 +33,13 @@ export async function POST(request: NextRequest) {
     })
 
     if (!product) {
+      log.warn('Product not found', { cartId, productId })
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
     const inventory = product.inventory ?? 1
     if (inventory === 0) {
+      log.warn('Product out of stock', { cartId, productId, inventory })
       return NextResponse.json({ error: 'Product is no longer available' }, { status: 400 })
     }
 
@@ -52,6 +60,7 @@ export async function POST(request: NextRequest) {
         ...updatedItems[existingItemIndex],
         quantity: updatedItems[existingItemIndex].quantity + quantity,
       }
+      log.debug('Updated existing item quantity', { cartId, productId, newQuantity: updatedItems[existingItemIndex].quantity })
     } else {
       updatedItems = [
         ...items,
@@ -61,6 +70,7 @@ export async function POST(request: NextRequest) {
           unitPrice: product.price,
         },
       ]
+      log.debug('Added new item to cart', { cartId, productId, quantity, price: product.price })
     }
 
     const updatedCart = await payload.update({
@@ -70,9 +80,11 @@ export async function POST(request: NextRequest) {
       depth: 2,
     })
 
+    log.debug('Line item added successfully', { cartId, itemCount: updatedCart.items?.length })
+
     return NextResponse.json({ cart: updatedCart })
   } catch (error) {
-    console.error('Error adding line item:', error)
+    log.error('Failed to add line item', {}, error)
     return NextResponse.json({ error: 'Failed to add item' }, { status: 500 })
   }
 }

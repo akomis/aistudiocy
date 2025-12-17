@@ -8,6 +8,132 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
+// Logging helper for both client and server
+const logFetch = {
+  request: (operation: string, url: string, method: string = 'GET') => {
+    const isServer = typeof window === "undefined";
+    const timestamp = new Date().toISOString();
+    const context = { timestamp, operation, url, method, env: isServer ? 'server' : 'client' };
+
+    if (isServer) {
+      console.info(JSON.stringify({ level: 'DEBUG', message: `[Store] ${operation} started`, context }));
+    } else if (process.env.NODE_ENV === 'development') {
+      console.debug(`[Store] ${operation}`, method, url);
+    }
+  },
+
+  error: (operation: string, url: string, error: unknown, response?: Response) => {
+    const isServer = typeof window === "undefined";
+    const timestamp = new Date().toISOString();
+
+    // Extract detailed error info
+    const errorDetails: Record<string, unknown> = {
+      message: error instanceof Error ? error.message : String(error),
+    };
+
+    if (error instanceof Error) {
+      errorDetails.name = error.name;
+      errorDetails.stack = error.stack;
+
+      // Extract cause chain (important for ECONNREFUSED errors)
+      if ('cause' in error && error.cause) {
+        const cause = error.cause as any;
+        errorDetails.cause = {
+          message: cause.message,
+          code: cause.code,
+          name: cause.name,
+        };
+      }
+
+      // Extract error codes
+      if ('code' in error) {
+        errorDetails.code = (error as any).code;
+      }
+      if ('digest' in error) {
+        errorDetails.digest = (error as any).digest;
+      }
+    }
+
+    const context = {
+      timestamp,
+      operation,
+      url,
+      statusCode: response?.status,
+      statusText: response?.statusText,
+      env: isServer ? 'server' : 'client',
+      apiBase: API_BASE,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'NOT_SET',
+    };
+
+    if (isServer) {
+      console.error(JSON.stringify({
+        level: 'ERROR',
+        message: `[Store] ${operation} failed`,
+        context,
+        error: errorDetails
+      }));
+    } else {
+      console.error(`[Store] ${operation} failed:`, { context, error: errorDetails });
+    }
+  },
+
+  success: (operation: string, url: string, duration: number) => {
+    const isServer = typeof window === "undefined";
+
+    if (isServer) {
+      console.info(JSON.stringify({
+        level: 'DEBUG',
+        message: `[Store] ${operation} completed`,
+        context: { operation, url, duration, env: 'server' }
+      }));
+    }
+  }
+};
+
+// Enhanced fetch with logging
+async function storeApi<T>(
+  url: string,
+  options: RequestInit & { operation: string }
+): Promise<T> {
+  const { operation, ...fetchOptions } = options;
+  const method = fetchOptions.method || 'GET';
+  const startTime = Date.now();
+
+  logFetch.request(operation, url, method);
+
+  try {
+    const response = await fetch(url, fetchOptions);
+    const duration = Date.now() - startTime;
+
+    if (!response.ok) {
+      let errorBody: any;
+      try {
+        errorBody = await response.clone().json();
+      } catch {
+        errorBody = await response.clone().text();
+      }
+
+      const error = new Error(
+        typeof errorBody === 'object' && errorBody.error
+          ? errorBody.error
+          : `${operation} failed with status ${response.status}`
+      );
+
+      logFetch.error(operation, url, error, response);
+      throw error;
+    }
+
+    logFetch.success(operation, url, duration);
+    return response.json();
+  } catch (error) {
+    // Only log if not already logged (response errors are logged above)
+    if (!(error instanceof Error && error.message.includes('failed with status'))) {
+      logFetch.error(operation, url, error);
+    }
+    throw error;
+  }
+}
+
 // Types
 export interface CartItem {
   product: Product | string;
@@ -145,60 +271,51 @@ export const store = {
   // Cart operations (session-based - cart ID stored in HTTP-only cookie)
   cart: {
     async create(): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts`, { method: "POST" });
-      if (!res.ok) throw new Error("Failed to create cart");
-      return res.json();
+      return storeApi(`${API_BASE}/carts`, {
+        method: "POST",
+        operation: "cart.create"
+      });
     },
 
     async retrieve(): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts`);
-      if (!res.ok) throw new Error("Failed to retrieve cart");
-      return res.json();
+      return storeApi(`${API_BASE}/carts`, {
+        operation: "cart.retrieve"
+      });
     },
 
     async update(data: Partial<Cart>): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts`, {
+      return storeApi(`${API_BASE}/carts`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        operation: "cart.update"
       });
-      if (!res.ok) throw new Error("Failed to update cart");
-      return res.json();
     },
 
     async addLineItem(productId: string, quantity = 1): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/line-items`, {
+      return storeApi(`${API_BASE}/carts/line-items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity }),
+        operation: "cart.addLineItem"
       });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to add item");
-      }
-      return res.json();
     },
 
     async deleteLineItem(itemIndex: number): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/line-items/${itemIndex}`, {
+      return storeApi(`${API_BASE}/carts/line-items/${itemIndex}`, {
         method: "DELETE",
+        operation: "cart.deleteLineItem"
       });
-      if (!res.ok) throw new Error("Failed to delete item");
-      return res.json();
     },
 
     async createPaymentIntent(): Promise<{
       client_secret: string;
       payment_intent_id: string;
     }> {
-      const res = await fetch(`${API_BASE}/carts/payment`, {
+      return storeApi(`${API_BASE}/carts/payment`, {
         method: "POST",
+        operation: "cart.createPaymentIntent"
       });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to create payment");
-      }
-      return res.json();
     },
 
     async complete(): Promise<
@@ -206,39 +323,33 @@ export const store = {
       | { type: "cart"; error: string }
       | { type: "processing"; message: string }
     > {
-      const res = await fetch(`${API_BASE}/carts/complete`, {
+      return storeApi(`${API_BASE}/carts/complete`, {
         method: "POST",
+        operation: "cart.complete"
       });
-      return res.json();
     },
 
     async applyCoupon(code: string): Promise<{
       cart: Cart;
       coupon: { code: string; type: string; value: number };
     }> {
-      const res = await fetch(`${API_BASE}/carts/coupon`, {
+      return storeApi(`${API_BASE}/carts/coupon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
+        operation: "cart.applyCoupon"
       });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to apply coupon");
-      }
-      return res.json();
     },
 
     async removeCoupon(): Promise<{ cart: Cart }> {
-      const res = await fetch(`${API_BASE}/carts/coupon`, {
+      return storeApi(`${API_BASE}/carts/coupon`, {
         method: "DELETE",
+        operation: "cart.removeCoupon"
       });
-      if (!res.ok) {
-        throw new Error("Failed to remove coupon");
-      }
-      return res.json();
     },
 
     async reset(): Promise<void> {
+      logFetch.request("cart.reset", `${API_BASE}/carts`, "DELETE");
       await fetch(`${API_BASE}/carts`, { method: "DELETE" });
     },
   },
@@ -247,24 +358,24 @@ export const store = {
   product: {
     async list(categoryId?: string): Promise<{ products: Product[] }> {
       const params = categoryId ? `?category_id=${categoryId}` : "";
-      const res = await fetch(`${API_BASE}/products${params}`);
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
+      return storeApi(`${API_BASE}/products${params}`, {
+        operation: "product.list"
+      });
     },
 
     async get(handle: string): Promise<{ product: Product }> {
-      const res = await fetch(`${API_BASE}/products/${handle}`);
-      if (!res.ok) throw new Error("Failed to fetch product");
-      return res.json();
+      return storeApi(`${API_BASE}/products/${handle}`, {
+        operation: "product.get"
+      });
     },
   },
 
   // Category operations
   category: {
     async list(): Promise<{ categories: Category[] }> {
-      const res = await fetch(`${API_BASE}/categories`);
-      if (!res.ok) throw new Error("Failed to fetch categories");
-      return res.json();
+      return storeApi(`${API_BASE}/categories`, {
+        operation: "category.list"
+      });
     },
   },
 
@@ -274,24 +385,24 @@ export const store = {
       countryCode?: string
     ): Promise<{ shipping_options: ShippingOption[] }> {
       const params = countryCode ? `?country_code=${countryCode}` : "";
-      const res = await fetch(`${API_BASE}/shipping${params}`);
-      if (!res.ok) throw new Error("Failed to fetch shipping options");
-      return res.json();
+      return storeApi(`${API_BASE}/shipping${params}`, {
+        operation: "shipping.listOptions"
+      });
     },
   },
 
   // CMS operations
   cms: {
     async getLandingPage(): Promise<{ landingPage: LandingPage }> {
-      const res = await fetch(`${API_BASE}/landing-page`);
-      if (!res.ok) throw new Error("Failed to fetch landing page");
-      return res.json();
+      return storeApi(`${API_BASE}/landing-page`, {
+        operation: "cms.getLandingPage"
+      });
     },
 
     async getCatalogue(): Promise<{ catalogue: Catalogue }> {
-      const res = await fetch(`${API_BASE}/catalogue`);
-      if (!res.ok) throw new Error("Failed to fetch catalogue");
-      return res.json();
+      return storeApi(`${API_BASE}/catalogue`, {
+        operation: "cms.getCatalogue"
+      });
     },
   },
 };

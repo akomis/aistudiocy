@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
 import { getCartSession, setCartSession, clearCartSession } from '@/lib/session'
+import { logger } from '@/lib/logger'
 
 // GET /api/store/carts - Retrieve cart from session
 export async function GET() {
+  const log = logger.scope({ operation: 'cart.retrieve', endpoint: '/api/store/carts' })
+
   try {
     const cartId = await getCartSession()
 
     if (!cartId) {
+      log.debug('No cart session found')
       return NextResponse.json({ error: 'No cart session' }, { status: 404 })
     }
+
+    log.debug('Retrieving cart', { cartId })
 
     const payload = await getPayloadClient()
 
@@ -19,9 +25,11 @@ export async function GET() {
       depth: 2,
     })
 
+    log.debug('Cart retrieved successfully', { cartId })
+
     return NextResponse.json({ cart })
   } catch (error) {
-    console.error('Error fetching cart:', error)
+    log.error('Failed to fetch cart', {}, error)
     // Clear invalid session
     await clearCartSession()
     return NextResponse.json({ error: 'Cart not found' }, { status: 404 })
@@ -30,7 +38,11 @@ export async function GET() {
 
 // POST /api/store/carts - Create new cart and set session
 export async function POST() {
+  const log = logger.scope({ operation: 'cart.create', endpoint: '/api/store/carts' })
+
   try {
+    log.debug('Creating new cart')
+
     const payload = await getPayloadClient()
 
     const cart = await payload.create({
@@ -46,21 +58,28 @@ export async function POST() {
     // Set the cart session cookie
     await setCartSession(String(cart.id))
 
+    log.info('Cart created successfully', { cartId: String(cart.id) })
+
     return NextResponse.json({ cart })
   } catch (error) {
-    console.error('Error creating cart:', error)
+    log.error('Failed to create cart', {}, error)
     return NextResponse.json({ error: 'Failed to create cart' }, { status: 500 })
   }
 }
 
 // PATCH /api/store/carts - Update cart
 export async function PATCH(request: NextRequest) {
+  const log = logger.scope({ operation: 'cart.update', endpoint: '/api/store/carts' })
+
   try {
     const cartId = await getCartSession()
 
     if (!cartId) {
+      log.warn('No cart session for update')
       return NextResponse.json({ error: 'No cart session' }, { status: 401 })
     }
+
+    log.debug('Updating cart', { cartId })
 
     const payload = await getPayloadClient()
     const data = await request.json()
@@ -72,20 +91,25 @@ export async function PATCH(request: NextRequest) {
       depth: 2,
     })
 
+    log.debug('Cart updated successfully', { cartId })
+
     return NextResponse.json({ cart })
   } catch (error) {
-    console.error('Error updating cart:', error)
+    log.error('Failed to update cart', {}, error)
     return NextResponse.json({ error: 'Failed to update cart' }, { status: 500 })
   }
 }
 
 // DELETE /api/store/carts - Clear cart session
 export async function DELETE() {
+  const log = logger.scope({ operation: 'cart.delete', endpoint: '/api/store/carts' })
+
   try {
+    log.debug('Clearing cart session')
     await clearCartSession()
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error clearing cart session:', error)
+    log.error('Failed to clear cart session', {}, error)
     return NextResponse.json({ error: 'Failed to clear cart' }, { status: 500 })
   }
 }

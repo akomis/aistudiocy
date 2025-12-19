@@ -2,7 +2,7 @@ const getApiBase = () => {
   if (typeof window !== "undefined") {
     return "/api/store";
   }
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
   return `${baseUrl}/api/store`;
 };
 
@@ -10,19 +10,36 @@ const API_BASE = getApiBase();
 
 // Logging helper for both client and server
 const logFetch = {
-  request: (operation: string, url: string, method: string = 'GET') => {
+  request: (operation: string, url: string, method: string = "GET") => {
     const isServer = typeof window === "undefined";
     const timestamp = new Date().toISOString();
-    const context = { timestamp, operation, url, method, env: isServer ? 'server' : 'client' };
+    const context = {
+      timestamp,
+      operation,
+      url,
+      method,
+      env: isServer ? "server" : "client",
+    };
 
     if (isServer) {
-      console.info(JSON.stringify({ level: 'DEBUG', message: `[Store] ${operation} started`, context }));
-    } else if (process.env.NODE_ENV === 'development') {
+      console.info(
+        JSON.stringify({
+          level: "DEBUG",
+          message: `[Store] ${operation} started`,
+          context,
+        })
+      );
+    } else if (process.env.NODE_ENV === "development") {
       console.debug(`[Store] ${operation}`, method, url);
     }
   },
 
-  error: (operation: string, url: string, error: unknown, response?: Response) => {
+  error: (
+    operation: string,
+    url: string,
+    error: unknown,
+    response?: Response
+  ) => {
     const isServer = typeof window === "undefined";
     const timestamp = new Date().toISOString();
 
@@ -36,7 +53,7 @@ const logFetch = {
       errorDetails.stack = error.stack;
 
       // Extract cause chain (important for ECONNREFUSED errors)
-      if ('cause' in error && error.cause) {
+      if ("cause" in error && error.cause) {
         const cause = error.cause as any;
         errorDetails.cause = {
           message: cause.message,
@@ -46,10 +63,10 @@ const logFetch = {
       }
 
       // Extract error codes
-      if ('code' in error) {
+      if ("code" in error) {
         errorDetails.code = (error as any).code;
       }
-      if ('digest' in error) {
+      if ("digest" in error) {
         errorDetails.digest = (error as any).digest;
       }
     }
@@ -60,20 +77,25 @@ const logFetch = {
       url,
       statusCode: response?.status,
       statusText: response?.statusText,
-      env: isServer ? 'server' : 'client',
+      env: isServer ? "server" : "client",
       apiBase: API_BASE,
-      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'NOT_SET',
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "NOT_SET",
     };
 
     if (isServer) {
-      console.error(JSON.stringify({
-        level: 'ERROR',
-        message: `[Store] ${operation} failed`,
-        context,
-        error: errorDetails
-      }));
+      console.error(
+        JSON.stringify({
+          level: "ERROR",
+          message: `[Store] ${operation} failed`,
+          context,
+          error: errorDetails,
+        })
+      );
     } else {
-      console.error(`[Store] ${operation} failed:`, { context, error: errorDetails });
+      console.error(`[Store] ${operation} failed:`, {
+        context,
+        error: errorDetails,
+      });
     }
   },
 
@@ -81,13 +103,15 @@ const logFetch = {
     const isServer = typeof window === "undefined";
 
     if (isServer) {
-      console.info(JSON.stringify({
-        level: 'DEBUG',
-        message: `[Store] ${operation} completed`,
-        context: { operation, url, duration, env: 'server' }
-      }));
+      console.info(
+        JSON.stringify({
+          level: "DEBUG",
+          message: `[Store] ${operation} completed`,
+          context: { operation, url, duration, env: "server" },
+        })
+      );
     }
-  }
+  },
 };
 
 // Enhanced fetch with logging
@@ -96,7 +120,7 @@ async function storeApi<T>(
   options: RequestInit & { operation: string }
 ): Promise<T> {
   const { operation, ...fetchOptions } = options;
-  const method = fetchOptions.method || 'GET';
+  const method = fetchOptions.method || "GET";
   const startTime = Date.now();
 
   logFetch.request(operation, url, method);
@@ -114,7 +138,7 @@ async function storeApi<T>(
       }
 
       const error = new Error(
-        typeof errorBody === 'object' && errorBody.error
+        typeof errorBody === "object" && errorBody.error
           ? errorBody.error
           : `${operation} failed with status ${response.status}`
       );
@@ -127,7 +151,9 @@ async function storeApi<T>(
     return response.json();
   } catch (error) {
     // Only log if not already logged (response errors are logged above)
-    if (!(error instanceof Error && error.message.includes('failed with status'))) {
+    if (
+      !(error instanceof Error && error.message.includes("failed with status"))
+    ) {
       logFetch.error(operation, url, error);
     }
     throw error;
@@ -273,13 +299,13 @@ export const store = {
     async create(): Promise<{ cart: Cart }> {
       return storeApi(`${API_BASE}/carts`, {
         method: "POST",
-        operation: "cart.create"
+        operation: "cart.create",
       });
     },
 
     async retrieve(): Promise<{ cart: Cart }> {
       return storeApi(`${API_BASE}/carts`, {
-        operation: "cart.retrieve"
+        operation: "cart.retrieve",
       });
     },
 
@@ -288,23 +314,26 @@ export const store = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-        operation: "cart.update"
+        operation: "cart.update",
       });
     },
 
-    async addLineItem(productId: string, quantity = 1): Promise<{ cart: Cart }> {
+    async addLineItem(
+      productId: string,
+      quantity = 1
+    ): Promise<{ cart: Cart }> {
       return storeApi(`${API_BASE}/carts/line-items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity }),
-        operation: "cart.addLineItem"
+        operation: "cart.addLineItem",
       });
     },
 
     async deleteLineItem(itemIndex: number): Promise<{ cart: Cart }> {
       return storeApi(`${API_BASE}/carts/line-items/${itemIndex}`, {
         method: "DELETE",
-        operation: "cart.deleteLineItem"
+        operation: "cart.deleteLineItem",
       });
     },
 
@@ -314,7 +343,7 @@ export const store = {
     }> {
       return storeApi(`${API_BASE}/carts/payment`, {
         method: "POST",
-        operation: "cart.createPaymentIntent"
+        operation: "cart.createPaymentIntent",
       });
     },
 
@@ -325,7 +354,7 @@ export const store = {
     > {
       return storeApi(`${API_BASE}/carts/complete`, {
         method: "POST",
-        operation: "cart.complete"
+        operation: "cart.complete",
       });
     },
 
@@ -337,14 +366,14 @@ export const store = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
-        operation: "cart.applyCoupon"
+        operation: "cart.applyCoupon",
       });
     },
 
     async removeCoupon(): Promise<{ cart: Cart }> {
       return storeApi(`${API_BASE}/carts/coupon`, {
         method: "DELETE",
-        operation: "cart.removeCoupon"
+        operation: "cart.removeCoupon",
       });
     },
 
@@ -359,13 +388,13 @@ export const store = {
     async list(categoryId?: string): Promise<{ products: Product[] }> {
       const params = categoryId ? `?category_id=${categoryId}` : "";
       return storeApi(`${API_BASE}/products${params}`, {
-        operation: "product.list"
+        operation: "product.list",
       });
     },
 
     async get(handle: string): Promise<{ product: Product }> {
       return storeApi(`${API_BASE}/products/${handle}`, {
-        operation: "product.get"
+        operation: "product.get",
       });
     },
   },
@@ -374,7 +403,7 @@ export const store = {
   category: {
     async list(): Promise<{ categories: Category[] }> {
       return storeApi(`${API_BASE}/categories`, {
-        operation: "category.list"
+        operation: "category.list",
       });
     },
   },
@@ -386,7 +415,7 @@ export const store = {
     ): Promise<{ shipping_options: ShippingOption[] }> {
       const params = countryCode ? `?country_code=${countryCode}` : "";
       return storeApi(`${API_BASE}/shipping${params}`, {
-        operation: "shipping.listOptions"
+        operation: "shipping.listOptions",
       });
     },
   },
@@ -395,13 +424,13 @@ export const store = {
   cms: {
     async getLandingPage(): Promise<{ landingPage: LandingPage }> {
       return storeApi(`${API_BASE}/landing-page`, {
-        operation: "cms.getLandingPage"
+        operation: "cms.getLandingPage",
       });
     },
 
     async getCatalogue(): Promise<{ catalogue: Catalogue }> {
       return storeApi(`${API_BASE}/catalogue`, {
-        operation: "cms.getCatalogue"
+        operation: "cms.getCatalogue",
       });
     },
   },

@@ -52,7 +52,7 @@ export async function POST() {
     }
 
     // Create or update payment intent
-    let paymentIntent: Stripe.PaymentIntent
+    let paymentIntent: Stripe.PaymentIntent | undefined
 
     // Stripe expects amounts in cents
     const amountInCents = Math.round((cart.total || 0) * 100)
@@ -76,10 +76,33 @@ export async function POST() {
           status: paymentIntent.status,
         })
       } catch (stripeError) {
-        log.error('Stripe update failed', { cartId, paymentIntentId: cart.stripePaymentIntentId }, stripeError)
-        throw stripeError
+        // Handle stale payment intent from different Stripe environment (test vs live)
+        const isResourceMissing =
+          stripeError instanceof Stripe.errors.StripeInvalidRequestError &&
+          stripeError.code === 'resource_missing'
+
+        if (isResourceMissing) {
+          log.warn('Stale payment intent detected, will create new one', {
+            cartId,
+            stalePaymentIntentId: cart.stripePaymentIntentId,
+          })
+          // Clear the stale payment intent ID so we fall through to create a new one
+          await payload.update({
+            collection: 'carts',
+            id: cartId,
+            data: {
+              stripePaymentIntentId: null,
+              stripeClientSecret: null,
+            },
+          })
+        } else {
+          log.error('Stripe update failed', { cartId, paymentIntentId: cart.stripePaymentIntentId }, stripeError)
+          throw stripeError
+        }
       }
-    } else {
+    }
+
+    if (!paymentIntent) {
       // Create new payment intent
       try {
         paymentIntent = await getStripe().paymentIntents.create({

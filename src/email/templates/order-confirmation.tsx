@@ -32,6 +32,8 @@ interface OrderConfirmationEmailProps {
       amount?: number;
     };
     subtotal: number;
+    discount?: number | null;
+    couponCode?: string | null;
     shippingTotal: number;
     total: number;
     createdAt: string;
@@ -111,6 +113,12 @@ export function OrderConfirmationEmail({
             <Text style={styles.text}>
               Subtotal: {order.subtotal.toFixed(2)} EUR
             </Text>
+            {order.discount && order.discount > 0 && (
+              <Text style={{ ...styles.text, color: "#22c55e" }}>
+                Discount{order.couponCode ? ` (${order.couponCode})` : ""}:{" "}
+                -{order.discount.toFixed(2)} EUR
+              </Text>
+            )}
             <Text style={styles.text}>
               Shipping: {order.shippingTotal.toFixed(2)} EUR
             </Text>

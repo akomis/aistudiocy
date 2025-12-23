@@ -27,6 +27,8 @@ interface Order {
     amount?: number;
   };
   subtotal: number;
+  discount?: number | null;
+  couponCode?: string | null;
   shippingTotal: number;
   total: number;
   createdAt: string;

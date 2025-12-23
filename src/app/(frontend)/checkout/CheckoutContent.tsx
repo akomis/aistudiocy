@@ -477,7 +477,13 @@ const CheckoutForm = () => {
     setCouponLoading(true);
     try {
       const { cart: updatedCart } = await store.cart.applyCoupon(couponCode);
-      setCart(updatedCart);
+      // Update PaymentIntent with new total (after discount)
+      const paymentData = await store.cart.createPaymentIntent();
+      setCart({
+        ...updatedCart,
+        stripeClientSecret: paymentData.client_secret,
+        stripePaymentIntentId: paymentData.payment_intent_id,
+      });
       setCouponCode("");
       toast({ title: "Coupon applied successfully" });
     } catch (error) {
@@ -496,7 +502,13 @@ const CheckoutForm = () => {
     setCouponLoading(true);
     try {
       const { cart: updatedCart } = await store.cart.removeCoupon();
-      setCart(updatedCart);
+      // Update PaymentIntent with new total (without discount)
+      const paymentData = await store.cart.createPaymentIntent();
+      setCart({
+        ...updatedCart,
+        stripeClientSecret: paymentData.client_secret,
+        stripePaymentIntentId: paymentData.payment_intent_id,
+      });
       toast({ title: "Coupon removed" });
     } catch (error) {
       toast({

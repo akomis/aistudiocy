@@ -37,7 +37,7 @@ const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
   const aboutsList = abouts || [];
 
   return (
-    <Section className="pt-12">
+    <Section className="pt-12 pb-4">
       <div className="flex flex-col 2xl:flex-row justify-between items-start lg:items-end leading-10">
         <div className="mb-6 lg:mb-2 px-10 2xl:p-0">
           <CutoffText>ABOUT</CutoffText>

@@ -20,12 +20,11 @@ import { formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  CardElement,
+  PaymentElement,
   Elements,
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { StripeCardElement } from "@stripe/stripe-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -530,24 +529,26 @@ const CheckoutForm = () => {
     if (!stripe || !elements || !clientSecret || !cart)
       throw new Error("handlePayment() is missing data");
 
-    const card = elements.getElement(CardElement);
-
-    const { error } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: card as StripeCardElement,
-        billing_details: {
-          name: cart?.shippingAddress?.firstName,
-          email: cart?.email,
-          phone: cart?.shippingAddress?.phone,
-          address: {
-            city: cart?.shippingAddress?.city,
-            country: cart?.shippingAddress?.countryCode,
-            line1: cart?.shippingAddress?.address1,
-            postal_code: cart?.shippingAddress?.postalCode,
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/confirmation?status=success`,
+        receipt_email: cart?.email,
+        payment_method_data: {
+          billing_details: {
+            name: `${cart?.shippingAddress?.firstName} ${cart?.shippingAddress?.lastName}`,
+            email: cart?.email,
+            phone: cart?.shippingAddress?.phone,
+            address: {
+              city: cart?.shippingAddress?.city,
+              country: cart?.shippingAddress?.countryCode,
+              line1: cart?.shippingAddress?.address1,
+              postal_code: cart?.shippingAddress?.postalCode,
+            },
           },
         },
       },
-      receipt_email: cart?.email,
+      redirect: "if_required",
     });
 
     if (error) {
@@ -617,7 +618,7 @@ const CheckoutForm = () => {
         className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between px-0.5"
         onSubmit={handlePayment}
       >
-        <CardElement className="bg-gray-300 p-4" />
+        <PaymentElement />
 
         {/* Coupon input */}
         <div className="flex flex-col gap-2">

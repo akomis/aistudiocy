@@ -23,6 +23,47 @@ export async function POST() {
 
     const payload = await getPayloadClient()
 
+    // Check for sold out items before completing order
+    const cartForValidation = await payload.findByID({
+      collection: 'carts',
+      id: cartId,
+      depth: 2,
+    })
+
+    if (cartForValidation.items && cartForValidation.items.length > 0) {
+      const unavailableItems = cartForValidation.items.filter((item) => {
+        const product = typeof item.product === 'object' ? item.product : null
+        if (!product) return false
+        return (product.inventory ?? 1) === 0
+      })
+
+      if (unavailableItems.length > 0) {
+        const unavailableNames = unavailableItems
+          .map((item) => {
+            const product = item.product as { title?: string }
+            return product?.title || 'Unknown product'
+          })
+          .join(', ')
+
+        log.warn('Cart contains sold out items at completion', {
+          cartId,
+          unavailableItems: unavailableItems.map((item) => {
+            const product = item.product as { id?: string; title?: string }
+            return { id: product?.id, title: product?.title }
+          }),
+        })
+
+        return NextResponse.json(
+          {
+            type: 'cart',
+            error: `Some items are no longer available: ${unavailableNames}`,
+            code: 'ITEMS_UNAVAILABLE',
+          },
+          { status: 400 },
+        )
+      }
+    }
+
     const startTime = Date.now()
     let pollCount = 0
 

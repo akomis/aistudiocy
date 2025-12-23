@@ -169,20 +169,22 @@ function ProductDetails({ product }: { product: Product }) {
 
           {/* Product Info Section */}
           <div className="flex-1 flex flex-col gap-6 lg:sticky lg:top-32 lg:self-start">
-            <h1 className="text-lg lg:text-xl text-muted-foreground tracking-wide">
-              {product.title}
-            </h1>
+            <div className="flex flex-col gap-1">
+              <h1 className="text-base lg:text-lg text-muted-foreground tracking-wide">
+                {product.title}
+              </h1>
 
-            <div className="flex items-center gap-4">
-              <span className="text-2xl lg:text-3xl font-semibold">
-                €{formatPrice(product.price)}
-              </span>
-              {product.compareAtPrice &&
-                product.compareAtPrice > product.price && (
-                  <span className="text-lg text-gray-500 line-through">
-                    €{formatPrice(product.compareAtPrice)}
-                  </span>
-                )}
+              <div className="flex items-center gap-4">
+                <span className="text-3xl lg:text-4xl font-semibold">
+                  €{formatPrice(product.price)}
+                </span>
+                {product.compareAtPrice &&
+                  product.compareAtPrice > product.price && (
+                    <span className="text-lg text-gray-500 line-through">
+                      €{formatPrice(product.compareAtPrice)}
+                    </span>
+                  )}
+              </div>
             </div>
 
             {product.size && <p className="text-gray-300">{product.size}</p>}

@@ -564,6 +564,12 @@ const CheckoutForm = () => {
       const result = await store.cart.complete();
 
       if (result.type === "cart") {
+        // Check if items became unavailable (sold to another customer)
+        if ("code" in result && result.code === "ITEMS_UNAVAILABLE") {
+          // Redirect to catalogue with param to show toast there
+          router.push("/catalogue?items_removed=true");
+          return;
+        }
         throw new Error(result.error || "There was a problem with the order");
       } else if (result.type === "order" || result.type === "processing") {
         resetCart();

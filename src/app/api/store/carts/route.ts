@@ -19,11 +19,52 @@ export async function GET() {
 
     const payload = await getPayloadClient()
 
-    const cart = await payload.findByID({
+    let cart = await payload.findByID({
       collection: 'carts',
       id: cartId,
       depth: 2,
     })
+
+    // Check for sold out items and remove them from the cart
+    if (cart.items && cart.items.length > 0) {
+      const unavailableIndices: number[] = []
+
+      cart.items.forEach((item, index) => {
+        const product = typeof item.product === 'object' ? item.product : null
+        if (product && (product.inventory ?? 1) === 0) {
+          unavailableIndices.push(index)
+          log.info('Removing sold out item from cart', {
+            cartId,
+            productId: String(product.id),
+            productTitle: product.title,
+          })
+        }
+      })
+
+      if (unavailableIndices.length > 0) {
+        // Filter out unavailable items (keeping items whose index is NOT in unavailableIndices)
+        const updatedItems = cart.items
+          .filter((_, index) => !unavailableIndices.includes(index))
+          .map((item) => ({
+            product: typeof item.product === 'object' ? item.product.id : item.product,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          }))
+
+        // Update cart with filtered items (this will trigger recalculation via beforeChange hook)
+        cart = await payload.update({
+          collection: 'carts',
+          id: cartId,
+          data: { items: updatedItems },
+          depth: 2,
+        })
+
+        log.info('Removed sold out items from cart', {
+          cartId,
+          removedCount: unavailableIndices.length,
+        })
+      }
+    }
 
     log.debug('Cart retrieved successfully', { cartId })
 

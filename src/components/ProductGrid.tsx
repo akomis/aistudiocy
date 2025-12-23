@@ -256,7 +256,6 @@ const IMAGE_SIZE = 3000;
 const REFETCH_PRODUCTS_INTERVAL = 1000 * 60 * 2;
 
 export default function ProductGrid({ images, socials }: Props) {
-  const { cart, refetchCart } = useContext(CartContext);
   const { id, setId } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -264,6 +263,22 @@ export default function ProductGrid({ images, socials }: Props) {
   useEffect(() => {
     setId(searchParams.get("category"));
   }, []);
+
+  // Show toast if redirected here due to sold items
+  useEffect(() => {
+    if (searchParams.get("items_removed") === "true") {
+      toast({
+        title: "Some items are no longer available",
+        description: "Items that have been sold were removed from your cart.",
+        variant: "destructive",
+      });
+      // Clean up the URL param
+      const params = new URLSearchParams(searchParams);
+      params.delete("items_removed");
+      const newUrl = params.toString() ? `?${params.toString()}` : "/catalogue";
+      router.replace(newUrl);
+    }
+  }, [searchParams, router]);
 
   useLayoutEffect(() => {
     restoreScrollPosition();
@@ -278,39 +293,9 @@ export default function ProductGrid({ images, socials }: Props) {
   }, [id]);
 
   const { data: productData, error } = useSuspenseQuery({
-    queryKey: ["products", id, cart?.id],
+    queryKey: ["products", id],
     queryFn: async () => {
-      const data = await store.product.list(id ?? undefined);
-
-      const unavailableProducts = data.products.filter(
-        (product) => (product.inventory ?? 1) === 0
-      );
-
-      if (cart && cart.items) {
-        for (let i = cart.items.length - 1; i >= 0; i--) {
-          const item = cart.items[i];
-          const productId =
-            typeof item.product === "string" ? item.product : item.product?.id;
-          const unavailableProduct = unavailableProducts?.find(
-            (product) => product.id === productId
-          );
-
-          if (unavailableProduct) {
-            try {
-              await store.cart.deleteLineItem(i);
-              toast({
-                title: `Product is no longer available and was removed from your cart.`,
-              });
-            } catch {
-              // ignore
-            }
-          }
-        }
-
-        refetchCart();
-      }
-
-      return data;
+      return store.product.list(id ?? undefined);
     },
     refetchInterval: REFETCH_PRODUCTS_INTERVAL,
     refetchIntervalInBackground: true,

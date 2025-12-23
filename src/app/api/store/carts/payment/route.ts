@@ -51,39 +51,6 @@ export async function POST() {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
     }
 
-    // Check for sold out items before processing payment
-    const unavailableItems = cart.items.filter((item) => {
-      const product = typeof item.product === 'object' ? item.product : null
-      if (!product) return false
-      return (product.inventory ?? 1) === 0
-    })
-
-    if (unavailableItems.length > 0) {
-      const unavailableNames = unavailableItems
-        .map((item) => {
-          const product = item.product as { title?: string }
-          return product?.title || 'Unknown product'
-        })
-        .join(', ')
-
-      log.warn('Cart contains sold out items', {
-        cartId,
-        unavailableItems: unavailableItems.map((item) => {
-          const product = item.product as { id?: string; title?: string }
-          return { id: product?.id, title: product?.title }
-        }),
-      })
-
-      return NextResponse.json(
-        {
-          error: `The following items are no longer available: ${unavailableNames}. Please remove them from your cart to continue.`,
-          unavailableItems: unavailableNames,
-          code: 'ITEMS_UNAVAILABLE',
-        },
-        { status: 400 },
-      )
-    }
-
     // Create or update payment intent
     let paymentIntent: Stripe.PaymentIntent | undefined
 

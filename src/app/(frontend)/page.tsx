@@ -68,17 +68,14 @@ const Footer = ({
 
   return (
     <Section
-      className="h-[450px] flex flex-col justify-end items-start px-5 sm:px-10"
+      className="h-[450px] flex flex-col justify-start items-start px-5 sm:px-10"
       style={{
         backgroundImage: bgImageUrl ? `url(${bgImageUrl})` : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div
-        id="footer"
-        className="flex flex-col justify-end items-start gap-10 mr-10 mb-10"
-      >
+      <div id="footer" className="flex flex-col items-start gap-4 mt-10">
         <Contact socials={socialsList} />
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {pages.map((page) => (

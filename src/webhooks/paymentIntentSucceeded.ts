@@ -1,89 +1,96 @@
-import type { StripeWebhookHandler } from '@payloadcms/plugin-stripe/types'
-import type Stripe from 'stripe'
+import type { StripeWebhookHandler } from "@payloadcms/plugin-stripe/types";
+import type Stripe from "stripe";
 
 export const paymentIntentSucceeded: StripeWebhookHandler<{
-  data: { object: Stripe.PaymentIntent }
+  data: { object: Stripe.PaymentIntent };
 }> = async ({ event, payload }) => {
-  const paymentIntent = event.data.object
-  const cartId = paymentIntent.metadata?.cartId
+  const paymentIntent = event.data.object;
+  const cartId = paymentIntent.metadata?.cartId;
 
   if (!cartId) {
-    payload.logger.error('PaymentIntent missing cartId in metadata')
-    return
+    payload.logger.error("PaymentIntent missing cartId in metadata");
+    return;
   }
 
-  payload.logger.info(`Processing payment_intent.succeeded for cart ${cartId}`)
+  payload.logger.info(`Processing payment_intent.succeeded for cart ${cartId}`);
 
   try {
     // Check if order already exists (idempotency)
     const existingOrders = await payload.find({
-      collection: 'orders',
+      collection: "orders",
       where: {
         stripePaymentIntentId: { equals: paymentIntent.id },
       },
       limit: 1,
-    })
+    });
 
     if (existingOrders.docs.length > 0) {
-      payload.logger.info(`Order already exists for payment ${paymentIntent.id}`)
-      return
+      payload.logger.info(
+        `Order already exists for payment ${paymentIntent.id}`
+      );
+      return;
     }
 
     // Retrieve cart with full depth
     const cart = await payload.findByID({
-      collection: 'carts',
+      collection: "carts",
       id: cartId,
       depth: 2,
-    })
+    });
 
     if (!cart) {
-      payload.logger.error(`Cart ${cartId} not found`)
-      return
+      payload.logger.error(`Cart ${cartId} not found`);
+      return;
     }
 
     if (cart.completedAt) {
-      payload.logger.info(`Cart ${cartId} already completed`)
-      return
+      payload.logger.info(`Cart ${cartId} already completed`);
+      return;
     }
 
     // Get shipping option details
-    let shippingMethod = { name: 'Standard', amount: 0 }
+    let shippingMethod = { name: "Standard", amount: 0 };
     if (cart.shippingOption) {
       const shippingOptionId =
-        typeof cart.shippingOption === 'object' && cart.shippingOption !== null
+        typeof cart.shippingOption === "object" && cart.shippingOption !== null
           ? String(cart.shippingOption.id)
-          : String(cart.shippingOption)
+          : String(cart.shippingOption);
       try {
         const shippingOption = await payload.findByID({
-          collection: 'shipping',
+          collection: "shipping",
           id: shippingOptionId,
-        })
+        });
         if (shippingOption) {
-          shippingMethod = { name: shippingOption.name, amount: shippingOption.amount }
+          shippingMethod = {
+            name: shippingOption.name,
+            amount: shippingOption.amount,
+          };
         }
       } catch {
-        payload.logger.warn(`Could not retrieve shipping option ${shippingOptionId}`)
+        payload.logger.warn(
+          `Could not retrieve shipping option ${shippingOptionId}`
+        );
       }
     }
 
     // Get coupon details
-    let couponCode: string | undefined
-    let couponId: string | undefined
+    let couponCode: string | undefined;
+    let couponId: string | undefined;
     if (cart.coupon) {
       couponId =
-        typeof cart.coupon === 'object' && cart.coupon !== null
+        typeof cart.coupon === "object" && cart.coupon !== null
           ? String(cart.coupon.id)
-          : String(cart.coupon)
+          : String(cart.coupon);
       try {
         const coupon = await payload.findByID({
-          collection: 'coupons',
+          collection: "coupons",
           id: couponId,
-        })
+        });
         if (coupon) {
-          couponCode = coupon.code
+          couponCode = coupon.code;
         }
       } catch {
-        payload.logger.warn(`Could not retrieve coupon ${couponId}`)
+        payload.logger.warn(`Could not retrieve coupon ${couponId}`);
       }
     }
 
@@ -91,30 +98,34 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
     const orderItems = (cart.items || [])
       .filter((item: any) => item && item.product)
       .map((item: any) => {
-        const isPopulated = typeof item.product === 'object' && item.product !== null
-        const productId = isPopulated ? String(item.product.id) : String(item.product)
+        const isPopulated =
+          typeof item.product === "object" && item.product !== null;
+        const productId = isPopulated
+          ? String(item.product.id)
+          : String(item.product);
         return {
           productId,
-          productTitle: isPopulated ? item.product.title || 'Product' : 'Product',
-          thumbnail: isPopulated ? item.product.thumbnail?.url || '' : '',
+          productTitle: isPopulated
+            ? item.product.title || "Product"
+            : "Product",
+          thumbnail: isPopulated ? item.product.thumbnail?.url || "" : "",
           quantity: item.quantity || 1,
           unitPrice: item.unitPrice || 0,
-        }
+        };
       })
       .filter(
         (item: any) =>
           item.productId &&
-          item.productId !== 'null' &&
-          item.productId !== 'undefined' &&
-          item.productId !== '',
-      )
+          item.productId !== "null" &&
+          item.productId !== "undefined" &&
+          item.productId !== ""
+      );
 
-    // Create order
+    // Create order (displayId auto-generated by beforeChange hook)
     const order = await payload.create({
-      collection: 'orders',
+      collection: "orders",
       data: {
-        displayId: '', // Auto-generated by hook
-        email: cart.email || '',
+        email: cart.email || "",
         items: orderItems,
         shippingAddress: cart.shippingAddress as any,
         shippingMethod,
@@ -122,69 +133,73 @@ export const paymentIntentSucceeded: StripeWebhookHandler<{
         discount: cart.discount || 0,
         shippingTotal: cart.shippingTotal || 0,
         total: cart.total || 0,
-        couponCode: couponCode || '',
+        couponCode: couponCode || "",
         stripePaymentIntentId: paymentIntent.id,
-        status: 'confirmed',
-        notes: cart.notes || '',
-      },
-    })
+        status: "confirmed",
+        notes: cart.notes || "",
+      } as any,
+    });
 
-    payload.logger.info(`Created order ${order.displayId} from webhook`)
+    payload.logger.info(`Created order ${order.displayId} from webhook`);
 
     // Increment coupon usage count
     if (couponId) {
       try {
         const coupon = await payload.findByID({
-          collection: 'coupons',
+          collection: "coupons",
           id: couponId,
-        })
+        });
         await payload.update({
-          collection: 'coupons',
+          collection: "coupons",
           id: couponId,
           data: { usageCount: (coupon.usageCount || 0) + 1 },
-        })
+        });
       } catch {
-        payload.logger.warn(`Could not update usage count for coupon ${couponId}`)
+        payload.logger.warn(
+          `Could not update usage count for coupon ${couponId}`
+        );
       }
     }
 
     // Decrement inventory for each purchased item
     for (const item of cart.items || []) {
       const productId =
-        typeof item.product === 'object' && item.product !== null
+        typeof item.product === "object" && item.product !== null
           ? String(item.product.id)
-          : String(item.product)
-      const quantity = item.quantity || 1
+          : String(item.product);
+      const quantity = item.quantity || 1;
       try {
         const product = await payload.findByID({
-          collection: 'products',
+          collection: "products",
           id: productId,
-        })
-        const currentInventory = product.inventory ?? 1
-        const newInventory = Math.max(0, currentInventory - quantity)
+        });
+        const currentInventory = product.inventory ?? 1;
+        const newInventory = Math.max(0, currentInventory - quantity);
         await payload.update({
-          collection: 'products',
+          collection: "products",
           id: productId,
           data: { inventory: newInventory },
-        })
+        });
       } catch {
-        payload.logger.warn(`Could not update inventory for product ${productId}`)
+        payload.logger.warn(
+          `Could not update inventory for product ${productId}`
+        );
       }
     }
 
     // Mark cart as completed
     await payload.update({
-      collection: 'carts',
+      collection: "carts",
       id: cartId,
       data: {
         completedAt: new Date().toISOString(),
-        paymentStatus: 'succeeded',
+        paymentStatus: "succeeded",
       },
-    })
+    });
 
-    payload.logger.info(`Webhook processing complete for cart ${cartId}`)
+    payload.logger.info(`Webhook processing complete for cart ${cartId}`);
   } catch (error) {
-    payload.logger.error(`Error processing payment webhook: ${error}`)
-    throw error // Re-throw to signal webhook failure to Stripe
+    payload.logger.error(`Error processing payment webhook: ${error}`);
+    throw error; // Re-throw to signal webhook failure to Stripe
   }
-}
+};

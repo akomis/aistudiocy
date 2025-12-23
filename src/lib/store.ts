@@ -349,7 +349,7 @@ export const store = {
 
     async complete(): Promise<
       | { type: "order"; order: Order }
-      | { type: "cart"; error: string }
+      | { type: "cart"; error: string; code?: string }
       | { type: "processing"; message: string }
     > {
       return storeApi(`${API_BASE}/carts/complete`, {

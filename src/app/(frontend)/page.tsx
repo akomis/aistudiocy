@@ -68,7 +68,7 @@ const Footer = ({
 
   return (
     <Section
-      className="h-[450px] flex flex-col justify-start items-start px-5 sm:px-10"
+      className="h-[450px] flex flex-col justify-end items-start pb-5 px-5 sm:px-10"
       style={{
         backgroundImage: bgImageUrl ? `url(${bgImageUrl})` : undefined,
         backgroundSize: "cover",

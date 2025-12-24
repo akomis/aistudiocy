@@ -69,6 +69,7 @@ export async function POST() {
       try {
         paymentIntent = await getStripe().paymentIntents.update(cart.stripePaymentIntentId, {
           amount: amountInCents,
+          payment_method_types: ['card'],
         })
         log.debug('Stripe payment intent updated', {
           cartId,
@@ -108,6 +109,7 @@ export async function POST() {
         paymentIntent = await getStripe().paymentIntents.create({
           amount: amountInCents,
           currency: 'eur',
+          payment_method_types: ['card'],
           metadata: { cartId },
           receipt_email: cart.email || undefined,
         })

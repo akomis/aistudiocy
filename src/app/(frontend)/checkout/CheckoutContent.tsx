@@ -529,6 +529,18 @@ const CheckoutForm = () => {
     if (!stripe || !elements || !clientSecret || !cart)
       throw new Error("handlePayment() is missing data");
 
+    // Submit the payment element first to trigger wallet flows (Apple Pay, Google Pay)
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      toast({
+        title: "Error with payment",
+        description: submitError.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -639,12 +651,12 @@ const CheckoutForm = () => {
               </Button>
             </div>
           ) : (
-            <div className="flex gap-2 overflow-visible">
+            <div className="flex gap-2 overflow-visible items-center">
               <Input
                 placeholder="COUPON CODE"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="flex-1"
+                className="flex-1 h-9"
               />
               <Button
                 type="button"

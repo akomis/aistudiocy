@@ -1,5 +1,5 @@
-import { withSentryConfig } from "@sentry/nextjs";
 import { withPayload } from "@payloadcms/next/withPayload";
+import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,18 +17,15 @@ const nextConfig = {
       },
     ],
   },
-  sassOptions: {
-    silenceDeprecations: ["legacy-js-api", "import"],
-  },
 };
 
 export default withSentryConfig(withPayload(nextConfig), {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "akomis",
+  org: "allcaps",
 
-  project: "javascript-nextjs",
+  project: "fosjewels",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

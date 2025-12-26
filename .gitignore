@@ -136,3 +136,6 @@ dist
 .DS_Store
 *.pem
 scripts/migrate-dev-to-prod.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

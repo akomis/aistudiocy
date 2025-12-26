@@ -285,12 +285,20 @@ export default function ProductGrid({ images, socials }: Props) {
   }, []);
 
   useEffect(() => {
-    if (id) {
+    const currentCategory = searchParams.get("category");
+    // Only update URL if the category actually changed (avoids loops)
+    if (id && id !== currentCategory) {
       const params = new URLSearchParams(searchParams);
       params.set("category", id);
       router.push(`?${params.toString()}`);
+    } else if (!id && currentCategory) {
+      // Clear category from URL if filter was removed
+      const params = new URLSearchParams(searchParams);
+      params.delete("category");
+      const newUrl = params.toString() ? `?${params.toString()}` : "/catalogue";
+      router.push(newUrl);
     }
-  }, [id]);
+  }, [id, searchParams, router]);
 
   const { data: productData, error } = useSuspenseQuery({
     queryKey: ["products", id],

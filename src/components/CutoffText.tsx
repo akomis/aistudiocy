@@ -32,7 +32,7 @@ export default function CutoffText({
         }
       )}
     >
-      <span className={cn(sizeClasses[size].text, "tracking-[10px]")}>
+      <span className={cn(sizeClasses[size].text, "tracking-[12px]")}>
         {children}
       </span>
     </div>

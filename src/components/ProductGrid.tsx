@@ -250,12 +250,17 @@ const SubGrid = ({
 type Props = {
   images: { url: string; alternativeText?: string }[];
   socials: Social[];
+  initialProducts?: Product[];
 };
 
 const IMAGE_SIZE = 3000;
 const REFETCH_PRODUCTS_INTERVAL = 1000 * 60 * 2;
 
-export default function ProductGrid({ images, socials }: Props) {
+export default function ProductGrid({
+  images,
+  socials,
+  initialProducts,
+}: Props) {
   const { id, setId } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -305,6 +310,12 @@ export default function ProductGrid({ images, socials }: Props) {
     queryFn: async () => {
       return store.product.list(id ?? undefined);
     },
+    // Use server-fetched products as initial data when no category filter
+    // This eliminates the extra API call on initial page load
+    initialData:
+      !id && initialProducts
+        ? { products: initialProducts }
+        : undefined,
     refetchInterval: REFETCH_PRODUCTS_INTERVAL,
     refetchIntervalInBackground: true,
   });

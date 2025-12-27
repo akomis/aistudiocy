@@ -4,7 +4,12 @@ import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
 import { getPayloadClient } from "@/lib/payload";
-import { Catalogue as CatalogueType, Category, LandingPage } from "@/lib/store";
+import {
+  Catalogue as CatalogueType,
+  Category,
+  LandingPage,
+  Product,
+} from "@/lib/store";
 
 // Use dynamic rendering for pages that need database access
 export const dynamic = "force-dynamic";
@@ -12,23 +17,32 @@ export const dynamic = "force-dynamic";
 export default async function Catalogue() {
   const payload = await getPayloadClient();
 
-  const [categoriesResult, catalogue, landingPage] = await Promise.all([
-    payload.find({
-      collection: "categories",
-      depth: 2,
-      sort: "_order",
-      limit: 100,
-    }),
-    payload.findGlobal({
-      slug: "catalogue",
-      depth: 2,
-    }) as Promise<CatalogueType>,
-    payload.findGlobal({
-      slug: "landing-page" as "catalogue",
-    }) as unknown as Promise<LandingPage>,
-  ]);
+  const [categoriesResult, catalogue, landingPage, productsResult] =
+    await Promise.all([
+      payload.find({
+        collection: "categories",
+        depth: 2,
+        sort: "_order",
+        limit: 100,
+      }),
+      payload.findGlobal({
+        slug: "catalogue",
+        depth: 2,
+      }) as Promise<CatalogueType>,
+      payload.findGlobal({
+        slug: "landing-page" as "catalogue",
+      }) as unknown as Promise<LandingPage>,
+      payload.find({
+        collection: "products",
+        where: { status: { equals: "published" } },
+        depth: 2,
+        sort: "_order",
+        limit: 100,
+      }),
+    ]);
 
   const categories = categoriesResult.docs as unknown as Category[];
+  const products = productsResult.docs as unknown as Product[];
   const socials = landingPage.socials || [];
 
   if (!categories) throw new Error("Couldn't load categories");
@@ -51,7 +65,11 @@ export default async function Catalogue() {
           <Basket />
         </div>
 
-        <ProductGrid images={catalogueStaticImages} socials={socials} />
+        <ProductGrid
+          images={catalogueStaticImages}
+          socials={socials}
+          initialProducts={products}
+        />
       </div>
     </Screen>
   );

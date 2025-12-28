@@ -1,5 +1,4 @@
 import CartProvider from "@/providers/cart";
-import { FilterProvider } from "@/providers/filter";
 import { ReactQueryProvider } from "@/providers/react-query";
 
 export default function CatalogueLayout({
@@ -9,9 +8,7 @@ export default function CatalogueLayout({
 }>) {
   return (
     <ReactQueryProvider>
-      <CartProvider>
-        <FilterProvider>{children}</FilterProvider>
-      </CartProvider>
+      <CartProvider>{children}</CartProvider>
     </ReactQueryProvider>
   );
 }

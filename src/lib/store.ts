@@ -385,8 +385,8 @@ export const store = {
 
   // Product operations
   product: {
-    async list(categoryId?: string): Promise<{ products: Product[] }> {
-      const params = categoryId ? `?category_id=${categoryId}` : "";
+    async list(categoryHandle?: string): Promise<{ products: Product[] }> {
+      const params = categoryHandle ? `?category_handle=${categoryHandle}` : "";
       return storeApi(`${API_BASE}/products${params}`, {
         operation: "product.list",
       });

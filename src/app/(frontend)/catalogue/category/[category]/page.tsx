@@ -10,13 +10,34 @@ import {
   LandingPage,
   Product,
 } from "@/lib/store";
+import { notFound } from "next/navigation";
 
 // Use dynamic rendering for pages that need database access
 export const dynamic = "force-dynamic";
 
-export default async function Catalogue() {
+type Props = {
+  params: Promise<{ category: string }>;
+};
+
+export default async function CategoryPage({ params }: Props) {
+  const { category: categoryHandle } = await params;
   const payload = await getPayloadClient();
 
+  // First, find the category by handle
+  const categoryResult = await payload.find({
+    collection: "categories",
+    where: { handle: { equals: categoryHandle } },
+    limit: 1,
+  });
+
+  const category = categoryResult.docs[0] as unknown as Category | undefined;
+
+  // If category doesn't exist, return 404
+  if (!category) {
+    notFound();
+  }
+
+  // Now fetch everything else
   const [categoriesResult, catalogue, landingPage, productsResult] =
     await Promise.all([
       payload.find({
@@ -34,7 +55,10 @@ export default async function Catalogue() {
       }) as unknown as Promise<LandingPage>,
       payload.find({
         collection: "products",
-        where: { status: { equals: "published" } },
+        where: {
+          status: { equals: "published" },
+          category: { equals: category.id },
+        },
         depth: 2,
         sort: "_order",
         limit: 100,
@@ -44,8 +68,6 @@ export default async function Catalogue() {
   const categories = categoriesResult.docs as unknown as Category[];
   const products = productsResult.docs as unknown as Product[];
   const socials = landingPage.socials || [];
-
-  if (!categories) throw new Error("Couldn't load categories");
 
   const catalogueStaticImages =
     catalogue.showcaseImages?.map((item) => ({
@@ -59,7 +81,7 @@ export default async function Catalogue() {
           <HomeButton isIcon />
 
           <div className="absolute left-1/2 -translate-x-1/2">
-            <Filter categories={categories} activeCategoryHandle={null} />
+            <Filter categories={categories} activeCategoryHandle={categoryHandle} />
           </div>
 
           <Basket />
@@ -69,7 +91,7 @@ export default async function Catalogue() {
           images={catalogueStaticImages}
           socials={socials}
           initialProducts={products}
-          categoryHandle={undefined}
+          categoryHandle={categoryHandle}
         />
       </div>
     </Screen>

@@ -8,9 +8,9 @@ export async function GET(request: NextRequest) {
 
   try {
     const { searchParams } = new URL(request.url)
-    const categoryId = searchParams.get('category_id')
+    const categoryHandle = searchParams.get('category_handle')
 
-    log.debug('Fetching products', { categoryId: categoryId || 'all' })
+    log.debug('Fetching products', { categoryHandle: categoryHandle || 'all' })
 
     const payload = await getPayloadClient()
 
@@ -18,8 +18,20 @@ export async function GET(request: NextRequest) {
       status: { equals: 'published' },
     }
 
-    if (categoryId) {
-      where.category = { equals: categoryId }
+    if (categoryHandle) {
+      // First find the category by handle
+      const categoryResult = await payload.find({
+        collection: 'categories',
+        where: { handle: { equals: categoryHandle } },
+        limit: 1,
+      })
+
+      if (categoryResult.docs.length === 0) {
+        log.debug('Category not found', { categoryHandle })
+        return NextResponse.json({ products: [] })
+      }
+
+      where.category = { equals: categoryResult.docs[0].id }
     }
 
     const products = await payload.find({
@@ -30,7 +42,7 @@ export async function GET(request: NextRequest) {
       limit: 100,
     })
 
-    log.debug('Products fetched successfully', { count: products.docs.length, categoryId: categoryId || 'all' })
+    log.debug('Products fetched successfully', { count: products.docs.length, categoryHandle: categoryHandle || 'all' })
 
     return NextResponse.json({ products: products.docs })
   } catch (error) {

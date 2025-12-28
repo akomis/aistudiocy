@@ -1,18 +1,18 @@
 "use client"
 
-import FilterContext from "@/providers/filter"
 import { Category } from "@/lib/store"
-import { useContext } from "react"
 import CategoryPicker from "./CategoryPicker"
 
 type Props = {
   categories: Category[]
+  activeCategoryHandle?: string | null
 }
 
-export default function Filter({ categories }: Props) {
-  const { id, setId } = useContext(FilterContext)
-
+export default function Filter({ categories, activeCategoryHandle }: Props) {
   return (
-    <CategoryPicker categories={categories} activeId={id} setActive={setId} />
+    <CategoryPicker
+      categories={categories}
+      activeHandle={activeCategoryHandle}
+    />
   )
 }

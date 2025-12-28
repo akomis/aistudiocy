@@ -6,7 +6,6 @@ import { toast } from "@/hooks/use-toast";
 import { Product, store } from "@/lib/store";
 import { cn, formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
-import FilterContext from "@/providers/filter";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
@@ -251,6 +250,7 @@ type Props = {
   images: { url: string; alternativeText?: string }[];
   socials: Social[];
   initialProducts?: Product[];
+  categoryHandle?: string;
 };
 
 const IMAGE_SIZE = 3000;
@@ -260,14 +260,10 @@ export default function ProductGrid({
   images,
   socials,
   initialProducts,
+  categoryHandle,
 }: Props) {
-  const { id, setId } = useContext(FilterContext);
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  useEffect(() => {
-    setId(searchParams.get("category"));
-  }, []);
 
   // Show toast if redirected here due to sold items
   useEffect(() => {
@@ -289,31 +285,15 @@ export default function ProductGrid({
     restoreScrollPosition();
   }, []);
 
-  useEffect(() => {
-    const currentCategory = searchParams.get("category");
-    // Only update URL if the category actually changed (avoids loops)
-    if (id && id !== currentCategory) {
-      const params = new URLSearchParams(searchParams);
-      params.set("category", id);
-      router.push(`?${params.toString()}`);
-    } else if (!id && currentCategory) {
-      // Clear category from URL if filter was removed
-      const params = new URLSearchParams(searchParams);
-      params.delete("category");
-      const newUrl = params.toString() ? `?${params.toString()}` : "/catalogue";
-      router.push(newUrl);
-    }
-  }, [id, searchParams, router]);
-
   const { data: productData, error } = useSuspenseQuery({
-    queryKey: ["products", id],
+    queryKey: ["products", categoryHandle],
     queryFn: async () => {
-      return store.product.list(id ?? undefined);
+      return store.product.list(categoryHandle ?? undefined);
     },
     // Use server-fetched products as initial data when no category filter
     // This eliminates the extra API call on initial page load
     initialData:
-      !id && initialProducts
+      !categoryHandle && initialProducts
         ? { products: initialProducts }
         : undefined,
     refetchInterval: REFETCH_PRODUCTS_INTERVAL,
@@ -337,7 +317,7 @@ export default function ProductGrid({
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center w-full">
-        {id ? (
+        {categoryHandle ? (
           <>
             <p className="text-lg md:text-2xl text-center font-light">
               No products found with the applied filter. Feel free to explore
@@ -347,7 +327,6 @@ export default function ProductGrid({
               variant={"outline"}
               className="mx-auto mt-10"
               onClick={() => {
-                setId(null);
                 router.push("/catalogue");
               }}
             >

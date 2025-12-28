@@ -7,9 +7,48 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import CategoryPicker from "./CategoryPicker";
 import Logo from "./Logo";
 import Section from "./Section";
+
+// Wrapper component for CategoryPicker with landing page-specific behavior
+type LandingCategoryPickerProps = {
+  categories: Category[];
+  activeHandle: string | null;
+  setCategoryHandle: (handle: string) => void;
+  setIsPaused: (paused: boolean) => void;
+};
+
+const LandingCategoryPicker = ({
+  categories,
+  activeHandle,
+  setCategoryHandle,
+  setIsPaused,
+}: LandingCategoryPickerProps) => {
+  const router = useRouter();
+
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="flex flex-col gap-1 w-fit text-center">
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            className={`text-sm font-black hover:cursor-pointer hover:opacity-80 tracking-[0.3em] text-center w-full ${
+              activeHandle === category.handle ? "opacity-70" : ""
+            }`}
+            onClick={() => router.push(`/catalogue/category/${category.handle}`)}
+            onMouseEnter={() => setCategoryHandle(category.handle)}
+          >
+            {category.name}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 type Props = {
   data: {
@@ -20,7 +59,7 @@ type Props = {
 };
 
 const DynamicBackground = ({ data }: Props) => {
-  const [categoryId, setCategoryId] = useState<string | null>(data[0]?.category?.id ?? null);
+  const [categoryHandle, setCategoryHandle] = useState<string | null>(data[0]?.category?.handle ?? null);
   const [isPaused, setIsPaused] = useState(false);
 
   const isMobile = useIsMobile();
@@ -37,17 +76,17 @@ const DynamicBackground = ({ data }: Props) => {
     if (isPaused || !data.length) return;
 
     const currentCategoryIndex = data.findIndex(
-      (e) => e.category.id === categoryId
+      (e) => e.category.handle === categoryHandle
     );
 
     const timeout = setTimeout(() => {
       currentCategoryIndex < data.length - 1
-        ? setCategoryId(data[currentCategoryIndex + 1].category.id)
-        : setCategoryId(data[0].category.id);
+        ? setCategoryHandle(data[currentCategoryIndex + 1].category.handle)
+        : setCategoryHandle(data[0].category.handle);
     }, 5000);
 
     return () => clearTimeout(timeout);
-  }, [categoryId, isPaused, data]);
+  }, [categoryHandle, isPaused, data]);
 
   if (!data.length || !imagesLoaded) {
     return (
@@ -58,7 +97,7 @@ const DynamicBackground = ({ data }: Props) => {
   }
 
   const displayedHeaderUrls = data.find((e) => {
-    return e.category.id === categoryId;
+    return e.category.handle === categoryHandle;
   });
 
   const displayedImageUrl = isMobile
@@ -74,7 +113,7 @@ const DynamicBackground = ({ data }: Props) => {
         >
           <Image
             src={displayedImageUrl}
-            alt={categoryId ?? "category"}
+            alt={categoryHandle ?? "category"}
             fill
             style={{ objectFit: "cover" }}
             quality={100}
@@ -94,21 +133,11 @@ const DynamicBackground = ({ data }: Props) => {
           <Logo />
         </Link>
 
-        <CategoryPicker
+        <LandingCategoryPicker
           categories={categories}
-          activeId={categoryId}
-          setActive={(categoryId: string | null) => {
-            setCategoryId(categoryId as string);
-          }}
-          onHover={(categoryId: string) => {
-            setCategoryId(categoryId);
-            setIsPaused(true);
-          }}
-          onExitHover={() => {
-            setIsPaused(false);
-          }}
-          navigateOnClick
-          setOnClick={false}
+          activeHandle={categoryHandle}
+          setCategoryHandle={setCategoryHandle}
+          setIsPaused={setIsPaused}
         />
       </div>
     </Section>

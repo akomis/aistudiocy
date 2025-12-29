@@ -43,7 +43,7 @@ export default function FrontendLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${ceraPro.variable} antialiased bg-black`}>
-        <GoogleAnalytics gaId="G-345214197" />
+        <GoogleAnalytics gaId="G-6NSNH6LYWE" />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

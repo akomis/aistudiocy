@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Image from "next/image"
 import Lightbox from "yet-another-react-lightbox"
-import "yet-another-react-lightbox/styles.css"
 
 type Props = {
   src: string

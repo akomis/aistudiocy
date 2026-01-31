@@ -8,7 +8,6 @@ import {
   MasonryPhotoAlbum,
 } from "react-photo-album";
 import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
 import "react-photo-album/masonry.css";
 import Image from "next/image";
 

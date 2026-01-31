@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -10,6 +10,9 @@ function makeQueryClient() {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
         staleTime: 60 * 1000,
+        // Keep cached data for 2 minutes to persist during back/forward navigation
+        // This prevents cache invalidation when user navigates back from product pages
+        gcTime: 2 * 60 * 1000,
       },
     },
   });

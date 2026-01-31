@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/providers/theme";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import "yet-another-react-lightbox/styles.css";
 
 const ceraPro = localFont({
   src: [

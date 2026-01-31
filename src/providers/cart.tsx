@@ -2,7 +2,7 @@
 
 import { clearCheckoutFormStorage } from "@/components/Basket"
 import { store, Cart } from "@/lib/store"
-import React, { createContext, useEffect, useState } from "react"
+import React, { createContext, useEffect, useMemo, useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -128,17 +128,20 @@ export const CartProvider = ({ children }: Props) => {
     }
   }
 
+  const contextValue = useMemo(
+    () => ({
+      cart,
+      setCart,
+      refetchCart,
+      resetCart,
+      basketOpen,
+      setBasketOpen,
+    }),
+    [cart, basketOpen]
+  )
+
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        setCart,
-        refetchCart,
-        resetCart,
-        basketOpen,
-        setBasketOpen,
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   )

@@ -10,7 +10,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import RingSizeGuide from "./RingSizeGuide";
 import Spinner from "./Spinner";
 import { Badge } from "./ui/badge";
@@ -44,8 +44,12 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { cart, setCart, setBasketOpen } = useContext(CartContext);
-  const isMobile = useIsMobile();
+  const isMobileValue = useIsMobile();
   const router = useRouter();
+
+  // During SSR/hydration (when isMobileValue is undefined), default to desktop layout
+  // to ensure consistent rendering between server and initial client render
+  const isMobile = isMobileValue ?? false;
 
   const lineItemIndex = cart?.items?.findIndex((item) => {
     const productId =
@@ -264,10 +268,12 @@ export default function ProductGrid({
 }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const hasShownToast = useRef(false);
 
   // Show toast if redirected here due to sold items
   useEffect(() => {
-    if (searchParams.get("items_removed") === "true") {
+    if (searchParams.get("items_removed") === "true" && !hasShownToast.current) {
+      hasShownToast.current = true;
       toast({
         title: "Some items are no longer available",
         description: "Items that have been sold were removed from your cart.",
@@ -290,12 +296,11 @@ export default function ProductGrid({
     queryFn: async () => {
       return store.product.list(categoryHandle ?? undefined);
     },
-    // Use server-fetched products as initial data when no category filter
-    // This eliminates the extra API call on initial page load
-    initialData:
-      !categoryHandle && initialProducts
-        ? { products: initialProducts }
-        : undefined,
+    // Use initialData only when server provides products (first render)
+    // Don't provide fallback empty array - let React Query handle cache properly
+    ...(initialProducts && {
+      initialData: { products: initialProducts },
+    }),
     refetchInterval: REFETCH_PRODUCTS_INTERVAL,
     refetchIntervalInBackground: true,
   });

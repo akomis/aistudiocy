@@ -62,8 +62,12 @@ const DynamicBackground = ({ data }: Props) => {
   const [categoryHandle, setCategoryHandle] = useState<string | null>(data[0]?.category?.handle ?? null);
   const [isPaused, setIsPaused] = useState(false);
 
-  const isMobile = useIsMobile();
+  const isMobileValue = useIsMobile();
   const router = useRouter();
+
+  // During SSR/hydration (when isMobileValue is undefined), default to desktop
+  // to ensure consistent rendering between server and initial client render
+  const isMobile = isMobileValue ?? false;
   const categories = data.map((e) => e.category);
 
   const allImageUrls = useMemo(() => {

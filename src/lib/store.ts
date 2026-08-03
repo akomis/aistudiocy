@@ -114,6 +114,19 @@ const logFetch = {
   },
 };
 
+// Error thrown for any non-ok store API response. Carries the HTTP status so
+// callers can distinguish an expected 404 from a genuine failure instead of
+// treating every bad response as an unhandled exception.
+export class StoreError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "StoreError";
+    this.status = status;
+  }
+}
+
 // Enhanced fetch with logging
 async function storeApi<T>(
   url: string,
@@ -137,10 +150,11 @@ async function storeApi<T>(
         errorBody = await response.clone().text();
       }
 
-      const error = new Error(
+      const error = new StoreError(
         typeof errorBody === "object" && errorBody.error
           ? errorBody.error
-          : `${operation} failed with status ${response.status}`
+          : `${operation} failed with status ${response.status}`,
+        response.status
       );
 
       logFetch.error(operation, url, error, response);
@@ -151,9 +165,7 @@ async function storeApi<T>(
     return response.json();
   } catch (error) {
     // Only log if not already logged (response errors are logged above)
-    if (
-      !(error instanceof Error && error.message.includes("failed with status"))
-    ) {
+    if (!(error instanceof StoreError)) {
       logFetch.error(operation, url, error);
     }
     throw error;

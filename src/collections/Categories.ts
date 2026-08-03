@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 export const Categories: CollectionConfig = {
   slug: 'categories',
   orderable: true,
+  defaultSort: '_order',
   admin: {
     group: 'Store',
     useAsTitle: 'name',

@@ -37,7 +37,7 @@ export default function ProductsListView(props: ListViewClientProps) {
         const params = new URLSearchParams({
           depth: "2",
           limit: "0",
-          sort: "_order",
+          sort: "-createdAt",
         });
         if (search) {
           params.append("where[title][contains]", search);

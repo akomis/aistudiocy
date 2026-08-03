@@ -36,7 +36,7 @@ export default async function Catalogue() {
         collection: "products",
         where: { status: { equals: "published" } },
         depth: 2,
-        sort: "_order",
+        sort: "-createdAt",
         limit: 100,
       }),
     ]);

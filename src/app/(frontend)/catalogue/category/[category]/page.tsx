@@ -60,7 +60,7 @@ export default async function CategoryPage({ params }: Props) {
           category: { equals: category.id },
         },
         depth: 2,
-        sort: "_order",
+        sort: "-createdAt",
         limit: 100,
       }),
     ]);

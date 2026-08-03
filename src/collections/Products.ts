@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const Products: CollectionConfig = {
   slug: 'products',
-  orderable: true,
+  defaultSort: '-createdAt',
   admin: {
     group: 'Store',
     useAsTitle: 'title',

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       collection: 'products',
       where,
       depth: 2,
-      sort: '_order',
+      sort: '-createdAt',
       limit: 100,
     })
 

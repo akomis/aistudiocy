@@ -27,6 +27,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -37,6 +38,9 @@ interface BasketItem extends CartItem {
 }
 
 const CHECKOUT_FORM_STORAGE_KEY = "checkout_form_values";
+
+// Prices are VAT-inclusive; this is display-only and does not affect totals
+const VAT_RATE_PERCENT = 19;
 
 const getStoredFormValues = () => {
   if (typeof window === "undefined") return null;
@@ -94,6 +98,11 @@ const OrderSummaryItem = ({ item }: { item: BasketItem }) => {
 };
 
 const OrderSummary = ({ items }: { items: BasketItem[] }) => {
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0,
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-xl font-bold tracking-wider mb-2">ORDER SUMMARY</h2>
@@ -101,6 +110,15 @@ const OrderSummary = ({ items }: { items: BasketItem[] }) => {
         {items.map((item, index) => (
           <OrderSummaryItem key={`${item.product.id}-${index}`} item={item} />
         ))}
+      </div>
+      <div className="flex flex-col items-end gap-1 pt-1">
+        <span className="text-xs text-gray-500">
+          {`ALL PRICES INCLUDE VAT (${VAT_RATE_PERCENT}%)`}
+        </span>
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-light text-gray-400">SUBTOTAL</span>
+          <span className="text-lg font-bold">{`€${formatPrice(subtotal)}`}</span>
+        </div>
       </div>
     </div>
   );
@@ -150,8 +168,11 @@ const CustomerForm = () => {
         shipping_option: z
           .string()
           .min(1, { message: "Shipping option is required" }),
+        terms: z.boolean().refine((value) => value === true, {
+          message: "You must accept the Terms & Conditions to continue",
+        }),
       }),
-    []
+    [],
   );
 
   const storedValues = getStoredFormValues();
@@ -179,6 +200,8 @@ const CustomerForm = () => {
         typeof cart?.shippingOption === "number"
           ? String(cart.shippingOption)
           : String(cart?.shippingOption?.id ?? "")),
+      // Not restored from storage - acceptance must be given for each order
+      terms: false,
     },
   });
 
@@ -247,8 +270,8 @@ const CustomerForm = () => {
     ? shippingData?.shipping_options
         ?.filter((option: ShippingOption) =>
           option.countries?.some(
-            (c) => c.toLowerCase() === countryCode.toLowerCase()
-          )
+            (c) => c.toLowerCase() === countryCode.toLowerCase(),
+          ),
         )
         .map((option: ShippingOption) => ({
           label: `${option.name} - €${formatPrice(option.amount)}`,
@@ -432,6 +455,45 @@ const CustomerForm = () => {
             {notes.length}/500
           </span>
         </div>
+
+        {!clientSecret && (
+          <FormField
+            control={form.control}
+            name="terms"
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <div className="flex items-start gap-3">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      className="mt-0.5 size-4 shrink-0 cursor-pointer accent-foreground border border-input"
+                    />
+                  </FormControl>
+                  <label
+                    htmlFor="terms"
+                    className="text-sm text-gray-400 cursor-pointer"
+                  >
+                    I HAVE READ AND ACCEPT THE{" "}
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 text-foreground"
+                    >
+                      TERMS &amp; CONDITIONS
+                    </Link>
+                  </label>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {!clientSecret && (
           <div className="h-12 col-span-2">
@@ -716,7 +778,7 @@ export default function CheckoutContent() {
   const items: BasketItem[] =
     (cart?.items?.filter(
       (item): item is BasketItem =>
-        item != null && typeof item.product !== "string"
+        item != null && typeof item.product !== "string",
     ) as BasketItem[]) ?? [];
 
   const clientSecret = cart?.stripeClientSecret;
@@ -746,7 +808,9 @@ export default function CheckoutContent() {
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <div className="flex items-center justify-end mb-10">
-          <CutoffText align="right" size="sm">CHECKOUT</CutoffText>
+          <CutoffText align="right" size="sm">
+            CHECKOUT
+          </CutoffText>
         </div>
 
         {/* Content */}

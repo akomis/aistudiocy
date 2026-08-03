@@ -42,7 +42,21 @@ export default withSentryConfig(withPayload(nextConfig), {
   // side errors will fail.
   tunnelRoute: "/monitoring",
 
+  _experimental: {
+    // Same first-party key as below, for Turbopack builds.
+    turbopackApplicationKey: "fosjewels",
+  },
+
   webpack: {
+    // Marks our own modules as first-party so thirdPartyErrorFilterIntegration
+    // (see src/instrumentation-client.ts) can tell injected in-app-browser and
+    // extension scripts apart from our bundle. Must stay in sync with the
+    // integration's `filterKeys` - a mismatch silently drops every client
+    // error.
+    unstable_sentryWebpackPluginOptions: {
+      applicationKey: "fosjewels",
+    },
+
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
     // See the following for more information:
     // https://docs.sentry.io/product/crons/

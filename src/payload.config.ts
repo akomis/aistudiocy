@@ -56,6 +56,18 @@ export default buildConfig({
     Carts,
   ],
   globals: [Catalogue, LandingPage],
+  onInit: (payload) => {
+    // node-postgres emits `error` on clients sitting idle in the pool when the
+    // connection is closed from the other side. Without a listener this is an
+    // unhandled exception; with one, the client is discarded and the next
+    // query gets a fresh connection.
+    const { pool } = payload.db as unknown as {
+      pool?: { on: (event: "error", listener: (err: Error) => void) => void };
+    };
+    pool?.on("error", (error) => {
+      payload.logger.error({ err: error }, "Postgres idle client error");
+    });
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "your-secret-key",
   typescript: {
@@ -64,6 +76,19 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
+      // Bound the pool - the app container is small and Postgres has a
+      // finite connection limit.
+      max: 10,
+      // Recycle idle connections before the server or the proxy in front of
+      // it closes them. A connection dropped server-side and then handed to
+      // the next query surfaces as `read ECONNRESET` mid-render.
+      idleTimeoutMillis: 30_000,
+      // Fail fast instead of hanging a server render on pool exhaustion.
+      connectionTimeoutMillis: 10_000,
+      // TCP keepalives stop idle sockets being silently dropped in transit.
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10_000,
+      allowExitOnIdle: false,
     },
   }),
   plugins: [

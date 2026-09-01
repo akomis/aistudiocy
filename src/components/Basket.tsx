@@ -4,8 +4,9 @@ import { CartItem, Product, store } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import { useMutation } from "@tanstack/react-query";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { useContext, useState } from "react";
 import CutoffText from "./CutoffText";
 import Spinner from "./Spinner";
@@ -38,6 +39,7 @@ const BasketListItem = ({
   item: BasketItem;
   index: number;
 }) => {
+  const t = useTranslations("Common");
   const { setCart, setBasketOpen } = useContext(CartContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -95,7 +97,7 @@ const BasketListItem = ({
             className="text-xl p-0"
             onClick={() => deleteItem.mutate()}
           >
-            REMOVE
+            {t("remove")}
           </Button>
         )}
 
@@ -130,6 +132,8 @@ const BasketList = ({ items }: { items: BasketItem[] }) => {
 };
 
 export default function Basket() {
+  const t = useTranslations("Common");
+  const tBasket = useTranslations("Basket");
   const { cart, setBasketOpen, basketOpen } = useContext(CartContext);
 
   const items: BasketItem[] =
@@ -153,12 +157,12 @@ export default function Basket() {
         className="font-black text-2xl hover:cursor-pointer hover:opacity-75 transform transition-all hover:no-underline disabled:opacity-50 disabled:cursor-wait tracking-widest"
         disabled={!cart}
       >
-        BASKET
+        {t("basket")}
       </DrawerTrigger>
       <DrawerContent className="p-4 max-w-[700px] border-b-0 ml-auto sm:mr-4 bg-black/85 h-full max-h-[90vh] overflow-hidden rounded-none">
         <DrawerHeader>
           <DrawerTitle className="-mb-4 mx-auto">
-            <CutoffText>BASKET</CutoffText>
+            <CutoffText>{t("basket")}</CutoffText>
           </DrawerTitle>
         </DrawerHeader>
 
@@ -169,10 +173,10 @@ export default function Basket() {
             ) : (
               <div className="flex p-2 md:py-10 flex-1 flex-col items-center justify-center">
                 <Label className="text-lg sm:text-2xl font-thin text-center">
-                  Your basket is empty.
+                  {tBasket("empty")}
                 </Label>{" "}
                 <Label className="text-lg sm:text-2xl font-thin text-center">
-                  Use the [+] button on your preferred piece.
+                  {tBasket("emptyHint")}
                 </Label>
               </div>
             )}
@@ -182,7 +186,7 @@ export default function Basket() {
             <div className="flex flex-col gap-4 p-1">
               <div className="w-full flex justify-between border-t border-gray-600 pt-4">
                 <span className="text-xl font-light text-gray-400">
-                  SUBTOTAL
+                  {tBasket("subtotal")}
                 </span>
                 <span className="text-xl font-bold">{`€${formatPrice(subtotal)}`}</span>
               </div>
@@ -193,7 +197,7 @@ export default function Basket() {
                   className="w-full font-bold tracking-widest text-2xl h-14"
                   size="lg"
                 >
-                  CONTINUE
+                  {t("continue")}
                 </Button>
               </Link>
             </div>

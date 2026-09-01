@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Countries, CountryCode } from "@/lib/countries";
+import { Link, useRouter } from "@/i18n/navigation";
+import { CountryCode } from "@/lib/countries";
 import { CartItem, Coupon, Product, ShippingOption, store } from "@/lib/store";
 import { stripePromise } from "@/lib/stripe";
 import { formatPrice } from "@/lib/utils";
@@ -26,9 +27,8 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -98,6 +98,7 @@ const OrderSummaryItem = ({ item }: { item: BasketItem }) => {
 };
 
 const OrderSummary = ({ items }: { items: BasketItem[] }) => {
+  const t = useTranslations("Checkout");
   const subtotal = items.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
     0,
@@ -105,7 +106,9 @@ const OrderSummary = ({ items }: { items: BasketItem[] }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-xl font-bold tracking-wider mb-2">ORDER SUMMARY</h2>
+      <h2 className="text-xl font-bold tracking-wider mb-2">
+        {t("orderSummary")}
+      </h2>
       <div className="flex flex-col max-h-[300px] overflow-y-auto">
         {items.map((item, index) => (
           <OrderSummaryItem key={`${item.product.id}-${index}`} item={item} />
@@ -113,10 +116,12 @@ const OrderSummary = ({ items }: { items: BasketItem[] }) => {
       </div>
       <div className="flex flex-col items-end gap-1 pt-1">
         <span className="text-xs text-gray-500">
-          {`ALL PRICES INCLUDE VAT (${VAT_RATE_PERCENT}%)`}
+          {t("vatIncluded", { rate: VAT_RATE_PERCENT })}
         </span>
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-light text-gray-400">SUBTOTAL</span>
+          <span className="text-sm font-light text-gray-400">
+            {t("subtotal")}
+          </span>
           <span className="text-lg font-bold">{`€${formatPrice(subtotal)}`}</span>
         </div>
       </div>
@@ -125,6 +130,8 @@ const OrderSummary = ({ items }: { items: BasketItem[] }) => {
 };
 
 const CustomerForm = () => {
+  const t = useTranslations("Checkout");
+  const tCountries = useTranslations("Countries");
   const { cart, setCart } = useContext(CartContext);
   const router = useRouter();
   const [isProceeding, setIsProceeding] = useState<boolean>(false);
@@ -142,37 +149,32 @@ const CustomerForm = () => {
       option.countries?.forEach((code) => countrySet.add(code));
     });
     return Array.from(countrySet).map((code) => ({
-      label: Countries[code],
+      label: tCountries(code),
       value: code,
     }));
-  }, [shippingData]);
+  }, [shippingData, tCountries]);
 
   const customerFormSchema = useMemo(
     () =>
       z.object({
-        first_name: z.string().min(1, { message: "First name is required" }),
-        last_name: z.string().min(1, { message: "Last name is required" }),
-        email: z.string().email({ message: "Invalid email address" }),
+        first_name: z.string().min(1, { message: t("errors.firstName") }),
+        last_name: z.string().min(1, { message: t("errors.lastName") }),
+        email: z.string().email({ message: t("errors.email") }),
         phone: z.string().regex(/^\+?\d{8,}$/, {
-          message:
-            "Phone number must be at least 8 digits and may include country code with '+' prefix",
+          message: t("errors.phone"),
         }),
-        city: z.string().min(1, { message: "City is required" }),
-        address_1: z.string().min(1, { message: "Address is required" }),
-        country_code: z
-          .string()
-          .min(2, { message: "Country code is required" }),
-        postal_code: z
-          .string()
-          .min(4, { message: "Postal code must be at least 4 digits" }),
+        city: z.string().min(1, { message: t("errors.city") }),
+        address_1: z.string().min(1, { message: t("errors.address") }),
+        country_code: z.string().min(2, { message: t("errors.country") }),
+        postal_code: z.string().min(4, { message: t("errors.postalCode") }),
         shipping_option: z
           .string()
-          .min(1, { message: "Shipping option is required" }),
+          .min(1, { message: t("errors.shippingOption") }),
         terms: z.boolean().refine((value) => value === true, {
-          message: "You must accept the Terms & Conditions to continue",
+          message: t("errors.terms"),
         }),
       }),
-    [],
+    [t],
   );
 
   const storedValues = getStoredFormValues();
@@ -256,7 +258,7 @@ const CustomerForm = () => {
       }
     } catch (e: unknown) {
       toast({
-        title: "Error with customer registration",
+        title: t("toasts.registrationError"),
         description: (e as Error).message,
         variant: "destructive",
       });
@@ -302,7 +304,7 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2">
               <FormControl>
-                <Input placeholder="EMAIL *" {...field} />
+                <Input placeholder={t("email")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -315,7 +317,7 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input placeholder="FIRST NAME *" {...field} />
+                <Input placeholder={t("firstName")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -328,7 +330,7 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input placeholder="LAST NAME *" {...field} />
+                <Input placeholder={t("lastName")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -341,7 +343,7 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input placeholder="ADDRESS *" {...field} />
+                <Input placeholder={t("address")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -354,7 +356,11 @@ const CustomerForm = () => {
           render={({ field }) => (
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
-                <Input className="col-span-2" placeholder="CITY *" {...field} />
+                <Input
+                  className="col-span-2"
+                  placeholder={t("city")}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -371,7 +377,7 @@ const CustomerForm = () => {
                   options={countries}
                   value={field.value}
                   setValue={field.onChange}
-                  title="country"
+                  title={t("country")}
                 />
               </FormControl>
               <FormMessage />
@@ -386,7 +392,7 @@ const CustomerForm = () => {
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
                 <Input
-                  placeholder="POSTAL CODE *"
+                  placeholder={t("postalCode")}
                   {...field}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
@@ -412,7 +418,7 @@ const CustomerForm = () => {
                   options={shippingOptions ?? []}
                   value={field.value}
                   setValue={field.onChange}
-                  title={"shipping"}
+                  title={t("shippingOption")}
                   disabled={!shippingOptions?.length}
                 />
               </FormControl>
@@ -428,7 +434,7 @@ const CustomerForm = () => {
             <FormItem className="col-span-2 sm:col-span-1">
               <FormControl>
                 <Input
-                  placeholder="PHONE"
+                  placeholder={t("phone")}
                   {...field}
                   onChange={(e) => {
                     const value = e.target.value.replace(/[^\d+]/g, "");
@@ -445,7 +451,7 @@ const CustomerForm = () => {
         {/* Order notes */}
         <div className="col-span-2 flex flex-col gap-1">
           <textarea
-            placeholder="ORDER NOTES (OPTIONAL)"
+            placeholder={t("orderNotes")}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="w-full min-h-[80px] border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
@@ -478,14 +484,23 @@ const CustomerForm = () => {
                     htmlFor="terms"
                     className="text-sm text-gray-400 cursor-pointer"
                   >
-                    I HAVE READ AND ACCEPT THE{" "}
+                    {t("termsIntro")}{" "}
                     <Link
                       href="/terms"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline underline-offset-2 text-foreground"
                     >
-                      TERMS &amp; CONDITIONS
+                      {t("termsLink")}
+                    </Link>{" "}
+                    {t("termsAnd")}{" "}
+                    <Link
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 text-foreground"
+                    >
+                      {t("privacyLink")}
                     </Link>
                   </label>
                 </div>
@@ -518,6 +533,7 @@ const CustomerForm = () => {
 };
 
 const CheckoutForm = () => {
+  const t = useTranslations("Checkout");
   const { cart, setCart, resetCart } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
@@ -546,10 +562,10 @@ const CheckoutForm = () => {
         stripePaymentIntentId: paymentData.payment_intent_id,
       });
       setCouponCode("");
-      toast({ title: "Coupon applied successfully" });
+      toast({ title: t("toasts.couponApplied") });
     } catch (error) {
       toast({
-        title: "Failed to apply coupon",
+        title: t("toasts.couponApplyFailed"),
         description: (error as Error).message,
         variant: "destructive",
       });
@@ -570,10 +586,10 @@ const CheckoutForm = () => {
         stripeClientSecret: paymentData.client_secret,
         stripePaymentIntentId: paymentData.payment_intent_id,
       });
-      toast({ title: "Coupon removed" });
+      toast({ title: t("toasts.couponRemoved") });
     } catch (error) {
       toast({
-        title: "Failed to remove coupon",
+        title: t("toasts.couponRemoveFailed"),
         description: (error as Error).message,
         variant: "destructive",
       });
@@ -595,7 +611,7 @@ const CheckoutForm = () => {
     const { error: submitError } = await elements.submit();
     if (submitError) {
       toast({
-        title: "Error with payment",
+        title: t("toasts.paymentError"),
         description: submitError.message,
         variant: "destructive",
       });
@@ -627,7 +643,7 @@ const CheckoutForm = () => {
 
     if (error) {
       toast({
-        title: "Error with payment details",
+        title: t("toasts.paymentDetailsError"),
         description: error.message,
         variant: "destructive",
       });
@@ -645,7 +661,7 @@ const CheckoutForm = () => {
           router.push("/catalogue?items_removed=true");
           return;
         }
-        throw new Error(result.error || "There was a problem with the order");
+        throw new Error(result.error || t("toasts.orderProblem"));
       } else if (result.type === "order" || result.type === "processing") {
         resetCart();
         router.push("/confirmation?status=success");
@@ -653,7 +669,7 @@ const CheckoutForm = () => {
       }
     } catch (error: unknown) {
       toast({
-        title: "There was a problem with the order",
+        title: t("toasts.orderProblem"),
         description: (error as Error).message,
         variant: "destructive",
       });
@@ -683,10 +699,10 @@ const CheckoutForm = () => {
         className="p-0 self-start text-xl"
         onClick={goBackToCustomerForm}
       >
-        BACK TO DETAILS
+        {t("backToDetails")}
       </Button>
 
-      <h2 className="text-xl font-bold tracking-wider">PAYMENT</h2>
+      <h2 className="text-xl font-bold tracking-wider">{t("payment")}</h2>
 
       <form
         className="flex flex-col gap-4 flex-1 h-full overflow-y-auto overflow-x-hidden justify-between px-0.5"
@@ -709,13 +725,13 @@ const CheckoutForm = () => {
                 onClick={handleRemoveCoupon}
                 disabled={couponLoading}
               >
-                {couponLoading ? <Spinner /> : "REMOVE"}
+                {couponLoading ? <Spinner /> : t("couponRemove")}
               </Button>
             </div>
           ) : (
             <div className="flex gap-2 overflow-visible items-center">
               <Input
-                placeholder="COUPON CODE"
+                placeholder={t("couponCode")}
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 className="flex-1 h-9"
@@ -726,7 +742,7 @@ const CheckoutForm = () => {
                 onClick={handleApplyCoupon}
                 disabled={couponLoading || !couponCode.trim()}
               >
-                {couponLoading ? <Spinner /> : "APPLY"}
+                {couponLoading ? <Spinner /> : t("couponApply")}
               </Button>
             </div>
           )}
@@ -735,23 +751,29 @@ const CheckoutForm = () => {
         <div className="flex w-full flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="w-full flex justify-between">
-              <span className="text-lg font-light text-gray-400">SUBTOTAL</span>
+              <span className="text-lg font-light text-gray-400">
+                {t("subtotal")}
+              </span>
               <span className="text-lg font-light">{`€${formatPrice(cart?.subtotal ?? 0)}`}</span>
             </div>
             {(cart?.discount ?? 0) > 0 && (
               <div className="w-full flex justify-between">
                 <span className="text-lg font-light text-green-400">
-                  DISCOUNT
+                  {t("discount")}
                 </span>
                 <span className="text-lg font-light text-green-400">{`-€${formatPrice(cart?.discount ?? 0)}`}</span>
               </div>
             )}
             <div className="w-full flex justify-between">
-              <span className="text-lg font-light text-gray-400">SHIPPING</span>
+              <span className="text-lg font-light text-gray-400">
+                {t("shipping")}
+              </span>
               <span className="text-lg font-light">{`€${formatPrice(cart?.shippingTotal ?? 0)}`}</span>
             </div>
             <div className="w-full flex justify-between border-t border-gray-600 pt-2">
-              <span className="text-2xl font-bold text-gray-400">TOTAL</span>
+              <span className="text-2xl font-bold text-gray-400">
+                {t("total")}
+              </span>
               <span className="text-2xl font-bold">{`€${formatPrice(cart?.total ?? 0)}`}</span>
             </div>
           </div>
@@ -763,7 +785,7 @@ const CheckoutForm = () => {
             type="submit"
             disabled={!cart?.items?.length || !stripe || !elements}
           >
-            {isLoading ? <Spinner /> : "PAY NOW"}
+            {isLoading ? <Spinner /> : t("payNow")}
           </Button>
         </div>
       </form>

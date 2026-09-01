@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/carousel";
 import { Category, Media, Product } from "@/lib/store";
 import { cn, formatPrice } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Lightbox from "yet-another-react-lightbox";
 
 export default function ProductDetails({ product }: { product: Product }) {
+  const t = useTranslations("Product");
+  const tCommon = useTranslations("Common");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -162,14 +165,11 @@ export default function ProductDetails({ product }: { product: Product }) {
               )}
 
               {isFingerCategory && (
-                <p>
-                  For your convenience, please let us know your size to adjust
-                  it for you.
-                </p>
+                <p>{t("sizeAdjust")}</p>
               )}
-              <p>Handmade, silver 925.</p>
-              <p>Please, allow 5 to 15 days for delivery.</p>
-              <p>Made in Cyprus.</p>
+              <p>{t("handmade")}</p>
+              <p>{t("delivery")}</p>
+              <p>{t("madeIn")}</p>
             </div>
 
             {isAvailable ? (
@@ -180,7 +180,7 @@ export default function ProductDetails({ product }: { product: Product }) {
               />
             ) : (
               <Button variant="outline" size="lg" disabled>
-                SOLD
+                {tCommon("sold")}
               </Button>
             )}
           </div>

@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import { Category } from "@/lib/store"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname } from "@/i18n/navigation"
 
 type Props = {
   activeHandle?: string | null

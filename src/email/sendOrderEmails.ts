@@ -1,6 +1,32 @@
+import { LEGAL_PDFS } from "@/lib/legal";
 import { render } from "@react-email/components";
+import { readFile } from "fs/promises";
+import path from "path";
 import type { Payload } from "payload";
 import { OrderConfirmationEmail } from "./templates/order-confirmation";
+
+/**
+ * Clause 2.4 of the General Conditions requires the accepted conditions to be
+ * supplied on a durable medium with the order confirmation, so the signed PDF
+ * travels with the email. A missing file must not block the confirmation, so a
+ * read failure is logged and the email goes out without the attachment.
+ */
+async function generalConditionsAttachment(payload: Payload) {
+  const filename = LEGAL_PDFS.en;
+
+  try {
+    const content = await readFile(path.join(process.cwd(), "public", filename));
+
+    return [{ filename: path.basename(filename), content }];
+  } catch (error) {
+    payload.logger.error(
+      { err: error, filename },
+      "Could not attach the General Conditions to the order confirmation",
+    );
+
+    return undefined;
+  }
+}
 
 interface Order {
   displayId: string;
@@ -52,6 +78,7 @@ export async function sendOrderConfirmationEmail(
     to: order.email,
     subject: `φως - Your order has been placed`,
     html,
+    attachments: await generalConditionsAttachment(payload),
   });
 
   // Send notification to admin

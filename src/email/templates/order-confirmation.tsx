@@ -1,3 +1,4 @@
+import { TERMS_VERSION } from "@/lib/legal";
 import {
   Body,
   Container,
@@ -5,6 +6,7 @@ import {
   Hr,
   Html,
   Img,
+  Link,
   Preview,
   Section,
   Text,
@@ -125,6 +127,30 @@ export function OrderConfirmationEmail({
             <Text style={{ ...styles.text, fontWeight: "bold" }}>
               Total: {order.total.toFixed(2)} EUR
             </Text>
+
+            <Hr style={styles.hr} />
+
+            {/* Clause 2.4 of the General Conditions: the accepted conditions
+                must reach the customer on a durable medium. The PDF is
+                attached to this email; these links are for convenience. */}
+            <Text style={styles.legal}>
+              This order is governed by our General Conditions of Online Sale,
+              version {TERMS_VERSION}, which you accepted at checkout. A copy is
+              attached to this email. You can also read them at{" "}
+              <Link href={`${siteUrl}/terms`} style={styles.legalLink}>
+                {siteUrl}/terms
+              </Link>{" "}
+              and our Privacy Notice at{" "}
+              <Link href={`${siteUrl}/privacy`} style={styles.legalLink}>
+                {siteUrl}/privacy
+              </Link>
+              .
+            </Text>
+            <Text style={styles.legal}>
+              You may withdraw from this purchase within 14 days of receiving
+              your order. See clause 6 of the General Conditions, or email
+              contact@fosjewels.com.
+            </Text>
           </Section>
         </Container>
       </Body>
@@ -177,6 +203,16 @@ const styles = {
   hr: {
     borderColor: "#333",
     margin: "24px 0",
+  },
+  legal: {
+    fontSize: "12px",
+    lineHeight: "20px",
+    color: "#999",
+    margin: "8px 0",
+  },
+  legalLink: {
+    color: "#999",
+    textDecoration: "underline",
   },
 };
 

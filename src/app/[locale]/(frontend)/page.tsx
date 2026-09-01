@@ -2,11 +2,15 @@ import Block from "@/components/Block";
 import Contact from "@/components/Contact";
 import CutoffText from "@/components/CutoffText";
 import DynamicBackground from "@/components/DynamicBackground";
+import CookieSettingsLink from "@/components/CookieSettingsLink";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 import Section from "@/components/Section";
-import { pages } from "@/lib/pages";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { getPages } from "@/lib/pages";
 import { getPayloadClient } from "@/lib/payload";
 import type { Category, LandingPage } from "@/lib/store";
-import Link from "next/link";
+import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 // Use dynamic rendering for pages that need database access
@@ -59,9 +63,11 @@ const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
 };
 
 const Footer = ({
+  locale,
   socials,
   footerImage,
 }: {
+  locale: Locale;
   socials: LandingPage["socials"];
   footerImage: LandingPage["footerImage"];
 }) => {
@@ -80,7 +86,7 @@ const Footer = ({
       <div id="footer" className="flex flex-col items-start gap-4 mt-10">
         <Contact socials={socialsList} />
         <div className="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm">
-          {pages.map((page) => (
+          {getPages(locale).map((page) => (
             <Link
               key={page.slug}
               href={`/${page.slug}`}
@@ -89,13 +95,23 @@ const Footer = ({
               {page.title}
             </Link>
           ))}
+          <CookieSettingsLink className="text-left hover:opacity-70 transition-all duration-500" />
+          <LocaleSwitcher />
         </div>
       </div>
     </Section>
   );
 };
 
-export default async function Landing() {
+export default async function Landing({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
+
+  setRequestLocale(locale);
+
   const payload = await getPayloadClient();
 
   const landingPage = (await payload.findGlobal({
@@ -109,6 +125,7 @@ export default async function Landing() {
         <Header />
         <About abouts={landingPage.abouts} />
         <Footer
+          locale={locale}
           socials={landingPage.socials}
           footerImage={landingPage.footerImage}
         />

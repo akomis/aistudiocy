@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 type Props = {
   fallbackHref?: string;
 };
 
 export default function BackButton({ fallbackHref = "/" }: Props) {
+  const t = useTranslations("Common");
   const router = useRouter();
 
   const handleBack = () => {
@@ -22,7 +24,7 @@ export default function BackButton({ fallbackHref = "/" }: Props) {
       onClick={handleBack}
       className="flex items-center gap-2 hover:opacity-75 transition-all text-2xl tracking-wide"
     >
-      <span>BACK</span>
+      <span>{t("back")}</span>
     </button>
   );
 }

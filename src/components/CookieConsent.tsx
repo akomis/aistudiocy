@@ -8,6 +8,7 @@ const GA_ID = "G-6NSNH6LYWE";
 
 const COOKIE_NAME = "cookie-consent";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
+const INITIAL_DELAY_MS = 3000;
 
 type Consent = "granted" | "denied";
 
@@ -42,12 +43,21 @@ export default function CookieConsent() {
   useEffect(() => {
     const stored = readConsent();
     setConsent(stored);
-    setIsOpen(stored === null);
+
+    // Let the landing animation play out before the banner slides in. Reopening
+    // from the footer link is deliberate, so that path stays instant.
+    const timer =
+      stored === null
+        ? window.setTimeout(() => setIsOpen(true), INITIAL_DELAY_MS)
+        : undefined;
 
     const reopen = () => setIsOpen(true);
     window.addEventListener(COOKIE_SETTINGS_EVENT, reopen);
 
-    return () => window.removeEventListener(COOKIE_SETTINGS_EVENT, reopen);
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      window.removeEventListener(COOKIE_SETTINGS_EVENT, reopen);
+    };
   }, []);
 
   const decide = useCallback((next: Consent) => {
@@ -64,13 +74,13 @@ export default function CookieConsent() {
         <div
           role="dialog"
           aria-label="Cookie preferences"
-          className="fixed bottom-4 left-4 right-4 z-50 w-auto max-w-[calc(100vw-2rem)] border border-white/20 bg-black/95 p-5 shadow-lg backdrop-blur duration-500 animate-in fade-in slide-in-from-bottom-4 sm:left-auto sm:bottom-6 sm:right-6 sm:w-96"
+          className="fixed bottom-4 left-4 right-4 z-50 w-auto max-w-[calc(100vw-2rem)] border border-white/20 bg-black/95 p-5 shadow-lg backdrop-blur duration-500 animate-in fade-in slide-in-from-bottom-4 sm:left-auto sm:bottom-10 sm:right-6 sm:w-96"
         >
           <div className="flex flex-col gap-4">
             <p className="text-sm leading-6 text-gray-300">
-              We use technical cookies that keep the site working, and
-              analytics cookies that help us understand how it is used.
-              Analytics cookies are only set if you accept.{" "}
+              We use technical cookies that keep the site working, and analytics
+              cookies that help us understand how it is used. Analytics cookies
+              are only set if you accept.{" "}
               <Link
                 href="/privacy"
                 className="underline underline-offset-2 text-foreground"

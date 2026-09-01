@@ -80,10 +80,10 @@ const Footer = ({
     >
       <div
         id="footer"
-        className="flex flex-col items-start gap-4 mt-10 w-full text-neutral-900"
+        className="flex flex-row items-end justify-between gap-4 mt-10 w-full text-white"
       >
         <Contact socials={socialsList} />
-        <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-x-6 gap-y-2 text-sm w-full">
+        <div className="flex flex-col items-end sm:flex-row sm:items-center sm:justify-end flex-wrap gap-x-6 gap-y-2 text-sm w-auto">
           {getPages().map((page) => (
             <Link
               key={page.slug}
@@ -93,7 +93,7 @@ const Footer = ({
               {page.title}
             </Link>
           ))}
-          <CookieSettingsLink className="text-left sm:ml-auto hover:opacity-70 transition-all duration-500" />
+          <CookieSettingsLink className="text-right sm:text-left hover:opacity-70 transition-all duration-500" />
         </div>
       </div>
     </Section>

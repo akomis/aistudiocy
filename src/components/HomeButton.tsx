@@ -1,4 +1,4 @@
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Logo from "./Logo";
 import { Label } from "./ui/label";

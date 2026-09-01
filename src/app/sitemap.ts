@@ -1,34 +1,13 @@
 import { MetadataRoute } from 'next'
 import { getPayloadClient } from '@/lib/payload'
-import { getAllPageSlugs } from '@/lib/pages'
-import { routing, type Locale } from '@/i18n/routing'
+import { LOCALES, getAllPageSlugs, pagePath } from '@/lib/pages'
 
 const BASE_URL = 'https://www.fosjewels.com'
 
-// `localePrefix: "as-needed"` - the default locale has no prefix.
-const localePath = (locale: Locale) =>
-  locale === routing.defaultLocale ? '' : `/${locale}`
-
-const url = (locale: Locale, path: string) =>
-  `${BASE_URL}${localePath(locale)}${path}`
-
-/**
- * One entry per locale, each carrying the full set of hreflang alternates so
- * search engines can pair the translations.
- */
-const localizedEntries = (
+const entry = (
   path: string,
-  rest: Omit<MetadataRoute.Sitemap[number], 'url' | 'alternates'>,
-): MetadataRoute.Sitemap =>
-  routing.locales.map((locale) => ({
-    ...rest,
-    url: url(locale, path),
-    alternates: {
-      languages: Object.fromEntries(
-        routing.locales.map((alternate) => [alternate, url(alternate, path)]),
-      ),
-    },
-  }))
+  rest: Omit<MetadataRoute.Sitemap[number], 'url'>,
+): MetadataRoute.Sitemap[number] => ({ ...rest, url: `${BASE_URL}${path}` })
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayloadClient()
@@ -56,17 +35,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   })
 
-  // Static pages from lib/pages
-  const staticPageSlugs = getAllPageSlugs()
-
   // Core pages
   const corePages: MetadataRoute.Sitemap = [
-    ...localizedEntries('/', {
+    entry('/', {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     }),
-    ...localizedEntries('/catalogue', {
+    entry('/catalogue', {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
@@ -74,33 +50,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Category pages
-  const categoryPages: MetadataRoute.Sitemap = categories.docs.flatMap(
-    (category) =>
-      localizedEntries(`/catalogue?category=${category.handle}`, {
-        lastModified: category.updatedAt
-          ? new Date(category.updatedAt)
-          : new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      }),
+  const categoryPages: MetadataRoute.Sitemap = categories.docs.map((category) =>
+    entry(`/catalogue/category/${category.handle}`, {
+      lastModified: category.updatedAt
+        ? new Date(category.updatedAt)
+        : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }),
   )
 
   // Product pages
-  const productPages: MetadataRoute.Sitemap = products.docs.flatMap((product) =>
-    localizedEntries(`/catalogue/${product.handle}`, {
+  const productPages: MetadataRoute.Sitemap = products.docs.map((product) =>
+    entry(`/catalogue/${product.handle}`, {
       lastModified: product.updatedAt ? new Date(product.updatedAt) : new Date(),
-      changeFrequency: 'weekly' as const,
+      changeFrequency: 'weekly',
       priority: 0.7,
     }),
   )
 
-  // Static content pages
-  const staticPages: MetadataRoute.Sitemap = staticPageSlugs.flatMap((slug) =>
-    localizedEntries(`/${slug}`, {
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.5,
-    }),
+  // Static content pages - the only translated surface, so these carry
+  // hreflang alternates pairing the English and Greek versions.
+  const staticPages: MetadataRoute.Sitemap = getAllPageSlugs().flatMap((slug) =>
+    LOCALES.map((locale) =>
+      entry(pagePath(locale, slug), {
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.5,
+        alternates: {
+          languages: Object.fromEntries(
+            LOCALES.map((alternate) => [
+              alternate,
+              `${BASE_URL}${pagePath(alternate, slug)}`,
+            ]),
+          ),
+        },
+      }),
+    ),
   )
 
   return [...corePages, ...categoryPages, ...productPages, ...staticPages]

@@ -2,8 +2,7 @@
 
 import HomeButton from "@/components/HomeButton";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 type Props = {
   error: Error & { digest?: string };
@@ -15,18 +14,16 @@ const isStaleDeployment = (error: Error) =>
   error.message.includes("Failed to find Server Action");
 
 export default function Error({ error }: Props) {
-  const t = useTranslations("Errors");
-
   if (isStaleDeployment(error)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-20">
         <div className="flex flex-col items-center justify-center gap-6">
           <div className="text-center">
-            <p className="text-2xl">{t("staleTitle")}</p>
-            <p className="text-2xl">{t("staleMessage")}</p>
+            <p className="text-2xl">This page is out of date.</p>
+            <p className="text-2xl">Reload to pick up the latest version.</p>
           </div>
           <Button variant="outline" onClick={() => window.location.reload()}>
-            {t("reload")}
+            Reload
           </Button>
         </div>
 
@@ -39,10 +36,10 @@ export default function Error({ error }: Props) {
     <div className="flex flex-col items-center justify-center h-screen gap-20">
       <div className="flex flex-col items-center justify-center">
         <div className="text-center">
-          <p className="text-2xl">{t("sorry")}</p>
+          <p className="text-2xl">We are so sorry about this.</p>
           <p className="text-2xl">
-            {t("contactPrefix")}{" "}
-            <Link href="/#footer">{t("contactLink")}</Link>.
+            If you think this was our fault please{" "}
+            <Link href="/#footer">contact us</Link>.
           </p>
         </div>
         {/* Show the digest, not error.message - the message can carry internal
@@ -50,7 +47,7 @@ export default function Error({ error }: Props) {
             customer. The digest is what correlates with the server log. */}
         {error.digest && (
           <p className="font-thin text-lg max-w-lg">
-            {t("reference", { digest: error.digest })}
+            Reference: {error.digest}
           </p>
         )}
       </div>

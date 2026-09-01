@@ -4,7 +4,6 @@ import { store } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
 import { useMutation } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
 import { useContext, useState } from "react";
 import Spinner from "./Spinner";
 import { Button } from "./ui/button";
@@ -25,7 +24,6 @@ export default function AddToCartButton({
   size = "lg",
   maxQuantity = 1,
 }: Props) {
-  const t = useTranslations("Common");
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const { cart, setCart, setBasketOpen } = useContext(CartContext);
@@ -123,9 +121,9 @@ export default function AddToCartButton({
             className={!isInBasket ? "text-black dark:text-black" : ""}
           />
         ) : isInBasket ? (
-          t("remove")
+          "REMOVE"
         ) : (
-          t("add")
+          "ADD"
         )}
       </Button>
     </div>

@@ -3,7 +3,6 @@ import Filter from "@/components/Filter";
 import HomeButton from "@/components/HomeButton";
 import ProductGrid from "@/components/ProductGrid";
 import Screen from "@/components/Screen";
-import type { Locale } from "@/i18n/routing";
 import { getPayloadClient } from "@/lib/payload";
 import {
   Catalogue as CatalogueType,
@@ -11,21 +10,11 @@ import {
   LandingPage,
   Product,
 } from "@/lib/store";
-import { getTranslations, setRequestLocale } from "next-intl/server";
 
 // Use dynamic rendering for pages that need database access
 export const dynamic = "force-dynamic";
 
-export default async function Catalogue({
-  params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}) {
-  const { locale } = await params;
-
-  setRequestLocale(locale);
-
-  const t = await getTranslations("Catalogue");
+export default async function Catalogue() {
   const payload = await getPayloadClient();
 
   const [categoriesResult, catalogue, landingPage, productsResult] =
@@ -56,7 +45,7 @@ export default async function Catalogue({
   const products = productsResult.docs as unknown as Product[];
   const socials = landingPage.socials || [];
 
-  if (!categories) throw new Error(t("categoriesError"));
+  if (!categories) throw new Error("Couldn't load categories");
 
   const catalogueStaticImages =
     catalogue.showcaseImages?.map((item) => ({

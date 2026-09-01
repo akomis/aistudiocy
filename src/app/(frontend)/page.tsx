@@ -3,14 +3,11 @@ import Contact from "@/components/Contact";
 import CutoffText from "@/components/CutoffText";
 import DynamicBackground from "@/components/DynamicBackground";
 import CookieSettingsLink from "@/components/CookieSettingsLink";
-import LocaleSwitcher from "@/components/LocaleSwitcher";
 import Section from "@/components/Section";
-import { Link } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
-import { getPages } from "@/lib/pages";
+import Link from "next/link";
+import { getPages, pagePath } from "@/lib/pages";
 import { getPayloadClient } from "@/lib/payload";
 import type { Category, LandingPage } from "@/lib/store";
-import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 // Use dynamic rendering for pages that need database access
@@ -63,11 +60,9 @@ const About = ({ abouts }: { abouts: LandingPage["abouts"] }) => {
 };
 
 const Footer = ({
-  locale,
   socials,
   footerImage,
 }: {
-  locale: Locale;
   socials: LandingPage["socials"];
   footerImage: LandingPage["footerImage"];
 }) => {
@@ -83,35 +78,29 @@ const Footer = ({
         backgroundPosition: "center",
       }}
     >
-      <div id="footer" className="flex flex-col items-start gap-4 mt-10">
+      <div
+        id="footer"
+        className="flex flex-col items-start gap-4 mt-10 w-full text-neutral-900"
+      >
         <Contact socials={socialsList} />
-        <div className="flex flex-col sm:flex-row flex-wrap gap-x-6 gap-y-2 text-sm">
-          {getPages(locale).map((page) => (
+        <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-x-6 gap-y-2 text-sm w-full">
+          {getPages().map((page) => (
             <Link
               key={page.slug}
-              href={`/${page.slug}`}
+              href={pagePath("en", page.slug)}
               className="hover:opacity-70 transition-all duration-500"
             >
               {page.title}
             </Link>
           ))}
-          <CookieSettingsLink className="text-left hover:opacity-70 transition-all duration-500" />
-          <LocaleSwitcher />
+          <CookieSettingsLink className="text-left sm:ml-auto hover:opacity-70 transition-all duration-500" />
         </div>
       </div>
     </Section>
   );
 };
 
-export default async function Landing({
-  params,
-}: {
-  params: Promise<{ locale: Locale }>;
-}) {
-  const { locale } = await params;
-
-  setRequestLocale(locale);
-
+export default async function Landing() {
   const payload = await getPayloadClient();
 
   const landingPage = (await payload.findGlobal({
@@ -125,7 +114,6 @@ export default async function Landing({
         <Header />
         <About abouts={landingPage.abouts} />
         <Footer
-          locale={locale}
           socials={landingPage.socials}
           footerImage={landingPage.footerImage}
         />

@@ -6,10 +6,9 @@ import { toast } from "@/hooks/use-toast";
 import { Product, store } from "@/lib/store";
 import { cn, formatPrice } from "@/lib/utils";
 import { CartContext } from "@/providers/cart";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter } from "next/navigation";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -42,7 +41,6 @@ type ProductItemProps = {
 };
 
 const ProductItem = ({ product }: ProductItemProps) => {
-  const tCommon = useTranslations("Common");
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -203,7 +201,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
                 className="text-thin text-sm text-gray-300 absolute left-5 bottom-3"
                 variant={"outline"}
               >
-                {tCommon("sold")}
+                SOLD
               </Badge>
             )}
           </div>
@@ -213,7 +211,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
               className="text-thin text-xs text-gray-300 mt-2"
               variant={"outline"}
             >
-              {tCommon("sold")}
+              SOLD
             </Badge>
           )}
         </div>
@@ -269,8 +267,6 @@ export default function ProductGrid({
   initialProducts,
   categoryHandle,
 }: Props) {
-  const t = useTranslations("Catalogue");
-  const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
   const router = useRouter();
   const hasShownToast = useRef(false);
@@ -280,8 +276,9 @@ export default function ProductGrid({
     if (searchParams.get("items_removed") === "true" && !hasShownToast.current) {
       hasShownToast.current = true;
       toast({
-        title: t("itemsUnavailableTitle"),
-        description: t("itemsUnavailableDescription"),
+        title: "Some items are no longer available",
+        description:
+          "Items that have been sold were removed from your cart.",
         variant: "destructive",
       });
       // Clean up the URL param
@@ -310,7 +307,7 @@ export default function ProductGrid({
     refetchIntervalInBackground: true,
   });
 
-  if (error) throw new Error(t("productsError"));
+  if (error) throw new Error("Couldn't load products");
 
   const products = productData?.products ?? [];
 
@@ -330,7 +327,8 @@ export default function ProductGrid({
         {categoryHandle ? (
           <>
             <p className="text-lg md:text-2xl text-center font-light">
-              {t("noProductsFiltered")}
+              No products found with the applied filter. Feel free to explore
+              more through the categories on top.
             </p>
             <Button
               variant={"outline"}
@@ -339,12 +337,13 @@ export default function ProductGrid({
                 router.push("/catalogue");
               }}
             >
-              {tCommon("explore")}
+              EXPLORE
             </Button>
           </>
         ) : (
           <p className="text-lg md:text-2xl text-center font-light max-w-2xl">
-            {t("noProductsPrefix")}{" "}
+            We currently don&apos;t have any available pieces. Feel free to
+            stalk us on{" "}
             <a
               href={
                 socials.find((s) => s.key.toLowerCase() === "instagram")?.url
@@ -353,9 +352,9 @@ export default function ProductGrid({
               rel="noopener noreferrer"
               className="underline hover:opacity-75 transition-all"
             >
-              {t("instagram")}
+              instagram
             </a>{" "}
-            {t("noProductsSuffix")}
+            for any updates!
           </p>
         )}
       </div>

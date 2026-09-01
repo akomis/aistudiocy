@@ -1,6 +1,5 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import { withSentryConfig } from "@sentry/nextjs";
-import createNextIntlPlugin from "next-intl/plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -20,9 +19,7 @@ const nextConfig = {
   },
 };
 
-const withNextIntl = createNextIntlPlugin();
-
-export default withSentryConfig(withNextIntl(withPayload(nextConfig)), {
+export default withSentryConfig(withPayload(nextConfig), {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 const GA_ID = "G-6NSNH6LYWE";
@@ -35,8 +34,6 @@ export function openCookieSettings() {
 }
 
 export default function CookieConsent() {
-  const t = useTranslations("Cookies");
-
   // `null` while we have not read the cookie yet - nothing renders and, more
   // importantly, Analytics stays unloaded until consent is known.
   const [consent, setConsent] = useState<Consent | null>(null);
@@ -66,34 +63,36 @@ export default function CookieConsent() {
       {isOpen && (
         <div
           role="dialog"
-          aria-label={t("title")}
-          className="fixed inset-x-0 bottom-0 z-50 border-t border-white/20 bg-black/95 px-5 py-5 backdrop-blur sm:px-10"
+          aria-label="Cookie preferences"
+          className="fixed bottom-4 left-4 right-4 z-50 w-auto max-w-[calc(100vw-2rem)] border border-white/20 bg-black/95 p-5 shadow-lg backdrop-blur duration-500 animate-in fade-in slide-in-from-bottom-4 sm:left-auto sm:bottom-6 sm:right-6 sm:w-96"
         >
-          <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4">
             <p className="text-sm leading-6 text-gray-300">
-              {t("description")}{" "}
+              We use technical cookies that keep the site working, and
+              analytics cookies that help us understand how it is used.
+              Analytics cookies are only set if you accept.{" "}
               <Link
                 href="/privacy"
                 className="underline underline-offset-2 text-foreground"
               >
-                {t("privacyLink")}
+                Read our Privacy Notice
               </Link>
             </p>
 
-            <div className="flex shrink-0 gap-3">
+            <div className="flex shrink-0 justify-end gap-3">
               <button
                 type="button"
                 onClick={() => decide("denied")}
                 className="border border-input px-4 py-2 text-sm transition-opacity hover:opacity-70"
               >
-                {t("reject")}
+                REJECT
               </button>
               <button
                 type="button"
                 onClick={() => decide("granted")}
                 className="bg-white px-4 py-2 text-sm text-black transition-opacity hover:opacity-70"
               >
-                {t("accept")}
+                ACCEPT
               </button>
             </div>
           </div>

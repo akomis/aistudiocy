@@ -31,13 +31,15 @@ export default function LegalPage({
   const other = OTHER_LOCALE[locale];
 
   return (
-    <Section className="min-h-screen animate-in fade-in">
+    <Section className="min-h-screen">
       <div
         className="max-w-3xl mx-auto px-6 py-12 sm:px-10 sm:py-20"
         lang={locale}
       >
         <div className="flex items-center justify-between gap-4">
-          <BackButton />
+          {/* Always the landing page: these are footer links, so history
+              is rarely where the visitor wants to go. */}
+          <BackButton href="/" />
           <Link
             href={pagePath(other, slug)}
             hrefLang={other}
@@ -64,7 +66,7 @@ export default function LegalPage({
           )}
         </header>
 
-        <article className="prose prose-invert max-w-none leading-7 text-justify whitespace-pre-line">
+        <article className="prose prose-invert max-w-none leading-7 text-left whitespace-pre-line">
           {page.content}
         </article>
 

@@ -1,104 +1,160 @@
-import type { PageData } from "./index";
+import type { LocalizedPage } from "./index";
 
-export const el: PageData[] = [
-  {
-    slug: "shipping",
-    title: "Αποστολή & Επιστροφές",
-    subtitle: "Περίληψη των ρητρών 5 και 6 των Γενικών Όρων",
-    content: `Η σελίδα αυτή συνοψίζει τον τρόπο αποστολής και επιστροφής. Πρόκειται για περίληψη διευκόλυνσης - κάθε παραγγελία διέπεται από τους Γενικούς Όρους εξ αποστάσεως πώλησης και, σε περίπτωση διαφοράς, υπερισχύουν οι Γενικοί Όροι.
+export const terms: LocalizedPage = {
+  slug: "terms",
+  en: {
+    title: "General Conditions",
+    subtitle: "Conditions of Online Sale · Version updated on 20.07.2026",
+    pdfHref: "/legal/general-conditions-en.pdf",
+    content: `These General Conditions of Online Sale (the "General Conditions" or "Terms") exclusively govern the remote sale, by electronic means, of the Jewels offered for sale on the website www.fosjewels.com (the "Website"), as duly displayed and described therein (the "Jewels").
 
-ΑΠΟΣΤΟΛΗ
+The General Conditions published on the Website and in force at the time the customer submits the order proposal (the "Order Proposal") shall apply to and govern each contract for the purchase of Jewels concluded between the seller of the Jewels and Website operator (as the term is defined herein below) and the customer.
 
-Επί του παρόντος δεχόμαστε παραγγελίες μόνο από την Κύπρο και την Ελλάδα.
+Before submitting the Order Proposal, the customer is required to carefully read the General Conditions and is given the opportunity to store and reproduce them in accordance with applicable law. Submission of the Order Proposal constitutes the customer's declaration that they have read, understood, and expressly accepted these General Conditions in their entirety, as well as all information provided prior to the conclusion of the contract, including the essential characteristics of the Jewels, pricing, and applicable terms of sale.
 
-Τα Κοσμήματα παραδίδονται μέσω μεταφορέα, είτε ταχυδρομικώς μέσω των Κυπριακών Ταχυδρομείων (Cyprus Post) είτε μέσω εταιρείας ταχυμεταφορών (courier), τον οποίο επιλέγετε κατά την ολοκλήρωση της παραγγελίας μεταξύ των μεταφορέων που συνεργάζονται μαζί μας. Τα έξοδα αποστολής εμφανίζονται κατά την ολοκλήρωση της παραγγελίας και εξαρτώνται από τον μεταφορέα που θα επιλέξετε.
+1. PARTIES
 
-Έξοδα αποστολής ανά χώρα
-Κύπρος: 2,00 EUR - 4,00 EUR
-Ελλάδα: 7,00 EUR - 24,00 EUR
+1.1. The seller of the Jewels (hereinafter referred to as the "Seller" or "Us", or "We") is P.V. LUMINUS LTD which operates under the trade name ΚΟΣΜΗΜΑΤΑ ΦΩΣ (FOS JWELLERY), with registered office at Thiseos 2, Nisou, PC. 2571, Nicosia Cyprus, Store address: Dimitriou Hamatsou 76, Idalion, PC 2540, Nicosia, Cyprus and email address: contact@fosjewels.com, VAT number 60250610G.
 
-Η παράδοση στην Κύπρο μπορεί να διαρκέσει έως και δεκαπέντε (15) ημέρες, ενώ η παράδοση στην Ελλάδα έως και είκοσι (20) ημέρες, από την ημερομηνία κατά την οποία λαμβάνετε την Επιβεβαίωση Παραγγελίας και Αποστολής, ανάλογα με τη μέθοδο παράδοσης που επιλέξατε. Δεν ευθυνόμαστε για καθυστερήσεις που οφείλονται σε περιστάσεις πέραν του εύλογου ελέγχου μας.
+1.2. In these General Terms and Conditions, the term "customer" refers to any natural or legal person who purchases Jewels through the Website. The customer is considered a party to the agreement concluded with Us under these Terms.
 
-Παραδίδουμε χωρίς αδικαιολόγητη καθυστέρηση και, σε κάθε περίπτωση, το αργότερο εντός τριάντα (30) ημερών από τη σύναψη της σύμβασης.
+1.3. These General Conditions govern exclusively the purchase of Jewels offered for sale on the Website and do not regulate the sale of Jewels or the provision of services by third parties that may be accessible on the Website through links, banners, or other hypertext links. The Seller shall not be held liable for the supply of goods or services by such third parties, nor for the content, accuracy, or legality of their respective websites.
 
-Μόλις αποσταλεί το δέμα σας, θα λάβετε μήνυμα ηλεκτρονικού ταχυδρομείου με τον αριθμό αποστολής. Με την άφιξη των Κοσμημάτων στη διεύθυνση παράδοσης ή στο σημείο παραλαβής, θα λάβετε ειδοποίηση μέσω email ή SMS με τις οδηγίες παραλαβής. Παρακαλούμε παραλάβετε τα Κοσμήματα εντός της προθεσμίας που ορίζει ο μεταφορέας - εάν δεν παραληφθούν εγκαίρως ή αποτύχει η παράδοση στη διεύθυνση που δηλώσατε, η παραγγελία ακυρώνεται και τα καταβληθέντα ποσά επιστρέφονται μέσω του αρχικού μέσου πληρωμής, εξαιρουμένων των εξόδων αποστολής και τυχόν ποσών για εξατομικευμένα Κοσμήματα.
+1.4. The customer shall be identified exclusively based on the information provided in the Order Proposal. The customer undertakes to provide complete, accurate, and truthful data and agrees not to provide false, inaccurate, or fictitious information. The Seller shall not be liable for any damages, delays, or issues arising from the provision of incorrect or incomplete data by the Customer.
 
-Σημείωση: μετά την υποβολή της παραγγελίας θα λάβετε επιβεβαιωτικό email. Εάν δεν το βρείτε στα εισερχόμενά σας, ελέγξτε τον φάκελο ανεπιθύμητης αλληλογραφίας (Spam ή Junk).
+1.5. The Jewels offered on the Website are intended exclusively for natural people who have reached the age of majority and possess the legal capacity to enter into binding contracts in accordance with applicable law. By submitting an Order Proposal through the Website, the customer is deemed to declare and warrant that they are at least eighteen (18) years of age and legally capable of entering a binding contractual relationship.
 
-ΚΑΤΑ ΤΗΝ ΠΑΡΑΛΑΒΗ
+2. CONTRACT CONCLUSION METHOD
 
-Παρακαλούμε επιθεωρήστε τα Κοσμήματα αμέσως μόλις τα παραλάβετε. Οποιαδήποτε εμφανής ζημιά ή ελάττωμα πρέπει να μας γνωστοποιηθεί αμέσως και, σε κάθε περίπτωση, το αργότερο εντός είκοσι τεσσάρων (24) ωρών από την παραλαβή, στο contact@fosjewels.com. Η μεταγενέστερη αναφορά συνεπάγεται απώλεια του δικαιώματος αξίωσης για τη συγκεκριμένη εμφανή ζημιά. Τούτο δεν θίγει τη διετή νόμιμη εγγύηση για μη συμμορφούμενα Κοσμήματα που περιγράφεται στους Γενικούς Όρους.
+2.1. Upon submission of the Order Proposal, the customer shall receive an automated email confirming receipt thereof (the "Order Proposal Confirmation Receipt"). Such confirmation shall be of a purely informative nature and shall not constitute acceptance of the Order Proposal by the Seller.
 
-ΧΕΙΡΟΠΟΙΗΤΗ ΠΟΙΟΤΗΤΑ
+2.2. The Order Proposal shall be deemed accepted, and the contract of sale concluded, only when the customer receives a subsequent email expressly confirming acceptance of the Order Proposal and shipment of the Jewels (the "Order and Shipping Confirmation").
 
-Στο φως κατασκευάζουμε κάθε κομμάτι στο χέρι, δίνοντας αξία σε κάθε μοναδική λεπτομέρεια. Οι μικρές αποκλίσεις αποτελούν μέρος του σχεδιασμού και καθιστούν κάθε κομμάτι μοναδικό. Οι εικόνες των προϊόντων έχουν ενδεικτικό χαρακτήρα: λαμβάνουμε όλα τα εύλογα μέτρα ώστε οι φωτογραφίες μας να αποδίδουν με ακρίβεια τα Κοσμήματα, ωστόσο ενδέχεται να προκύψουν μικρές διαφορές λόγω των ρυθμίσεων της οθόνης και της απόδοσης των χρωμάτων.
+2.3. Prior to submitting the Order Proposal, the customer shall be required to confirm that they have read and expressly accepted these General Conditions, including any clauses that may limit the Seller's liability, govern the right to withdrawal, or determine jurisdiction, in accordance with applicable law.
 
-Τα ασημένια κοσμήματα ενδέχεται να οξειδώνονται, να θαμπώνουν ή να αλλάζουν φυσικά χρώμα με την πάροδο του χρόνου λόγω έκθεσης στον αέρα, την υγρασία, το pH του δέρματος, καλλυντικά, αρώματα, απορρυπαντικά ή τη συνήθη χρήση. Οι αλλαγές αυτές θεωρούνται φυσικά χαρακτηριστικά του υλικού και δεν συνιστούν ελάττωμα.
+2.4. Upon completion of the Contract, the customer receives an Order and Shipping Confirmation by email. This email includes a summary of the Order as well as the General Conditions accepted by the customer, provided on a durable medium in accordance with applicable European Union legislation and the applicable law.
 
-ΕΠΙΣΤΡΟΦΕΣ - ΔΙΚΑΙΩΜΑ ΥΠΑΝΑΧΩΡΗΣΗΣ
+2.5. The Seller reserves the right, prior to sending the Order and Shipping Confirmation, to request additional information from the customer by email or telephone, where reasonably necessary to process the Order Proposal.
 
-Έχετε το δικαίωμα να υπαναχωρήσετε από την αγορά, χωρίς καμία επιβάρυνση και χωρίς να αιτιολογήσετε την απόφασή σας, εντός δεκατεσσάρων (14) ημερών. Η προθεσμία λήγει δεκατέσσερις (14) ημέρες από την ημέρα κατά την οποία εσείς, ή τρίτο πρόσωπο που έχετε ορίσει εκτός του μεταφορέα, αποκτάτε τη φυσική κατοχή των Κοσμημάτων.
+2.6. The Seller reserves the right not to accept or process Order Proposals that do not provide sufficient guarantees of solvency or that are incomplete or incorrect. In such cases, the Seller shall inform the customer by email, no later than thirty (30) working days from the date of submission of the Order Proposal, of the reasons why the Contract cannot be concluded. Any amounts authorized or placed on hold on the customer's chosen payment method shall be released accordingly.
 
-1. Ενημερώστε μας εντός 14 ημερών
-Αποστείλετε ρητή δήλωση υπαναχώρησης μέσω email στο contact@fosjewels.com, ή με συστημένη επιστολή ή courier στη διεύθυνση: Δημητρίου Χάματσου 76, Ιδάλιον, Τ.Κ. 2540, Λευκωσία, Κύπρος.
+2.7. The Seller undertakes to deliver the ordered Jewels without undue delay and, in any event, no later than thirty (30) days from the Contract Conclusion Date.
 
-2. Επιστρέψτε τα Κοσμήματα εντός επιπλέον 14 ημερών
-Μπορείτε να τα επιστρέψετε ταχυδρομικώς ή μέσω courier στην ανωτέρω διεύθυνση, ή σε καθορισμένο σημείο παραλαβής εφόσον διατίθεται. Η υπαναχώρηση μπορεί να αφορά το σύνολο ή μέρος της παραγγελίας και τα είδη της ίδιας παραγγελίας μπορούν να επιστραφούν με περισσότερες από μία αποστολές, εφόσον κάθε επιστροφή πραγματοποιείται εντός δεκατεσσάρων (14) ημερών από την κοινοποίηση της υπαναχώρησης.
+2.8. The Seller reserves the right to refuse Order Proposals from customers with whom a dispute or litigation relating to a previous order is pending or has previously arisen, as well as in cases where the Seller reasonably deems the customer unsuitable, including, by way of example, previous breaches of these General Conditions or involvement in fraudulent activities.
 
-3. Κατάσταση των επιστρεφόμενων Κοσμημάτων
-Τα επιστρεφόμενα Κοσμήματα πρέπει να είναι αχρησιμοποίητα, άθικτα και καθαρά, στην αρχική τους κατάσταση και μαζί με την αρχική τους συσκευασία, και να επιστρέφονται πλήρως - δεν γίνεται μερική επιστροφή εξαρτημάτων ή τμημάτων σετ.
+2.9. While the Seller adopts all reasonable technical measures to ensure that the photographs and descriptions of the Jewels displayed on the Website accurately represent the Jewels offered for sale, minor discrepancies may occur due to technical limitations, including differences in device display settings and color resolution. Product images are therefore for illustrative purposes only.
 
-4. Επιστροφή χρημάτων
-Μόλις παραλάβουμε τα επιστρεφόμενα Κοσμήματα, διενεργούμε έλεγχο, σας ενημερώνουμε και επιστρέφουμε όλα τα ποσά που καταβλήθηκαν για αυτά εντός δεκατεσσάρων (14) ημερών από την ημερομηνία παραλαβής τους. Η επιστροφή γίνεται με το ίδιο μέσο πληρωμής που χρησιμοποιήσατε για την αγορά.
+3. SELLING PRICES
 
-Τα έξοδα αποστολής που σχετίζονται με την επιλογή τρόπου παράδοσης διαφορετικού από τη συνήθη ταχυδρομική αποστολή δεν επιστρέφονται, όπως και οι πρόσθετες επιλογές που επιλέξατε (π.χ. ταχεία αποστολή ή συσκευασία δώρου, εφόσον διατίθενται). Τα έξοδα επιστροφής βαρύνουν εσάς, εκτός εάν ορίζεται διαφορετικά.
+3.1. The prices of the Jewels (the "Prices") and the applicable shipping costs (the "Shipping Costs") are those indicated on the Website at the time the Order Proposal is submitted.
 
-Εάν μια επιστροφή δεν πληροί τις ανωτέρω προϋποθέσεις, θα σας ενημερώσουμε για τους λόγους εντός δέκα (10) ημερών από την παραλαβή της και στη συνέχεια έχετε δέκα (10) ημέρες για να ζητήσετε την επιστροφή των Κοσμημάτων με δικά σας έξοδα.
+3.2. Unless otherwise expressly stated in the Order Proposal, all Prices and Shipping Costs are inclusive of applicable taxes, duties, and fees, including value added tax (VAT), and do not include any additional customs duties or charges that may apply depending on the destination of delivery.
 
-ΤΙ ΔΕΝ ΕΠΙΣΤΡΕΦΕΤΑΙ
+4. PAYMENT METHOD
 
-Το δικαίωμα υπαναχώρησης δεν εφαρμόζεται στα εξατομικευμένα ή προσωποποιημένα Κοσμήματα, ούτε στα σκουλαρίκια που παραδίδονται σε σφραγισμένη συσκευασία εφόσον η σφράγιση έχει ανοιχθεί μετά την παράδοση, για λόγους προστασίας της υγείας ή/και υγιεινής.
+4.1. Payment for Jewels is made electronically by credit or debit card.
 
-ΕΛΑΤΤΩΜΑΤΙΚΑ Ή ΜΗ ΣΥΜΜΟΡΦΟΥΜΕΝΑ ΚΟΣΜΗΜΑΤΑ
+4.2. Most major credit and debit cards are accepted. No additional fees shall be charged for payments made by credit or debit card, unless expressly indicated. By using a credit or debit card, the customer is deemed to declare and warrant that they are the lawful cardholders and authorized to use the selected payment method.
 
-Ανεξάρτητα από το δικαίωμα υπαναχώρησης, τα Κοσμήματα που πωλούνται μέσω της Ιστοσελίδας υπόκεινται στη νόμιμη διετή εγγύηση σύμφωνα με τη νομοθεσία περί προστασίας των καταναλωτών. Εφόσον επιβεβαιωθεί έλλειψη συμμόρφωσης, δικαιούστε, χωρίς πρόσθετη επιβάρυνση, τα μέτρα αποκατάστασης που προβλέπει ο νόμος, συμπεριλαμβανομένης της επιστροφής του τιμήματος ή της αντικατάστασης με ίδιο ή παρόμοιο Κόσμημα, ανάλογα με τη διαθεσιμότητα. Όλα τα έξοδα επιστροφής Κοσμημάτων που έχουν αναγνωριστεί ως ελαττωματικά ή μη συμμορφούμενα βαρύνουν εμάς.
+4.3. At the time the Order Proposal is submitted, an authorization of the payment amount is applied. If the payment cannot be successfully debited, the Order Proposal shall be automatically cancelled.
 
-ΑΝΤΑΛΛΑΓΕΣ
+4.4. The Seller does not have access to full credit or debit card details, which are securely managed by the third-party payment service provider (STRIPE). The Seller may retain only partial card information voluntarily saved by the customer (e.g., card type, expiration date, cardholder name) solely to facilitate future purchases. Such partial information is insufficient to identify the full card number. Accordingly, the Seller shall not be liable for any fraudulent use of the customer's payment card by third parties.
 
-Επί του παρόντος δεν προσφέρουμε απευθείας ανταλλαγές. Παρακαλούμε επιστρέψτε το είδος και υποβάλετε νέα παραγγελία.
+5. DELIVERY AND SHIPPING
 
-ΕΡΩΤΗΣΕΙΣ
+5.1. Each shipment shall contain: (i) the Jewels ordered; (ii) any documentation required under the applicable law; and (iii) information and advertising material.
 
-Αποστείλετε email στο contact@fosjewels.com αναφέροντας τον αριθμό της παραγγελίας σας.`,
+5.2. The purchase invoice relating to the Order will be provided via email with the acceptance of the order.
+
+5.3. The Jewels shall be delivered by a carrier, either by post via Cyprus Post or courier, selected by the customer from among the carriers appointed by the Seller. The applicable shipping costs are indicated on the Website in accordance with the selected carrier.
+
+5.4. Delivery to Cyprus may take up to 15 days from the date the customer receives the Order and Shipping Confirmation, while delivery to Greece may take up to 20 days, depending on the delivery method chosen by the customer. The Seller is not responsible for delays due to Force Majeure.
+
+5.5. Force Majeure: Neither party shall be liable for any failure or delay in performing its obligations under this Agreement if such failure or delay is due to an event, circumstance, or obstacle beyond its reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, government actions, strikes, pandemics, or other unforeseeable circumstances. If the failure or delay results from the non-performance of a third party engaged by the affected party to perform all or part of the obligations, the affected party shall be excused from liability only to the extent that the third party's non-performance meets the same criteria. The affected party shall notify the other party as soon as reasonably practicable of the occurrence of such event and its expected impact on performance. The obligations affected by such event shall be suspended for the duration of the event.
+
+5.6. Upon arrival of the Jewels at the designated address or collection point, the customer shall receive a notification (by email or SMS) containing the relevant collection or delivery instructions. The customer shall collect or receive the Jewels in accordance with the procedures established by the operator managing the collection service, personally or through a duly authorized representative, and within the time period designated by the carrier.
+
+5.7. Failure to collect the Jewels within the above timeframe, as well as any failed delivery to the address selected by the customer, shall result in cancellation of the Order and reimbursement of amounts paid via the original payment method. Any payments made for customized Jewels and shipping costs shall not be refundable.
+
+5.8. Upon delivery or collection, the customer shall immediately inspect the Jewels for visible damage or defects. Any visible damage or defects must be reported to the Seller immediately, and in any case no later than 24 hours after receiving the Jewels. Failure to report defects at the time of delivery or collection shall result in the forfeiture of the right to make claims regarding such defects. The legal warranty for defective Jewels, as set forth in Clause 7, shall remain fully applicable.
+
+5.9. Currently, the Website is accessible for placing orders from Cyprus and Greece only.
+
+5.10. Where the Seller has failed to deliver the goods at the time agreed with the customer, the customer shall require the Seller to make the delivery within an additional period appropriate to the circumstances. If the Seller fails to deliver the goods within the additional period, the customer shall be entitled to terminate the contract. Upon termination of the contract, the Seller shall, without undue delay, return all payments made under the contract. If the customer is a consumer (meaning a natural person acting for purposes outside their trade, business, or profession, as defined by applicable law), the consumer shall retain all other rights available to them under the law.
+
+5.11. In contracts where the Seller ships goods to the consumer, the risk of loss or damage to the goods passes to the customer when the customer, or a third party designated by him/her (other than the Seller's carrier), takes physical possession of the goods; however, if the consumer instructs the use of a specific carrier and the Seller did not offer this choice, the risk passes to the customer upon delivery of the goods to that carrier. This is without prejudice to the consumer's rights against the carrier under applicable law.
+
+6. RIGHT TO WITHDRAWAL
+
+6.1. The customer has the right to withdraw from the purchase contract, without penalty and without giving any reason, within 14 days. The withdrawal period expires 14 days from the day on which the customer or a third party designated by the customer (other than the carrier) takes physical possession of the Jewels.
+
+6.2. The right to withdrawal may be exercised for all or part of the Jewels included in an Order. Jewels from the same Order may be returned in multiple shipments, provided all returns are made within 14 days from the withdrawal notice.
+
+6.3. To exercise the right of withdrawal, the customer must notify the Seller of their decision to withdraw within the 14-day withdrawal period by submitting an explicit declaration of withdrawal (for example, by completing the Withdrawal Form). The declaration may be sent by registered mail or courier to the following address: Dimitriou Hamatsou 76, Idalion, PC 2540, Nicosia, Cyprus, or by email to contact@fosjewels.com. Following notification of the withdrawal, the customer shall have a further 14 days to return the Jewels to the Seller.
+
+6.4. The Jewels may be returned by:
+• Shipment by mail to the Seller's address: Dimitriou Hamatsou 76, Idalion, PC 2540, Nicosia, Cyprus
+• delivery to an appointed collection point (if available)
+• shipment through a carrier selected by the customer to the Seller's address: Dimitriou Hamatsou 76, Idalion, PC 2540, Nicosia, Cyprus
+• shipment through a carrier appointed by the Seller (if available)
+
+6.5. Returned Jewels must:
+• be in unused and undamaged, and clean.
+• be returned to their original condition, complete with packaging;
+• be returned in full (no partial return of components or sets).
+
+6.6. Once the Seller receives the returned Jewels, a verification of the returned items will be conducted. The Seller will then notify the customer and refund all payments received for the returned Jewels within fourteen (14) days from the date the Jewels are received.
+
+6.7. A return will not be accepted if the Product does not comply with the return conditions set out in these Terms. In such case, the Seller shall notify the customer of the non-acceptance of the return, stating the relevant reasons, within ten (10) days from receipt of the Jewels.
+
+6.8. Within ten (10) days from receipt of such notice, the customer may request that the Jewels be returned at their own expense. Failing such request within the above term, the Seller may retain the Jewels as well as the amount paid for their purchase, without prejudice to the customer's mandatory rights under applicable consumer protection law, provided that the Customer is a consumer.
+
+6.9. Refunds, where the customer is entitled to refund, will be made using the same payment method used for the purchase. If payment was made by cash on delivery, the refund will be issued by bank transfer. The customer shall be required to provide bank account information for this purpose.
+
+6.10. Shipping costs related to the choice of a delivery method other than standard mail will not be refunded. Additional costs chosen by the customer (such as express shipping, cash on delivery, or gift wrapping – if available) will not be refunded. Return shipping costs are borne by the customer, unless otherwise stated.
+
+6.11. The right to withdrawal does not apply to: customized or personalized Jewels; and earrings supplied in sealed packaging which has been opened after delivery, for health protection and/or hygiene reasons.
+
+7. LEGAL WARRANTY FOR NON-COMPLIANT JEWELS
+
+7.1. The Jewels sold through the Website are subject to the statutory two (2) year warranty under applicable consumer protection law, which applies when the customer is acting as a consumer. The Seller will consider any lack of conformity of the Jewels, as defined by law, existing at the time of delivery and reported by the Consumer.
+
+7.2. The legal warranty applies provided that: the lack of conformity appears within two (2) years from delivery of the Jewels; and the customer can provide proof of purchase (purchase invoice or equivalent proof). If a lack of conformity is confirmed, the customer shall be entitled, at no additional cost, to the remedies provided by applicable law, including a refund of the price paid for the non-compliant Jewels or replacement with the same or similar Jewels, subject to availability.
+
+7.3. All costs related to the return of Jewels recognized as defective or non-compliant shall be borne by the Seller.
+
+8. NATURAL CHARACTERISTICS OF SILVER JEWELRY
+
+8.1. Silver jewelry may naturally oxidize, tarnish, or change color over time due to exposure to air, humidity, skin pH, cosmetics, perfumes, detergents, or normal wear. Such changes are considered normal characteristics of the material and do not constitute a lack of conformity or a defect, provided that the Product was compliant at the time of delivery and that such changes are not attributable to a manufacturing defect.
+
+9. CONTACTS
+
+9.1. When the customer sends emails, text messages (SMS), or any other communications via mobile or computer devices (including, by way of example, chat functions), such communications are deemed to be made in electronic written form.
+
+9.2. The customer acknowledges that the Seller may communicate with the customer through various electronic means, including email, text messages (SMS), or by posting notices and communications on the Website, where permitted by applicable law.
+
+10. PRIVACY
+
+10.1. The Seller shall process the customer's personal data in compliance with the General Data Protection Regulation (EU) 2016/679 (GDPR) and any applicable national legislation concerning the protection of natural persons regarding the processing of personal data.
+
+10.2. The Seller shall not use any content, other than personal data, provided or created by the customer in the course of using the digital content or digital service supplied by the Seller, except where such content has no utility outside the context of the relevant digital content or digital service, relates solely to the customer's activity in the course of such use, has been aggregated with other data and cannot be disaggregated or can be disaggregated only with disproportionate effort, or has been generated jointly with other persons who may continue to use it; and, except in cases where the content has no utility outside the relevant context, relates solely to the customer's activity, or has been aggregated as described above, the Seller shall, upon the consumer's request, make such content available to the customer.
+
+10.3. Customers shall familiarize themselves with the Privacy Policy published on the Website to obtain all information on how their personal data is processed.
+
+11. GOVERNING LAW AND JURISDICTION
+
+11.1. These General Conditions and any contract concluded pursuant thereto shall be governed by and construed in accordance with the laws of Cyprus, without prejudice to the mandatory provisions of the law of the country of the customer's habitual residence, in accordance with Regulation (EC) No 593/2008 (Rome I).
+
+11.2. Any dispute arising out of or in connection with these General Conditions and/or any contract concluded thereunder shall be subject to the jurisdiction of the competent courts of the Republic of Cyprus, without prejudice to the rights of consumers under Regulation (EU) No 1215/2012 (Brussels I bis). Where the customer qualifies as a consumer under applicable European Union legislation, the customer may bring proceedings before the courts of the Member State in which he or she is domiciled.
+
+11.3. In the event of a dispute with a customer being a consumer that cannot be resolved through the Seller's internal complaint handling procedure, the consumer may submit the unresolved dispute to the Cyprus Consumer Centre for Alternative Dispute Resolution (CC-ADR) at info@cc-adr.cy. Participation in the ADR procedure is voluntary, and We are willing to cooperate with the CC-ADR to facilitate the resolution of disputes with our consumers.
+
+12. MODIFICATIONS AND UPDATES
+
+12.1. These Online Conditions may be changed at any time. The customer will be required to accept the Online Conditions in force at the time of purchase. The new versions of the Online Conditions will be effective from the date of publication on the Website and in relation to Orders submitted after that date. It is possible to verify any previous versions of the Online Conditions in the appropriate section of the Website.
+`,
   },
-  {
-    slug: "silver-care",
-    title: "Φροντίδα Ασημιού",
-    content: `Για να διατηρήσετε τα ασημένια σας κοσμήματα σε άριστη κατάσταση, φυλάξτε τα σε στεγνό και δροσερό μέρος, μακριά από υγρασία και ισχυρές χημικές ουσίες. Καθαρίστε τα με ένα μαλακό πανί και αποφύγετε την έκθεσή τους σε αρώματα ή λοσιόν.
-
-ΚΑΘΑΡΙΣΜΟΣ ΑΣΗΜΙΟΥ
-Εάν παρατηρήσετε ότι το ασημένιο σας κόσμημα χάνει τη λάμψη του, μπορείτε να το καθαρίσετε στο σπίτι με φιλικές και μη τοξικές μεθόδους. Ένα απλό μείγμα από χυμό λεμονιού και μαγειρική σόδα, αραιωμένο με λίγο χλιαρό νερό και εφαρμοσμένο απαλά με μια οδοντόβουρτσα με μαλακές τρίχες, θα βοηθήσει το κόσμημά σας να ανακτήσει την αρχική του λάμψη. Ξεπλύνετε με νερό, στεγνώστε καλά με ένα απαλό πανί και, για ακόμη καλύτερο αποτέλεσμα, τρίψτε απαλά με ένα πανί γυαλίσματος μέχρι να λάμψει.
-
-ΕΝΑ ΦΥΣΙΚΟ ΧΑΡΑΚΤΗΡΙΣΤΙΚΟ
-Τα ασημένια κοσμήματα ενδέχεται να οξειδώνονται, να θαμπώνουν ή να αλλάζουν φυσικά χρώμα με την πάροδο του χρόνου λόγω έκθεσης στον αέρα, την υγρασία, το pH του δέρματος, καλλυντικά, αρώματα, απορρυπαντικά ή τη συνήθη χρήση. Οι αλλαγές αυτές θεωρούνται φυσικά χαρακτηριστικά του υλικού και δεν συνιστούν έλλειψη συμμόρφωσης ή ελάττωμα.`,
-  },
-  {
-    slug: "ring-size",
-    title: "Οδηγός Μεγέθους Δαχτυλιδιού",
-    content: `Μέθοδος 1
-1. Πάρτε ένα δαχτυλίδι που σας ταιριάζει και μετρήστε την εσωτερική διάμετρο (Ø) σε χιλιοστά με έναν χάρακα.
-
-Μέθοδος 2
-1. Τυλίξτε ένα κομμάτι κλωστής ή μια μεζούρα χαλαρά γύρω από το δάχτυλό σας.
-2. Σημειώστε με στυλό το σημείο όπου ενώνονται τα άκρα.
-3. Απλώστε την κλωστή σε επίπεδη επιφάνεια και μετρήστε το μήκος της με χάρακα.`,
-    image: {
-      src: "/size-guide.jpeg",
-      alt: "Πίνακας μεγεθών δαχτυλιδιού με διάμετρο, περίμετρο και αντιστοιχίες US",
-    },
-  },
-  {
-    slug: "terms",
+  el: {
     title: "Γενικοί Όροι",
     subtitle: "Γενικοί Όροι εξ αποστάσεως πώλησης · Έκδοση ενημερωμένη στις 20.07.2026",
     pdfHref: "/legal/general-conditions-el.pdf",
@@ -255,82 +311,4 @@ export const el: PageData[] = [
 
 Έκδοση ενημερωμένη στις 20.07.2026.`,
   },
-  {
-    // Greek rendering of the English Privacy Notice, which remains the
-    // official signed version (see the PDF linked from this page).
-    slug: "privacy",
-    title: "Πολιτική Απορρήτου",
-    subtitle: "Τελευταία ενημέρωση: 07.08.2026",
-    pdfHref: "/legal/privacy-notice-en.pdf",
-    content: `Η παρούσα Πολιτική Απορρήτου έχει σκοπό να σας ενημερώσει για τον τρόπο με τον οποίο η ΚΟΣΜΗΜΑΤΑ ΦΩΣ (αναφερόμενη ως «Εμείς», «Εμάς», «Μας» ή «Fos») συλλέγει και επεξεργάζεται τα προσωπικά σας δεδομένα όταν χρησιμοποιείτε την ιστοσελίδα μας (www.fosjewels.com) (η «Ιστοσελίδα») ή/και όταν υποβάλλετε παραγγελία με ηλεκτρονικά μέσα ή/και συνάπτετε σύμβαση μαζί μας για την αγορά των προϊόντων μας (τα «Κοσμήματα»). Επίσης, εξηγεί τους σκοπούς για τους οποίους γίνεται η επεξεργασία των προσωπικών σας δεδομένων και τα δικαιώματα που έχετε ως υποκείμενο των δεδομένων.
-
-Αναφορικά με τα προσωπικά δεδομένα που συλλέγονται σε σχέση με τη χρήση των υπηρεσιών που είναι διαθέσιμες στην Ιστοσελίδα ή/και με σκοπό την παραγγελία Κοσμημάτων ή/και τη σύναψη σύμβασης μαζί μας, μπορείτε να επικοινωνήσετε με τον Υπεύθυνο Επεξεργασίας στο εγγεγραμμένο γραφείο μας, Θησέως 2, Νήσου, Τ.Κ. 2571, Λευκωσία, Κύπρος, ή αποστέλλοντας μήνυμα ηλεκτρονικού ταχυδρομείου στο contact@fosjewels.com με θέμα «Personal Data».
-
-ΕΠΕΞΕΡΓΑΖΟΜΑΣΤΕ ΤΑ ΠΡΟΣΩΠΙΚΑ ΣΑΣ ΔΕΔΟΜΕΝΑ ΓΙΑ ΕΝΑΝ Ή ΠΕΡΙΣΣΟΤΕΡΟΥΣ ΑΠΟ ΤΟΥΣ ΑΚΟΛΟΥΘΟΥΣ ΣΚΟΠΟΥΣ:
-
-1. Περιήγηση
-Η Ιστοσελίδα συλλέγει αυτόματα ορισμένες τεχνικές πληροφορίες, όπως διευθύνσεις IP, ονόματα τομέων και URI, προκειμένου να διασφαλιστεί η ορθή λειτουργία της, να διενεργούνται συγκεντρωτικές στατιστικές αναλύσεις και, σε περίπτωση υπόνοιας ηλεκτρονικού εγκλήματος, να ταυτοποιηθούν οι υπεύθυνοι. Η νομική βάση για την επεξεργασία αυτή είναι η παροχή των υπηρεσιών που είναι απαραίτητες ώστε οι χρήστες να έχουν πρόσβαση στην Ιστοσελίδα, καθώς και το έννομο συμφέρον μας για τη διασφάλιση της ασφάλειας και της ορθής λειτουργίας των συστημάτων πληροφορικής μας και για την πρόληψη και διερεύνηση ενδεχόμενων παράνομων ενεργειών, σύμφωνα με την ισχύουσα νομοθεσία περί προστασίας δεδομένων.
-
-2. Ηλεκτρονικές Αγορές
-Τα προσωπικά δεδομένα που συλλέγονται στο πλαίσιο ηλεκτρονικών αγορών υποβάλλονται σε επεξεργασία με σκοπό την εκτέλεση των παραγγελιών και τις συναφείς δραστηριότητες, συμπεριλαμβανομένων της αποστολής των Κοσμημάτων, της τιμολόγησης, της διαχείρισης πληρωμών, της παρακολούθησης της παραγγελίας, της παράδοσης και, όπου συντρέχει περίπτωση, της διαχείρισης επιστροφών προϊόντων και χρημάτων. Τα δεδομένα που υποβάλλονται σε επεξεργασία περιλαμβάνουν στοιχεία επικοινωνίας (όνομα και επώνυμο, διεύθυνση ηλεκτρονικού ταχυδρομείου, αριθμό τηλεφώνου) και τη διεύθυνση αποστολής. Σε περίπτωση επιστροφής, ενδέχεται να σας ζητηθεί επίσης ο IBAN σας, ο οποίος είναι απαραίτητος για την επιστροφή του τιμήματος των επιστρεφόμενων Κοσμημάτων. Τα στοιχεία του μέσου πληρωμής (όπως αριθμοί πιστωτικών καρτών ή κωδικοί ασφαλείας) δεν υποβάλλονται σε επεξεργασία από εμάς και τα διαχειρίζεται αποκλειστικά ο πάροχος υπηρεσιών πληρωμών που επιλέγετε. Η νομική βάση για την επεξεργασία αυτή είναι η εκτέλεση της σύμβασης πώλησης. Τα δεδομένα διατηρούνται για όσο χρονικό διάστημα απαιτείται για την εκπλήρωση των συμβατικών και νομικών υποχρεώσεων που σχετίζονται με την αγορά και πώληση προϊόντων, συμπεριλαμβανομένων εκείνων που απορρέουν από τη φορολογική νομοθεσία.
-
-3. Εξυπηρέτηση Πελατών
-Παρέχουμε υπηρεσίες υποστήριξης πελατών τηλεφωνικά ή μέσω ηλεκτρονικού ταχυδρομείου σε σχέση με την αγορά Κοσμημάτων ή τη χρήση των υπηρεσιών μας. Οι τηλεφωνικές κλήσεις ενδέχεται να καταγράφονται με σκοπό την παρακολούθηση και βελτίωση της ποιότητας και της αποτελεσματικότητας της παρεχόμενης υπηρεσίας. Τα προσωπικά δεδομένα που υποβάλλονται σε επεξεργασία περιλαμβάνουν τις πληροφορίες που είναι απαραίτητες για την απάντηση στα αιτήματά σας, όπως το όνομά σας, η διεύθυνση ηλεκτρονικού ταχυδρομείου και κάθε πρόσθετη πληροφορία που απαιτείται για σκοπούς ταυτοποίησης και επαλήθευσης. Η νομική βάση για την επεξεργασία αυτή είναι η εκτέλεση της σύμβασης πώλησης ή η λήψη προσυμβατικών μέτρων κατόπιν αιτήματός σας, καθώς και το έννομο συμφέρον μας για την προστασία και υπεράσπιση των δικαιωμάτων μας ενώπιον δικαστηρίων ή άλλων αρμόδιων αρχών σε περίπτωση νομικών αξιώσεων. Η καταγραφή των τηλεφωνικών κλήσεων βασίζεται στο έννομο συμφέρον μας για τη βελτίωση της ποιότητας και της αποτελεσματικότητας της εξυπηρέτησης πελατών.
-
-4. Κατάρτιση Προφίλ
-Χρησιμοποιούμε πληροφορίες που αφορούν το προφίλ και τις αγοραστικές σας συνήθειες για να σας αποστέλλουμε εξατομικευμένες ενημερώσεις και αποκλειστικές προσφορές, εφόσον έχετε δώσει τη συγκατάθεσή σας για τη λήψη προωθητικών μηνυμάτων, καθώς και για να αναλύουμε τις προτιμήσεις των πελατών ώστε να αναπτύσσουμε προϊόντα και υπηρεσίες που ανταποκρίνονται σε αυτές. Τα δεδομένα που υποβάλλονται σε επεξεργασία για σκοπούς κατάρτισης προφίλ ενδέχεται να περιλαμβάνουν πληροφορίες σχετικά με τις αγορές σας, τη χώρα προέλευσης, το φύλο, την ηλικία και τις αλληλεπιδράσεις σας μαζί μας μέσω της Ιστοσελίδας, τυχόν εφαρμογών που αναπτύσσονται από Εμάς ή από τρίτους για λογαριασμό μας, και των μέσων κοινωνικής δικτύωσής μας (π.χ. Instagram). Το προφίλ σας ενδέχεται επίσης να εμπλουτίζεται με στατιστικές πληροφορίες που λαμβάνονται νόμιμα από άλλες πηγές, όπως δημογραφικά ή γεωγραφικά δεδομένα σχετικά με την περιοχή διαμονής σας, καθώς και πληροφορίες σχετικά με τις ηλεκτρονικές συσκευές που χρησιμοποιείτε για να αλληλεπιδράτε μαζί μας. Η νομική βάση για την επεξεργασία αυτή είναι η συγκατάθεσή σας, την οποία μπορείτε να ανακαλέσετε οποτεδήποτε επικοινωνώντας μαζί μας στο contact@fosjewels.com με θέμα «Personal Data».
-
-5. Καταπολέμηση Απάτης
-Τα προσωπικά δεδομένα υποβάλλονται σε επεξεργασία με σκοπό την επαλήθευση της αντιστοιχίας μεταξύ του αγοραστή και του κατόχου του μέσου πληρωμής που χρησιμοποιήθηκε για την ολοκλήρωση μιας αγοράς, προκειμένου να προλαμβάνονται και να καταπολεμούνται δόλιες ενέργειες. Για τους σκοπούς αυτούς, τα δεδομένα που υποβάλλονται σε επεξεργασία ενδέχεται να περιλαμβάνουν το όνομα και το επώνυμό σας, τη διεύθυνση ηλεκτρονικού ταχυδρομείου, τη διεύθυνση IP, στοιχεία των ηλεκτρονικών παραγγελιών και πληροφορίες σχετικά με τον τύπο του μέσου πληρωμής που χρησιμοποιήθηκε για την αγορά. Η νομική βάση για την επεξεργασία αυτή είναι το έννομο συμφέρον μας για την πρόληψη, τον εντοπισμό και την καταπολέμηση της απάτης.
-
-6. Εγγραφή σε Προσωπικό Λογαριασμό
-Τα προσωπικά δεδομένα υποβάλλονται σε επεξεργασία με σκοπό τη δημιουργία και διαχείριση εγγεγραμμένου λογαριασμού χρήστη, ο οποίος σας επιτρέπει να αποθηκεύετε και να διαχειρίζεστε περιεχόμενο όπως τη λίστα επιθυμιών σας (δηλαδή τη λίστα των αγαπημένων σας προϊόντων), το ιστορικό αγορών και άλλες συναφείς πληροφορίες. Τα δεδομένα που υποβάλλονται σε επεξεργασία περιλαμβάνουν τα προσωπικά στοιχεία και τα στοιχεία επικοινωνίας που παρέχονται στη διαδικτυακή φόρμα εγγραφής. Οι πληροφορίες που είναι απαραίτητες για τη χρήση των υπηρεσιών μας επισημαίνονται με αστερίσκο· η μη παροχή των υποχρεωτικών αυτών δεδομένων μας εμποδίζει να δημιουργήσουμε τον λογαριασμό σας και να παρέχουμε τις αιτούμενες υπηρεσίες. Η νομική βάση για την επεξεργασία αυτή είναι η εκτέλεση της σύμβασης εγγραφής στην Ιστοσελίδα.
-
-7. Αποστολή Ηλεκτρονικής Απόδειξης
-Τα προσωπικά δεδομένα υποβάλλονται σε επεξεργασία με σκοπό την αποστολή της απόδειξης αγοράς μέσω ηλεκτρονικού ταχυδρομείου μετά από αγορά που πραγματοποιείται στην Ιστοσελίδα μας. Τα δεδομένα που υποβάλλονται σε επεξεργασία για τον σκοπό αυτό συνίστανται στη διεύθυνση ηλεκτρονικού ταχυδρομείου σας. Η νομική βάση για την επεξεργασία αυτή είναι η εκπλήρωση των νομικών υποχρεώσεων που σχετίζονται με φορολογικές και λογιστικές απαιτήσεις, καθώς και η εκτέλεση των συμβατικών υποχρεώσεων.
-
-8. Συμμετοχή σε Έρευνες Ικανοποίησης
-Τα προσωπικά δεδομένα ενδέχεται να υποβάλλονται σε επεξεργασία με σκοπό τη συλλογή πληροφοριών σχετικά με τα ενδιαφέροντα, τις προτιμήσεις και τις απόψεις σας για την ποιότητα των προϊόντων μας, των διαδικτυακών, εξ αποστάσεως ή/και εκτός εμπορικού καταστήματος υπηρεσιών μας και της εξυπηρέτησης πελατών μας. Ανάλογα με την έρευνα, τα δεδομένα που υποβάλλονται σε επεξεργασία ενδέχεται να περιλαμβάνουν το όνομά σας, τα στοιχεία επικοινωνίας σας και τον αριθμό της παραγγελίας. Η νομική βάση για την επεξεργασία αυτή είναι η ρητή συγκατάθεσή σας, η οποία παρέχεται με τη συμπλήρωση και υποβολή κάθε έρευνας.
-
-ΔΙΑΤΗΡΗΣΗ ΤΩΝ ΔΕΔΟΜΕΝΩΝ
-
-Διατηρούμε τα προσωπικά δεδομένα μόνο για όσο χρονικό διάστημα είναι απαραίτητο για την εκπλήρωση των σκοπών για τους οποίους συλλέχθηκαν και όπως απαιτείται από την ισχύουσα νομοθεσία. Τα κριτήρια που χρησιμοποιούνται για τον καθορισμό των περιόδων διατήρησης περιλαμβάνουν τη φύση των προσωπικών δεδομένων, τους σκοπούς της επεξεργασίας, τυχόν εφαρμοστέες νομικές, κανονιστικές, φορολογικές, λογιστικές ή συμβατικές υποχρεώσεις διατήρησης, καθώς και το διάστημα κατά το οποίο ενδέχεται να χρειαστεί να διατηρήσουμε τα δεδομένα για την προστασία των νομικών μας δικαιωμάτων ή για την απάντηση σε αξιώσεις. Μόλις τα προσωπικά δεδομένα παύσουν να είναι απαραίτητα για τους σκοπούς αυτούς και δεν υφίσταται νομική υποχρέωση διατήρησής τους, διαγράφονται ή ανωνυμοποιούνται με ασφάλεια.
-
-ΣΕ ΠΟΙΟΥΣ ΚΟΙΝΟΠΟΙΟΥΜΕ ΤΑ ΔΕΔΟΜΕΝΑ ΣΑΣ;
-
-Για την επίτευξη των σκοπών για τους οποίους επεξεργαζόμαστε τα προσωπικά σας δεδομένα, ενδέχεται να χρειαστεί να τα γνωστοποιήσουμε στις ακόλουθες κατηγορίες αποδεκτών: πιστωτικά ιδρύματα, εταιρείες παροχής υπηρεσιών αποστολής και μεταφοράς, και ασφαλιστικές εταιρείες. Οι αποδέκτες αυτοί ενεργούν ως ανεξάρτητοι Υπεύθυνοι Επεξεργασίας και η συμμετοχή τους είναι απαραίτητη για τη διενέργεια ενεργειών ουσιωδών για τη χρήση των υπηρεσιών μας, όπως η επεξεργασία πληρωμών και η παράδοση των αγορασθέντων Κοσμημάτων.
-
-COOKIES
-
-Η ιστοσελίδα μας χρησιμοποιεί cookies ώστε η περιήγησή σας να είναι ταχύτερη, ευκολότερη και πιο εξατομικευμένη. Τα cookies είναι μικρά αρχεία κειμένου που αποθηκεύονται στη συσκευή σας και μπορούν να θυμούνται τις προτιμήσεις σας, τα στοιχεία σύνδεσής σας ή τα προϊόντα στο καλάθι σας, βοηθώντας μας να βελτιώσουμε την εμπειρία σας. Χρησιμοποιούμε δύο βασικούς τύπους cookies: τα τεχνικά cookies, τα οποία είναι απαραίτητα για την ορθή λειτουργία της Ιστοσελίδας, όπως η πλοήγηση και οι γλωσσικές προτιμήσεις, και δεν απαιτούν τη συγκατάθεσή σας πριν από την εγκατάστασή τους· και τα cookies κατάρτισης προφίλ, τα οποία συλλέγουν πληροφορίες σχετικά με τις συνήθειες περιήγησής σας για την παροχή εξατομικευμένου περιεχομένου και διαφημίσεων και απαιτούν τη ρητή συγκατάθεσή σας πριν από την εγκατάστασή τους. Τα cookies μπορεί επίσης να είναι cookies συνεδρίας, τα οποία είναι προσωρινά και διαγράφονται μετά το κλείσιμο του προγράμματος περιήγησης, ή μόνιμα cookies, τα οποία παραμένουν στη συσκευή σας για να θυμούνται τις ρυθμίσεις σας σε μελλοντικές επισκέψεις. Τα απολύτως απαραίτητα cookies εξαιρούνται από την υποχρέωση συγκατάθεσης, ενώ για όλα τα υπόλοιπα cookies ζητούμε την άδειά σας πριν από τη χρήση τους.
-
-Μπορείτε να αποδεχθείτε, να απορρίψετε ή να διαχειριστείτε τις προτιμήσεις σας για τα cookies οποτεδήποτε μέσω των Ρυθμίσεων Cookies ή μέσω του σχετικού banner που εμφανίζεται κατά την πρώτη σας επίσκεψη στην Ιστοσελίδα. Η συγκατάθεση πρέπει να παρέχεται ελεύθερα, να είναι συγκεκριμένη, εν πλήρει επιγνώσει και σαφής, και μπορείτε να την ανακαλέσετε οποτεδήποτε προσαρμόζοντας τις ρυθμίσεις σας ή χρησιμοποιώντας τα διαθέσιμα εργαλεία· η ανάκληση της συγκατάθεσης δεν θίγει τη νομιμότητα της επεξεργασίας που πραγματοποιήθηκε πριν από αυτήν. Τα μη απαραίτητα cookies δεν ενεργοποιούνται εάν δεν παρέχετε τη συγκατάθεσή σας, ενώ μπορείτε να συνεχίσετε να περιηγείστε στην Ιστοσελίδα ακόμη και αν αρνηθείτε ορισμένους τύπους cookies (αν και ορισμένες λειτουργίες ενδέχεται να μη λειτουργούν όπως προβλέπεται).
-
-ΠΟΙΑ ΔΙΚΑΙΩΜΑΤΑ ΜΠΟΡΕΙΤΕ ΝΑ ΑΣΚΗΣΕΤΕ ΩΣ ΥΠΟΚΕΙΜΕΝΟ ΤΩΝ ΔΕΔΟΜΕΝΩΝ;
-
-Μπορείτε να ασκήσετε τα δικαιώματά σας σε σχέση με τα προσωπικά σας δεδομένα επικοινωνώντας μαζί μας στο contact@fosjewels.com με θέμα «Personal Data». Δεσμευόμαστε να απαντήσουμε στο αίτημά σας το συντομότερο δυνατό και, σε κάθε περίπτωση, εντός τριάντα (30) ημερών από την παραλαβή του. Όπου κρίνεται απαραίτητο, ενδέχεται να ζητήσουμε πρόσθετες πληροφορίες για την επαλήθευση της ταυτότητάς σας σε σχέση με το αίτημά σας, ώστε να διασφαλιστεί ο ορθός χειρισμός των προσωπικών σας δεδομένων. Μπορείτε να ασκήσετε τα ακόλουθα δικαιώματα σε σχέση με τα προσωπικά σας δεδομένα:
-
-• Δικαίωμα πρόσβασης: Να λάβετε επιβεβαίωση για το κατά πόσον υποβάλλονται σε επεξεργασία προσωπικά δεδομένα που σας αφορούν και, εφόσον συμβαίνει αυτό, να αποκτήσετε πρόσβαση σε αυτά και να ενημερωθείτε για την προέλευσή τους, τις κατηγορίες των προσωπικών δεδομένων που υποβάλλονται σε επεξεργασία, τους αποδέκτες ή τις κατηγορίες αποδεκτών, τους σκοπούς της επεξεργασίας, την ύπαρξη αυτοματοποιημένης λήψης αποφάσεων (συμπεριλαμβανομένης της κατάρτισης προφίλ), τον χρόνο διατήρησης των δεδομένων και τα δικαιώματα που παρέχει η ισχύουσα νομοθεσία.
-
-• Δικαίωμα διόρθωσης: Να ζητήσετε τη διόρθωση ανακριβών προσωπικών δεδομένων και τη συμπλήρωση ελλιπών προσωπικών δεδομένων.
-
-• Δικαίωμα διαγραφής: Να ζητήσετε τη διαγραφή των προσωπικών δεδομένων όταν αυτά δεν είναι πλέον απαραίτητα για τους σκοπούς για τους οποίους συλλέχθηκαν ή όταν δεν είμαστε πλέον εξουσιοδοτημένοι να τα επεξεργαζόμαστε.
-
-• Δικαίωμα περιορισμού της επεξεργασίας: Να επιτύχετε τον περιορισμό της επεξεργασίας στις ακόλουθες περιπτώσεις:
- i. Όταν αμφισβητείτε την ακρίβεια των δεδομένων, για το χρονικό διάστημα που απαιτείται για την επαλήθευσή της.
- ii. Όταν η επεξεργασία είναι παράνομη και αντιτίθεστε στη διαγραφή, ζητώντας αντ' αυτής τον περιορισμό.
- iii. Όταν τα δεδομένα δεν είναι πλέον απαραίτητα για την επεξεργασία, αλλά τα χρειάζεστε για τη θεμελίωση, άσκηση ή υποστήριξη νομικών αξιώσεων.
-
-• Δικαίωμα στη φορητότητα των δεδομένων: Να λάβετε τα προσωπικά σας δεδομένα σε δομημένο, κοινώς χρησιμοποιούμενο και αναγνώσιμο από μηχανήματα μορφότυπο και να ζητήσετε τη διαβίβασή τους σε άλλον υπεύθυνο επεξεργασίας, εφόσον αυτό είναι τεχνικά εφικτό.
-
-• Δικαίωμα εναντίωσης: Έχετε το δικαίωμα να αντιταχθείτε οποτεδήποτε, για λόγους που σχετίζονται με την ιδιαίτερη κατάστασή σας, στην επεξεργασία προσωπικών δεδομένων που βασίζεται στα έννομα συμφέροντά μας, συμπεριλαμβανομένης της κατάρτισης προφίλ που στηρίζεται σε αυτά. Μετά την εναντίωσή σας, δεν θα επεξεργαζόμαστε πλέον τα προσωπικά σας δεδομένα, εκτός εάν αποδείξουμε επιτακτικούς και νόμιμους λόγους που υπερισχύουν των συμφερόντων, των δικαιωμάτων και των ελευθεριών σας.
-
-• Δικαίωμα ανάκλησης της συγκατάθεσης: Να ανακαλέσετε τη συγκατάθεσή σας οποτεδήποτε, εφόσον η επεξεργασία βασίζεται σε αυτήν, χωρίς να θίγεται η νομιμότητα της επεξεργασίας που πραγματοποιήθηκε πριν από την ανάκληση.
-
-Η παρούσα Πολιτική Απορρήτου έχει συνταχθεί σύμφωνα με τον περί της Προστασίας των Φυσικών Προσώπων Έναντι της Επεξεργασίας των Δεδομένων Προσωπικού Χαρακτήρα και της Ελεύθερης Κυκλοφορίας των Δεδομένων αυτών Νόμο του 2018 (Ν. 125(I)/2018).
-
-Το παρόν κείμενο αποτελεί μετάφραση της αγγλικής Πολιτικής Απορρήτου, η οποία παρατίθεται στο συνημμένο έγγραφο και υπερισχύει σε περίπτωση απόκλισης.
-
-Τελευταία ενημέρωση: 07.08.2026`,
-  },
-];
+};

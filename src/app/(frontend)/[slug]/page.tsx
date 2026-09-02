@@ -5,6 +5,11 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+// Every slug is known at build time, so both locale trees are fully
+// prerendered and unknown slugs 404 instead of rendering on demand.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return getAllPageSlugs().map((slug) => ({ slug }));
 }
